@@ -70,7 +70,7 @@ const Contact = () => {
         <p className={styles.sectionSubText}>Get in touch</p>
         <h3 className={styles.sectionHeadText}>Contact.</h3>
 
-        <a href="https://www.linkedin.com/in/dilpreet-singh-887096190/"><p className='text-white font-medium mb-4'>LinkdIn Profile</p></a>
+        <a href="https://www.linkedin.com/in/ezhil-nilavan/"><p className='text-white font-medium mb-4'>LinkedIn Profile</p></a>
 
         <form
           ref={formRef}

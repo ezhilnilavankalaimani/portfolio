@@ -130,7 +130,7 @@ import {
   const testimonials = [
     {
       testimonial:
-        "I had the privilege of working closely with Ezhil Nilavan for three years at Amazon. His exceptional expertise as an automation analyst improved our efficiency through innovative solutions, making him highly recommended for automation projects.",
+        " Ezhil, our Automation Analyst, with three years of dedicated service at Amazon, consistently impressed with their automation prowess. His insights, problem-solving skills, and commitment to streamlining processes greatly contributed to our team's success and overall operational excellence. A valuable asset!.",
       name: "Mohan Kumar",
       designation: "Project Manager",
       company: "Amazon",

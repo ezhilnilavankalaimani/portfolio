@@ -19,7 +19,8 @@
 .av-ent { position: absolute; left: 0; top: 0; will-change: transform; pointer-events: none; }
 .av-ent svg { display: block; width: 100%; height: auto; }
 .av-balloon { z-index: 14; }
-.av-tiger { z-index: 18; scale: .78; transform-origin: 50% 100%; }
+.av-tiger { z-index: 18; }
+.av-tiger .av-flip { scale: .78; transform-origin: 50% 100%; }
 .av-ninja { z-index: 20; }
 .av-roarsvg { position: absolute !important; left: 0; top: 0; opacity: 0; }
 .av-tiger.roaring .av-roarsvg { opacity: 1; }
@@ -89,7 +90,7 @@
 @keyframes av-wave { from { transform: translateX(-60px); } to { transform: translateX(0); } }
 .av-jelly { animation: av-jelly 5s ease-in-out infinite; }
 @keyframes av-jelly { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-30px) scale(1.08, .92); } }
-.av-bgfish { position: absolute; font-size: 26px; opacity: .55; animation: av-bgswim 40s linear infinite; }
+.av-bgfish { position: absolute; opacity: .6; animation: av-bgswim 40s linear infinite; }
 @keyframes av-bgswim { from { transform: translateX(-80px) scaleX(-1); } to { transform: translateX(2700px) scaleX(-1); } }
 .av-amb { position: absolute; bottom: 20px; width: 12px; height: 12px; border: 2px solid #ffffffaa; border-radius: 50%; animation: av-ambup linear infinite; }
 @keyframes av-ambup { from { transform: translateY(0); opacity: .9; } to { transform: translateY(-720px); opacity: 0; } }
@@ -180,7 +181,7 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 .av-chips { display: flex; gap: 6px; flex-wrap: wrap; } .av-chips i { font-style: normal; background: #14532d; color: #fff; border-radius: 99px; padding: 3px 10px; font-size: 12px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .av-sway, .av-blink, .av-star, .av-cloud, .av-cloudy, .av-leaf, .av-ray, .av-wave, .av-jelly, .av-bgfish, .av-amb, .av-bob, .av-arrowhint, .gm-flyer, .gm-plane { animation: none !important; }
+  .av-flyparrot, .av-flyparrot svg, .av-wing, .av-sway, .av-blink, .av-star, .av-cloud, .av-cloudy, .av-leaf, .av-ray, .av-wave, .av-jelly, .av-bgfish, .av-amb, .av-bob, .av-arrowhint, .gm-flyer, .gm-plane { animation: none !important; }
 }
 
 /* portrait phones */
@@ -314,3 +315,77 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 .av-hint { align-self: flex-end; background: #0c3b24cc; color: #fff; font-size: 13px; font-weight: 700; padding: 8px 12px; border-radius: 12px; pointer-events: none; }
 .av-how .av-howtouch { display: none; }
 @media (pointer: coarse) { .av-how { display: none; } }
+
+/* buddy */
+.av-tiger .av-esvg { display: none; width: 230px; margin: -25px 25px 0; }
+.av-tiger[data-buddy='elephant'] .av-esvg { display: block; }
+.av-tiger[data-buddy='elephant'] .av-tsvg { display: none !important; }
+.av-tiger.roaring .av-esvg { animation: av-toot .22s ease-in-out infinite alternate; }
+@keyframes av-toot { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+.av-card { background: #fffbea; border: 3px solid #f7b32b; border-radius: 22px; padding: 22px 26px; max-width: 640px; width: calc(100% - 32px); text-align: center; color: #14532d; }
+.av-card h2 { margin: 0 0 4px; font-size: 28px; }
+.av-lead.small { font-size: 12px; opacity: .8; }
+.av-buddies { display: flex; gap: 16px; justify-content: center; margin: 14px 0; flex-wrap: wrap; }
+.av-buddies button { background: #fff; border: 3px solid #e8dfb8; border-radius: 18px; padding: 14px 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: inherit; color: #14532d; width: 230px; }
+.av-buddies button:hover, .av-buddies button.on { border-color: #2f8a57; background: #f1fbe9; }
+.av-buddies b { font-size: 20px; } .av-buddies span { font-size: 13px; opacity: .8; }
+/* flying parrot across the top */
+.av-flyparrot { position: absolute; top: 118px; left: 0; z-index: 40; pointer-events: none; animation: av-pfly 46s linear infinite; }
+.av-flyparrot svg { display: block; animation: av-pbob 1.6s ease-in-out infinite alternate; }
+.av-flyparrot .av-wing { transform-box: fill-box; transform-origin: 20% 90%; animation: av-flap .28s ease-in-out infinite alternate; }
+@keyframes av-pfly { 0% { transform: translateX(-180px) scaleX(1); } 49% { transform: translateX(1520px) scaleX(1); } 50% { transform: translateX(1520px) scaleX(-1); } 99% { transform: translateX(-180px) scaleX(-1); } 100% { transform: translateX(-180px) scaleX(1); } }
+@keyframes av-pbob { from { translate: 0 -10px; } to { translate: 0 14px; } }
+@keyframes av-flap { from { transform: rotate(-26deg) scaleY(1); } to { transform: rotate(18deg) scaleY(.6); } }
+
+.av-ctltitle { margin: 12px 0 6px; font-size: 16px; }
+.av-ctls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.av-ctls button { background: #fff; border: 3px solid #e8dfb8; border-radius: 16px; padding: 10px 14px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; font-family: inherit; color: #14532d; width: 250px; }
+.av-ctls button.on { border-color: #2f8a57; background: #f1fbe9; }
+.av-ctls b { font-size: 17px; } .av-ctls span { font-size: 12px; opacity: .8; }
+
+.av-mini { position: absolute; left: 30px; top: 100px; z-index: 60; width: min(300px, 40vw); height: 34px; border: 3px solid #0c3b24; border-radius: 18px; background: linear-gradient(#cfe9b8,#b5d99c); box-shadow: 0 3px 0 #0c3b2488, inset 0 0 0 2px #ffffff66; padding: 0; cursor: pointer; overflow: hidden; }
+.av-mini-road { position: absolute; left: 0; right: 0; top: 50%; height: 6px; margin-top: -3px; background: #5a5f66; border-top: 1px dashed #f5e663; }
+.av-mini-zone { position: absolute; top: 0; bottom: 0; }
+.av-mini-zone.sea { background: #4fb3e8aa; } .av-mini-zone.rain { background: #6b7f9aaa; }
+.av-mini-blip { position: absolute; top: 4px; transform: translateX(-50%); font: 800 10px/14px sans-serif; min-width: 14px; text-align: center; color: #fff; background: #9aa3a0; border-radius: 7px; padding: 0 2px; }
+.av-mini-blip.seen { background: #f7b32b; color: #14532d; } .av-mini-blip.flag { background: none; font-size: 12px; }
+.av-mini-me { position: absolute; top: 50%; z-index: 2; color: #fff; background: #e53935; border: 2px solid #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 8px; line-height: 12px; text-align: center; box-shadow: 0 0 0 3px #e5393555; }
+@media (max-width: 700px) { .av-mini { top: 96px; left: 16px; width: 38vw; height: 28px; } }
+
+.av-gtamap { border: 4px solid #0c3b24; border-radius: 18px; overflow: hidden; margin-bottom: 14px; box-shadow: 0 6px 0 #0c3b2455; background: #7cc4e8; }
+.av-gtamap svg { display: block; width: 100%; height: auto; max-height: 62vh; }
+.mg-node { cursor: pointer; }
+.mg-dot { fill: #fff; stroke: #14532d; stroke-width: 4; transition: transform .15s; }
+.mg-node.seen .mg-dot { fill: #f7b32b; }
+.mg-node:hover .mg-dot, .mg-node:focus .mg-dot { transform: scale(1.18); outline: none; }
+.mg-pulse { fill: #e5393555; animation: mg-p 1.3s ease-out infinite; transform-origin: center; }
+@keyframes mg-p { from { transform: scale(.7); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+
+.av-award .av-master { position: absolute; left: 0; bottom: 0; width: 150px; height: 235px; transition: transform 1.2s ease-in, opacity .5s 1s; }
+.av-mflip { width: 150px; height: 230px; transform-origin: 50% 100%; }
+.av-mflip svg { width: 100%; height: 100%; overflow: visible; }
+.av-mtag { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%); white-space: nowrap; background: #0c3b24; color: #ffd75e; font: 800 11px/1 sans-serif; letter-spacing: 1.5px; padding: 4px 9px; border-radius: 10px; }
+.av-mtrophy { position: absolute; left: 112px; top: 60px; width: 56px; opacity: 0; transform-origin: 50% 100%; }
+.av-mtrophy svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 0 10px #ffd75e); }
+.av-mbubble { position: absolute; left: -40px; top: -78px; background: #fff; border: 3px solid #0c3b24; border-radius: 14px; padding: 7px 12px; font: 800 14px/1.2 sans-serif; color: #14532d; text-align: center; opacity: 0; transform: scale(.6); transform-origin: 30% 100%; white-space: nowrap; }
+.av-mbubble small { font-weight: 700; font-size: 11px; opacity: .8; }
+.av-award[data-state='give'] .av-mbubble, .av-award[data-state='pin'] .av-mbubble { opacity: 1; transform: scale(1); transition: all .35s cubic-bezier(.3,1.6,.5,1); }
+.av-award[data-state='give'] .av-mtrophy { opacity: 1; animation: av-mtro 1.2s ease-in-out infinite alternate; }
+.av-award[data-state='pin'] .av-mtrophy { opacity: 1; animation: av-mfly 1s ease-in forwards; }
+.av-award[data-state='fly'] .av-mtrophy { opacity: 0; }
+@keyframes av-mfly { 0% { transform: translate(0,0) scale(1); opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(var(--dx,-200px), var(--dy,40px)) scale(.45); opacity: 0; } }
+.av-pmedal { position: absolute; left: 50%; top: 34%; width: 30px; margin-left: -15px; display: none; z-index: 3; pointer-events: none; }
+.av-pmedal svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 0 4px #ffd75e); }
+.av-hasmedal .av-pmedal { display: block; }
+@keyframes av-mtro { from { transform: translateY(0) rotate(-6deg); } to { transform: translateY(-10px) rotate(6deg); } }
+.av-award[data-state='fly'] .av-master, .av-award[data-state='gone'] .av-master { transform: translateX(240px); opacity: 0; }
+.av-award .av-heli { transform-origin: 50% 100%; }
+.av-rotor { transform-origin: 150px 9px; animation: av-rot .25s linear infinite; animation-play-state: paused; }
+.av-tailrot { transform-origin: 291px 59px; animation: av-trot .2s linear infinite; animation-play-state: paused; }
+@keyframes av-rot { 0% { transform: scaleX(1); } 50% { transform: scaleX(.12); } 100% { transform: scaleX(1); } }
+@keyframes av-trot { to { transform: rotate(360deg); } }
+.av-award[data-state='fly'] .av-rotor, .av-award[data-state='fly'] .av-tailrot { animation-play-state: running; }
+.av-award[data-state='fly'] .av-heli { animation: av-takeoff 6.4s 1.2s cubic-bezier(.5,0,.8,.6) forwards; }
+@keyframes av-takeoff { 0% { transform: translate(0,0); } 25% { transform: translate(0,-70px); } 100% { transform: translate(-1300px,-620px) scale(.5); } }
+.av-award[data-state='gone'] .av-heli { display: none; }
+.av-award[data-state='gone'] .av-mbubble, .av-award[data-state='gone'] .av-mtrophy { display: none; }

@@ -73,9 +73,9 @@ export const STAGES = {
   },
   td: {
     n: 4,
-    sign: ["TD · SYMCOR", "Apr 2024 – Present"],
+    sign: ["TD", "Apr 2024 – Present"],
     title: "Wealth Operations Officer III",
-    sub: "TD, Toronto · Symcor cheque processing · Apr 2024 – Present",
+    sub: "TD, Toronto · Apr 2024 – Present",
     bullets: [
       "Took cheque processing from manual to 99% automation",
       "100% accuracy on RSP / TFSA transactions",

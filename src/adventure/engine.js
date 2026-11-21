@@ -15,7 +15,7 @@ export const LEVELS = [
   { id: "amazon", x: 2880, name: "Experience · Amazon", big: "AMAZON", n: 2 },
   { id: "move", x: 4320, name: "Chennai → Toronto", big: "", n: 3 },
   { id: "work", x: 5760, name: "Experience · Walmart · Kelly", big: "WORK", n: 4 },
-  { id: "td", x: 7200, name: "Experience · TD · Symcor", big: "TD", n: 5 },
+  { id: "td", x: 7200, name: "Experience · TD", big: "TD", n: 5 },
   { id: "today", x: 8640, name: "Today", big: "TODAY", n: 6 },
   { id: "skills", x: 10080, name: "Skills · Underwater", big: "SKILLS", n: 7 },
   { id: "projects", x: 12960, name: "Projects", big: "PROJECTS", n: 8 },
@@ -100,6 +100,7 @@ export class Engine {
     this.emit = emit;
     this.collected = collected;
     this.keys = {};
+    this.buddy = "tiger";
     this.pressed = {};
     this.time = 0;
     this.paused = false;
@@ -213,8 +214,15 @@ export class Engine {
     this.cam.y = 0;
   }
   callTiger() {
-    this.t.mode = "follow";
-    this.t.call = true;
+    const t = this.t, p = this.p;
+    t.mode = "follow";
+    t.call = true;
+    if (Math.abs(p.x - t.x) > 800) {
+      // far away: dash in from just off-screen so the buddy arrives right away
+      let nx = clamp(p.x + (t.x < p.x ? -1 : 1) * (VW * 0.62), 40, WORLD_W - 40);
+      if (nx > POOL.x0 - 40 && nx < POOL.x1 + 40) nx = p.x < POOL.x0 ? POOL.x0 - 60 : POOL.x1 + 60;
+      t.x = nx; t.y = GROUND; t.vy = 0; t.swim = false; t.ground = true;
+    }
     this.t.roar = 0.9;
     sfx("roar");
     this.emit("tiger", "call");
@@ -237,6 +245,12 @@ export class Engine {
       t.x = p.x - p.face * 20;
       sfx("mount");
       this.emit("dismount");
+      return true;
+    }
+    if (!this.nearTiger() && p.ground) {
+      // too far: summon the buddy and hop on the moment it arrives
+      this.mountWhenNear = 4;
+      this.callTiger();
       return true;
     }
     if (this.nearTiger() && p.ground) {
@@ -301,6 +315,8 @@ export class Engine {
       this.emit("ending");
     }
   }
+
+  setAward(s) { const el = this.els.root && this.els.root.querySelector(".av-award"); if (el) el.dataset.state = s; }
 
   resetEnding() {
     this.ending = null; this.ended = false; this.p.hidden = false; this.p.mode = "land";
@@ -390,6 +406,22 @@ export class Engine {
       p.anim = "climb";
       this.emit("climb");
       return;
+    }
+
+    // ---- Master ninja award ----
+    const AX = 8640 + 900;
+    if (this.awardT == null && p.x > AX - 450 && p.x < AX + 500 && p.mode === "land") { this.awardT = 0; this.setAward("give"); this.emit("award", "give"); }
+    if (this.awardT != null && this.awardT < 99) {
+      this.awardT += dt;
+      if (this.awardT > 2.6 && !this.awardPin) {
+        this.awardPin = true;
+        const el = this.els.root.querySelector(".av-award");
+        if (el) { el.style.setProperty("--dx", `${this.p.x - 9660}px`); el.style.setProperty("--dy", `${this.p.y - 125 - 490}px`); }
+        this.setAward("pin");
+      }
+      if (this.awardT > 3.5 && !this.awardPinned) { this.awardPinned = true; this.els.stage.classList.add("av-hasmedal"); this.emit("award", "pinned"); }
+      if (this.awardT > 5.5 && this.awardS !== "fly") { this.awardS = "fly"; this.setAward("fly"); }
+      if (this.awardT > 12 && this.awardS !== "gone") { this.awardS = "gone"; this.setAward("gone"); this.awardT = 100; }
     }
 
     if (this.ending) { this.updateEnding(dt); return; }
@@ -492,6 +524,10 @@ export class Engine {
   updateTiger(dt) {
     const p = this.p, t = this.t;
     if (t.roar > 0) t.roar -= dt;
+    if (this.mountWhenNear > 0) {
+      this.mountWhenNear -= dt;
+      if (!p.mounted && p.mode === "land" && p.ground && this.nearTiger()) { this.mountWhenNear = 0; this.tryMount(); }
+    }
     if (t.celebrate > 0) {
       t.celebrate -= dt;
       if (t.ground && !t.swim && t.vy === 0 && Math.sin(this.time * 14) > 0.97) t.vy = -620;
@@ -506,7 +542,7 @@ export class Engine {
       const target = p.x - p.face * (t.call ? 90 : 150);
       const dx = target - t.x;
       const d = Math.abs(dx);
-      const speed = t.call ? 1500 : d > 650 ? 1050 : 540;
+      const speed = t.call ? 1900 : d > 650 ? 1050 : 540;
       if (d > 16) desired = Math.sign(dx) * Math.min(speed, d * 5);
       if (t.call && d < 70) t.call = false;
     }
@@ -515,9 +551,9 @@ export class Engine {
       t.swim = inPool(t.x) ? false : false; t.ground = true;
       if (inPool(t.x)) t.x = p.x < POOL.x0 ? POOL.x0 - 60 : POOL.x1 + 60;
     }
-    const lim = t.swim ? (Math.abs(p.x - t.x) > 500 ? 600 : 300) : 1500;
+    const lim = t.swim ? (Math.abs(p.x - t.x) > 500 ? 600 : 300) : 2000;
     desired = clamp(desired, -lim, lim);
-    t.vx = approach(t.vx, desired, 2600 * dt);
+    t.vx = approach(t.vx, desired, (t.call ? 9000 : 2600) * dt);
     if (Math.abs(t.vx) > 25) t.face = Math.sign(t.vx);
     else t.face = p.x >= t.x ? 1 : -1;
 
@@ -624,7 +660,7 @@ export class Engine {
     const nin = e.ninja;
     const swimming = p.mode === "swim";
     let nx = p.x - 60, ny = p.y - 184;
-    if (p.mounted) { nx = p.x - 60 + p.face * 8; ny = p.y - 204; }
+    if (p.mounted) { nx = p.x - 60 + p.face * 8; ny = p.y - (this.buddy === "elephant" ? 236 : 204); }
     nin.style.transform = `translate3d(${nx}px,${ny}px,0)`;
     nin.style.opacity = p.hidden ? "0" : "";
     let rot = "";

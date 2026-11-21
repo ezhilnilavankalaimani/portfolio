@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { education, experiences } from "../constants";
 import { CERTS, LINKS, PROJECTS, SKILLS, STAGES } from "../game/data";
+import { Elephant, Tiger } from "../game/characters";
 import { isSoundOn, setSound, sfx } from "./audio";
-import { Engine, GROUND, ITEMS, LEVELS, SKILL_COUNT, VH, VW } from "./engine";
+import { Engine, GROUND, ITEMS, LEVELS, POOL, SKILL_COUNT, VH, VW, WORLD_W } from "./engine";
 import { Poster, POSTER_THEMES, posterToPng } from "./poster";
 import { validateName } from "./names";
 import emailjs from "@emailjs/browser";
@@ -11,6 +12,10 @@ import "../game/game.css";
 import "./adventure.css";
 
 const SAVE_KEY = "advSave.v2";
+const BUDDY_KEY = "advBuddy";
+const CTL_KEY = "advControls";
+const loadCtl = () => { try { return localStorage.getItem(CTL_KEY) === "buttons" ? "buttons" : "gesture"; } catch (e) { return "gesture"; } };
+const loadBuddy = () => { try { const b = localStorage.getItem(BUDDY_KEY); return b === "elephant" || b === "tiger" ? b : null; } catch (e) { return null; } };
 // EmailJS: the first template is the existing contact-form one (mail to Ezhil); the second is the new "course clear" poster mail to the visitor.
 const EJ = { service: "service_3yf8wil", owner: "template_p3qaifo", visitor: "template_olacjjo", key: "pmZPRYuPINkDLOE3c" };
 
@@ -22,11 +27,12 @@ const ACHIEVEMENTS = [
   { id: "cheque", icon: "🧾", name: "Cheque Master", desc: "Collect all 5 cheques at TD." },
   { id: "roof", icon: "🪜", name: "Roof Climber", desc: "Climb the ladder to the control room." },
   { id: "sky", icon: "🎈", name: "Sky Pilot", desc: "Fly the hot-air balloon." },
-  { id: "rider", icon: "🐯", name: "Tiger Rider", desc: "Ride the tiger." },
+  { id: "rider", icon: "🐯", name: "Buddy Rider", desc: "Ride your tiger or elephant." },
   { id: "ocean", icon: "🌊", name: "Ocean Explorer", desc: "Reach the seabed." },
   { id: "skills", icon: "🐟", name: "Skills Explorer", desc: "Catch all 12 skills." },
   { id: "projects", icon: "🧰", name: "Project Hunter", desc: "Open all 5 project chests." },
   { id: "finish", icon: "🏁", name: "Adventure Complete", desc: "Slide down the flagpole and enter the castle." },
+  { id: "star", icon: "🌟", name: "Star Award", desc: "Receive the Q2 2026 Star Award from the Master Ninja." },
   { id: "collector", icon: "🏆", name: "Achievement Collector", desc: "Unlock 6 achievements." },
 ];
 
@@ -82,23 +88,127 @@ const Overlay = ({ title, onClose, children, wide }) => (
   </div>
 );
 
-const MapOverlay = ({ onClose, onGo, onRecruiter, onRestart, visited }) => (
-  <Overlay title='World map' onClose={onClose}>
-    <p className='av-lead'>Jump straight to any level.</p>
-    <div className='av-mapgrid'>
+const Minimap = ({ engine, visited, onOpen }) => {
+  const dot = useRef(null);
+  const pct = (x) => `${(x / WORLD_W) * 100}%`;
+  useEffect(() => {
+    let raf;
+    const loop = () => {
+      const e = engine.current;
+      if (e && dot.current) {
+        const px = Math.max(0, Math.min(1, e.p.x / WORLD_W));
+        dot.current.style.left = `${px * 100}%`;
+        dot.current.style.transform = `translate(-50%,-50%) rotate(${e.p.vx < -5 ? 180 : 0}deg)`;
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [engine]);
+  return (
+    <button className='av-mini' onClick={onOpen} title='Open world map' aria-label='Open world map'>
+      <span className='av-mini-zone sea' style={{ left: pct(POOL.x0), width: pct(POOL.x1 - POOL.x0) }} />
+      <span className='av-mini-zone rain' style={{ left: pct(4320), width: pct(1440) }} />
+      <span className='av-mini-road' />
       {LEVELS.map((l, i) => (
-        <button key={l.id} className={visited.includes(i) ? "seen" : ""} onClick={() => onGo(i)}>
-          <em>{i === 0 ? "START" : `LEVEL ${l.n}`}</em>
-          <b>{l.name}</b>
-        </button>
+        <span key={l.id} className={`av-mini-blip ${visited.includes(i) ? "seen" : ""}`} style={{ left: pct(l.x + 400) }}>{i === 0 ? "★" : l.n}</span>
       ))}
-    </div>
-    <div className='av-row'>
-      <button className='av-btn' onClick={onRecruiter}>📋 Recruiter mode</button>
-      <button className='av-btn ghost' onClick={onRestart}>↺ Restart adventure</button>
-    </div>
-  </Overlay>
-);
+      <span className='av-mini-blip flag' style={{ left: pct(17040) }}>🏁</span>
+      <span className='av-mini-me' ref={dot}>▶</span>
+    </button>
+  );
+};
+
+const MAP_NODES = [
+  { x: 95, y: 455, ico: "🏡" }, { x: 215, y: 350, ico: "🎓" }, { x: 135, y: 220, ico: "📦" },
+  { x: 290, y: 120, ico: "✈️" }, { x: 420, y: 215, ico: "🛒" }, { x: 380, y: 355, ico: "🏦" },
+  { x: 520, y: 450, ico: "⭐" }, { x: 640, y: 340, ico: "🐠" }, { x: 740, y: 215, ico: "🚀" },
+  { x: 840, y: 330, ico: "💬" }, { x: 880, y: 450, ico: "📮" },
+];
+const TREES = [[40,330],[60,260],[30,140],[170,70],[230,200],[250,270],[330,60],[350,150],[470,110],[500,290],[300,440],[280,510],[430,520],[580,520],[470,360],[590,230],[560,110],[680,110],[700,450],[760,420],[800,230],[930,250],[950,380],[780,520],[860,540],[130,520],[40,520],[330,300],[190,140],[610,430]];
+
+const MapOverlay = ({ onClose, onGo, onRecruiter, onRestart, visited, level }) => {
+  const path = MAP_NODES.map((n, i) => `${i ? "L" : "M"}${n.x} ${n.y}`).join(" ");
+  const smooth = MAP_NODES.reduce((d, n, i, arr) => {
+    if (!i) return `M${n.x} ${n.y}`;
+    const p = arr[i - 1];
+    return `${d} Q${p.x + (n.x - p.x) * 0.2} ${p.y + (n.y - p.y) * 0.9} ${(p.x + n.x) / 2} ${(p.y + n.y) / 2} T${n.x} ${n.y}`;
+  }, "");
+  void path;
+  return (
+    <Overlay title='🗺 The Enchanted Forest' onClose={onClose} wide>
+      <p className='av-lead'>Tap a place to run straight there. A new forest opens when I land my next job!</p>
+      <div className='av-gtamap'>
+        <svg viewBox='0 0 1000 580' role='img' aria-label='Forest adventure map'>
+          <defs>
+            <radialGradient id='mgGrass' cx='45%' cy='50%' r='75%'><stop offset='0' stopColor='#9ed36a' /><stop offset='1' stopColor='#5aa04a' /></radialGradient>
+            <pattern id='mgGrid' width='40' height='40' patternUnits='userSpaceOnUse'><path d='M40 0H0V40' fill='none' stroke='#ffffff' strokeOpacity='.12' /></pattern>
+            <filter id='mgBlur'><feGaussianBlur stdDeviation='6' /></filter>
+          </defs>
+          <rect width='1000' height='580' fill='#7cc4e8' />
+          <path d='M20 60 Q60 10 200 30 Q330 5 430 50 Q520 15 640 40 Q780 5 880 60 Q985 110 975 250 Q990 400 940 500 Q880 575 700 560 Q540 580 380 560 Q200 580 90 530 Q10 470 25 330 Q5 180 20 60Z' fill='url(#mgGrass)' stroke='#2f6b3a' strokeWidth='6' />
+          <rect width='1000' height='580' fill='url(#mgGrid)' />
+          {/* Chennai -> Toronto sea strip */}
+          <path d='M175 40 Q240 90 300 75 Q380 60 440 110 L470 150 Q380 120 320 160 Q240 170 170 110Z' fill='#5fb6e6' stroke='#2b8cc0' strokeWidth='3' />
+          {/* lake for skills */}
+          <ellipse cx='640' cy='345' rx='95' ry='62' fill='#4fb3e8' stroke='#2b8cc0' strokeWidth='4' />
+          <path d='M600 335q15-10 30 0M650 360q15-10 30 0' stroke='#fff' strokeOpacity='.7' strokeWidth='3' fill='none' strokeLinecap='round' />
+          {/* mountains */}
+          {[[560, 120], [610, 135], [585, 95]].map(([x, y], i) => <path key={i} d={`M${x - 38} ${y + 28}L${x} ${y - 20}L${x + 38} ${y + 28}Z`} fill='#8d9a8f' stroke='#5c6b5f' strokeWidth='3' />)}
+          {TREES.map(([x, y], i) => (
+            <g key={i} transform={`translate(${x} ${y})`}>
+              <rect x='-3' y='8' width='6' height='12' fill='#7a4e2a' />
+              <path d='M0 -22L16 10H-16Z' fill={i % 3 ? "#2f8a4a" : "#3aa05a"} stroke='#1f5e33' strokeWidth='2' />
+              <path d='M0 -34L12 -8H-12Z' fill={i % 3 ? "#38985a" : "#46b36a"} stroke='#1f5e33' strokeWidth='2' />
+            </g>
+          ))}
+          {/* trail */}
+          <path d={smooth} fill='none' stroke='#fff3c4' strokeWidth='12' strokeLinecap='round' strokeLinejoin='round' opacity='.95' />
+          <path d={smooth} fill='none' stroke='#c58a3c' strokeWidth='4' strokeDasharray='2 12' strokeLinecap='round' />
+          {/* locked next forest */}
+          <g>
+            <rect x='735' y='40' width='235' height='120' rx='22' fill='#cfd6d8' stroke='#8d999c' strokeWidth='4' strokeDasharray='10 8' opacity='.97' />
+            <circle cx='790' cy='72' r='30' fill='#fff' opacity='.7' filter='url(#mgBlur)' /><circle cx='930' cy='130' r='34' fill='#fff' opacity='.7' filter='url(#mgBlur)' />
+            <text x='852' y='88' textAnchor='middle' fontSize='34'>🔒</text>
+            <text x='852' y='114' textAnchor='middle' fontSize='15' fontWeight='800' fill='#4a5559'>NEXT FOREST</text>
+            <text x='852' y='136' textAnchor='middle' fontSize='12' fill='#4a5559'>Unlocks with my next job 🎉</text>
+          </g>
+          {/* castle / finish */}
+          <text x='945' y='500' textAnchor='middle' fontSize='34'>🏰</text>
+          <text x='945' y='525' textAnchor='middle' fontSize='11' fontWeight='800' fill='#14532d'>FINISH</text>
+          {MAP_NODES.map((n, i) => {
+            const l = LEVELS[i];
+            const seen = visited.includes(i);
+            const here = level === i;
+            return (
+              <g key={l.id} className={`mg-node ${seen ? "seen" : ""} ${here ? "here" : ""}`} transform={`translate(${n.x} ${n.y})`} onClick={() => onGo(i)} tabIndex={0} role='button' aria-label={l.name} onKeyDown={(e) => e.key === "Enter" && onGo(i)}>
+                {here && <circle r='34' className='mg-pulse' />}
+                <circle r='24' className='mg-dot' />
+                <text y='8' textAnchor='middle' fontSize='22'>{n.ico}</text>
+                <g transform='translate(0 44)'>
+                  <rect x='-62' y='-14' width='124' height='24' rx='12' fill='#0c3b24' opacity='.9' />
+                  <text y='3' textAnchor='middle' fontSize='11.5' fontWeight='800' fill='#fff'>{i === 0 ? "START" : `${l.n}`} · {l.name.replace("Experience · ", "").replace(" · Underwater", "").replace("Chennai → Toronto", "Chennai→Toronto").slice(0, 16)}</text>
+                </g>
+                {here && <text y='-34' textAnchor='middle' fontSize='24'>🥷</text>}
+              </g>
+            );
+          })}
+          <g transform='translate(18 18)'>
+            <rect width='150' height='76' rx='12' fill='#fffbe6' stroke='#0c3b24' strokeWidth='3' />
+            <text x='12' y='22' fontSize='12' fontWeight='800' fill='#14532d'>LEGEND</text>
+            <circle cx='20' cy='38' r='6' fill='#f7b32b' stroke='#14532d' strokeWidth='2' /><text x='34' y='42' fontSize='11' fill='#14532d'>visited</text>
+            <circle cx='20' cy='58' r='6' fill='#fff' stroke='#14532d' strokeWidth='2' /><text x='34' y='62' fontSize='11' fill='#14532d'>not yet</text>
+            <text x='96' y='42' fontSize='14'>🥷</text><text x='114' y='42' fontSize='11' fill='#14532d'>you</text>
+          </g>
+        </svg>
+      </div>
+      <div className='av-row'>
+        <button className='av-btn' onClick={onRecruiter}>📋 Recruiter mode</button>
+        <button className='av-btn ghost' onClick={onRestart}>↺ Restart adventure</button>
+      </div>
+    </Overlay>
+  );
+};
 
 const AchOverlay = ({ onClose, unlocked }) => (
   <Overlay title={`Achievements · ${unlocked.length} / ${ACHIEVEMENTS.length}`} onClose={onClose}>
@@ -114,6 +224,46 @@ const AchOverlay = ({ onClose, unlocked }) => (
 );
 
 const CONFETTI = Array.from({ length: 46 }, (_, i) => ({ l: (i * 37) % 100, d: (i % 9) * 0.35, c: ["#f7b32b", "#d9382f", "#2f8a57", "#6cf", "#ff6f91"][i % 5], s: 6 + (i % 4) * 3 }));
+
+const BuddyOverlay = ({ current, onPick, touch, ctl, onCtl }) => (
+  <div className='av-overlay'>
+    <div className='av-card av-buddy'>
+      <h2>Pick your buddy</h2>
+      <p className='av-lead'>Who should follow you and carry you through the adventure?</p>
+      <div className='av-buddies'>
+        <button className={current === "tiger" ? "on" : ""} onClick={() => onPick("tiger")}>
+          <Tiger style={{ width: 190 }} /><b>🐯 Tiger</b><span>Fast and fierce. Roars!</span>
+        </button>
+        <button className={current === "elephant" ? "on" : ""} onClick={() => onPick("elephant")}>
+          <Elephant style={{ width: 160 }} /><b>🐘 Elephant</b><span>Big, gentle and strong. Trumpets!</span>
+        </button>
+      </div>
+      {touch && (
+        <>
+          <h3 className='av-ctltitle'>How do you want to control the ninja?</h3>
+          <div className='av-ctls'>
+            <button className={ctl === "gesture" ? "on" : ""} onClick={() => onCtl("gesture")}><b>👆 Motion</b><span>Hold the left or right side to run, slide up to jump</span></button>
+            <button className={ctl === "buttons" ? "on" : ""} onClick={() => onCtl("buttons")}><b>🎮 Buttons</b><span>On-screen ◀ ▶ and jump buttons</span></button>
+          </div>
+        </>
+      )}
+      <p className='av-lead small'>You can change these any time with the buttons at the top.</p>
+    </div>
+  </div>
+);
+
+const RestartOverlay = ({ onYes, onNo }) => (
+  <div className='av-overlay' onMouseDown={(e) => e.target === e.currentTarget && onNo()}>
+    <div className='av-card av-buddy'>
+      <h2>Restart the adventure?</h2>
+      <p className='av-lead'>You will go back to the start. Coins, skills and achievements are cleared.</p>
+      <div className='av-row'>
+        <button className='av-btn' onClick={onYes}>↻ Yes, start over</button>
+        <button className='av-btn ghost' onClick={onNo}>Keep playing</button>
+      </div>
+    </div>
+  </div>
+);
 
 const EndOverlay = ({ score, coins, skills, achs, onClose, onAgain, onFormal }) => {
   const [name, setName] = useState("");
@@ -289,12 +439,18 @@ export default function Adventure({ onFormal }) {
   const [chq, setChq] = useState(saved?.chq || 0);
   const [opened, setOpened] = useState(saved?.opened || {});
   const [toasts, setToasts] = useState([]);
-  const [overlay, setOverlay] = useState(null);
+  const [buddy, setBuddy] = useState(() => loadBuddy() || "tiger");
+  const [ctl, setCtl] = useState(loadCtl);
+  const [overlay, setOverlay] = useState(() => (loadBuddy() ? null : "buddy"));
   const portrait = usePortrait();
   const [playAnyway, setPlayAnyway] = useState(false);
   const rotate = portrait && !playAnyway;
   const [sound, setSnd] = useState(false);
   const [tigerMode, setTigerMode] = useState("follow");
+  const buddyRef = useRef(buddy);
+  buddyRef.current = buddy;
+  const bn = buddy === "elephant" ? "Elephant" : "Tiger";
+  const be = buddy === "elephant" ? "🐘" : "🐯";
   const [riding, setRiding] = useState(false);
   const [finished, setFinished] = useState(!!saved?.ach?.includes("finish"));
   const [touch] = useState(() => typeof window !== "undefined" && window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
@@ -340,6 +496,8 @@ export default function Adventure({ onFormal }) {
         persist();
         break;
       }
+      case "award": if (d === "give") { unlock("star"); toast("🌟 The Master Ninja is awarding you the Q2 2026 Star Medal!", "ach"); s.coins += 25; setCoins(s.coins); sfx("coin"); } break;
+      
       case "hurdle": s.hurdles = d; if (d >= 5) unlock("hurdler"); break;
       case "item":
         if (d.type === "coin" || d.type === "star" || d.type === "pkg") { s.coins += d.type === "star" ? 5 : 1; setCoins(s.coins); }
@@ -348,15 +506,15 @@ export default function Adventure({ onFormal }) {
         if (d.type === "chest") { s.opened = { ...s.opened, [d.index]: true }; setOpened(s.opened); if (Object.keys(s.opened).length >= PROJECTS.length) unlock("projects"); }
         persist();
         break;
-      case "mount": setRiding(true); unlock("rider"); toast("🐯 Riding the tiger! Press E to hop off."); break;
+      case "mount": setRiding(true); unlock("rider"); { const b = buddyRef.current === "elephant"; toast(`${b ? "🐘" : "🐯"} Riding the ${b ? "elephant" : "tiger"}! Press E to hop off.`); }; break;
       case "dismount": setRiding(false); break;
       case "seabed": unlock("ocean"); break;
       case "flyhigh": unlock("sky"); break;
       case "board": toast("🎈 Up, up and away! Arrows to fly · E to land."); break;
       case "roof": unlock("roof"); break;
       case "splash": toast("🌊 Swimming! Arrows to swim, Shift to go faster."); break;
-      case "tigermode": setTigerMode(d); toast(d === "stay" ? "🐯 Tiger will wait here" : "🐯 Tiger follows you"); break;
-      case "tiger": if (d === "call") toast("🐯 Tiger is coming!"); break;
+      case "tigermode": setTigerMode(d); { const b = buddyRef.current === "elephant"; const n = `${b ? "🐘" : "🐯"} ${b ? "Elephant" : "Tiger"}`; toast(d === "stay" ? `${n} will wait here` : `${n} follows you`); }; break;
+      case "tiger": if (d === "call") toast(`${buddyRef.current === "elephant" ? "🐘 Elephant" : "🐯 Tiger"} is coming!`); break;
       default: break;
     }
   }, [persist, toast, unlock]);
@@ -406,6 +564,18 @@ export default function Adventure({ onFormal }) {
     setSnd(isSoundOn());
     sfx("coin");
   };
+  const pickCtl = (m) => {
+    setCtl(m);
+    try { localStorage.setItem(CTL_KEY, m); } catch (e) { /* ignore */ }
+    sfx("coin");
+  };
+  const pickBuddy = (b) => {
+    setBuddy(b);
+    try { localStorage.setItem(BUDDY_KEY, b); } catch (e) { /* ignore */ }
+    setOverlay(null);
+    sfx("coin");
+  };
+  useEffect(() => { if (engine.current) engine.current.buddy = buddy; }, [buddy]);
   const press = (k, v) => engine.current && engine.current.setKey(k, v);
   const holdProps = (k) => ({
     onPointerDown: (e) => { e.preventDefault(); e.currentTarget.setPointerCapture?.(e.pointerId); press(k, true); },
@@ -470,12 +640,23 @@ export default function Adventure({ onFormal }) {
         <div ref={(el) => (els.current.mid = el)} className='av-layer'><MidLayer /></div>
         <div ref={(el) => (els.current.world = el)} className='av-layer av-world'>
           <WorldContent skillCount={skillCount} opened={opened} finished={finished} />
-          <Entities refs={entRefs} />
+          <Entities refs={entRefs} buddy={buddy} />
           <div className='av-wateroverlay' />
         </div>
         <div ref={(el) => (els.current.fg = el)} className='av-layer av-fglayer'><FgLayer /></div>
         <div className='av-depth' />
-        {touch && <div className='av-gesture' onPointerDown={gDown} onPointerMove={gMove} onPointerUp={gUp} onPointerCancel={gUp} />}
+        <div className='av-flyparrot' aria-hidden='true'>
+          <svg viewBox='0 0 140 80' width='110' height='63'>
+            <path d='M18 44 L-6 58 L8 62 L-8 74 L22 62Z' fill='#d9382f' />
+            <ellipse cx='56' cy='46' rx='38' ry='16' fill='#2fb56a' />
+            <ellipse cx='50' cy='52' rx='24' ry='8' fill='#1f8a50' />
+            <g className='av-wing'><path d='M46 40 Q36 8 70 2 Q72 26 62 42Z' fill='#27a15d' /><path d='M52 38 Q46 16 68 8' stroke='#f7b32b' strokeWidth='3' fill='none' /></g>
+            <circle cx='92' cy='38' r='15' fill='#2fb56a' />
+            <path d='M102 34 q20 2 12 16 q-9 -2 -12 -8Z' fill='#f7b32b' />
+            <circle cx='96' cy='34' r='4.5' fill='#fff' /><circle cx='97.5' cy='34' r='2.2' fill='#1a1209' />
+          </svg>
+        </div>
+        {touch && ctl === "gesture" && <div className='av-gesture' onPointerDown={gDown} onPointerMove={gMove} onPointerUp={gUp} onPointerCancel={gUp} />}
 
         {/* HUD */}
         <div className='av-top'>
@@ -484,31 +665,35 @@ export default function Adventure({ onFormal }) {
             <button onClick={() => setOverlay("map")}>🗺 Map</button>
             <button onClick={() => setOverlay("ach")}>🏆 {ach.length}/{ACHIEVEMENTS.length}</button>
             <button onClick={() => setOverlay("rec")}>📋 Recruiter mode</button>
+            {touch && <button onClick={() => pickCtl(ctl === "gesture" ? "buttons" : "gesture")} title='Switch controls'>{ctl === "gesture" ? "👆 Motion" : "🎮 Buttons"}</button>}
+            <button onClick={() => setOverlay("buddy")} title='Change buddy'>{be} Buddy</button>
+            <button onClick={() => setOverlay("restart")} title='Restart adventure'>↻ Restart</button>
             <button onClick={toggleSound}>{sound ? "🔊" : "🔇"}</button>
             <button className='formal' onClick={onFormal}>☰ Formal version</button>
           </div>
         </div>
         <div className='av-score'>⭐ {score} <span>🪙 {coins}</span></div>
-        {level > 0 && <div className='av-lvtitle' key={titleKey}><em>{LEVELS[level].n ? `LEVEL ${LEVELS[level].n}` : ""}</em><b>{lv.name}</b></div>}
         <div className='av-toasts'>{toasts.map((t) => <div key={t.id} className={`av-toast ${t.kind}`}>{t.text}</div>)}</div>
         <div className='av-pad'>
-          <button onClick={() => engine.current.callTiger()}>🐯 Call <kbd>C</kbd></button>
+          <button onClick={() => engine.current.callTiger()}>{be} Call <kbd>C</kbd></button>
           <button onClick={() => engine.current.toggleStay()}>{tigerMode === "follow" ? "Stay" : "Follow"} <kbd>T</kbd></button>
           <button onClick={() => engine.current.roar()}>Roar <kbd>V</kbd></button>
           <button onClick={() => { const e = engine.current; if (e.p.mode === "fly") e.dismountBalloon(); else if (!e.p.mounted && e.nearBalloon()) e.boardBalloon(); else e.tryMount(); }}>{riding ? "Hop off" : "Ride / Board"} <kbd>E</kbd></button>
         </div>
         {touch && (
           <div className='av-touch'>
-            <div className='av-hint'>👈 touch left or right to run · slide up ☝ to jump</div>
+            {ctl === "buttons" ? <div><button {...holdProps("left")}>◀</button><button {...holdProps("right")}>▶</button></div> : <div className='av-hint'>👈 touch left or right to run · slide up ☝ to jump</div>}
             <div><button {...holdProps("down")}>▼</button><button {...holdProps("sprint")}>»</button><button className='big' {...holdProps("jump")}>⤒</button><button {...holdProps("act")}>E</button></div>
           </div>
         )}
 
-        {overlay === "map" && <MapOverlay onClose={() => setOverlay(null)} onGo={goLevel} visited={visited} onRecruiter={() => setOverlay("rec")} onRestart={restart} />}
+        {overlay === "map" && <MapOverlay onClose={() => setOverlay(null)} onGo={goLevel} visited={visited} level={level} onRecruiter={() => setOverlay("rec")} onRestart={restart} />}
         {overlay === "end" && (
-          <EndOverlay score={score} coins={coins} skills={skillCount} achs={ach.length} onClose={() => setOverlay(null)} onFormal={onFormal}
+          <EndOverlay score={score} coins={coins} skills={skillCount} achs={ach.length} onClose={() => { setOverlay(null); const e = engine.current; if (e) { e.resetEnding(); e.teleport(LEVELS[LEVELS.length - 1].x + 250); } }} onFormal={onFormal}
             onAgain={() => { setOverlay(null); engine.current && engine.current.resetEnding(); }} />
         )}
+        {overlay === "buddy" && <BuddyOverlay current={buddy} onPick={pickBuddy} touch={touch} ctl={ctl} onCtl={pickCtl} />}
+        {overlay === "restart" && <RestartOverlay onYes={restart} onNo={() => setOverlay(null)} />}
         {overlay === "ach" && <AchOverlay onClose={() => setOverlay(null)} unlocked={ach} />}
         {overlay === "rec" && <Recruiter onClose={() => setOverlay(null)} onAdventure={() => setOverlay(null)} />}
       </div>

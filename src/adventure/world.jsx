@@ -141,6 +141,47 @@ const WATER_W = POOL.x1 - POOL.x0;
 const SW = [60, 260, 520, 900, 1300, 1700, 2100, 2400];
 const CORALS = [[140, "#ff7a59"], [640, "#c78bff"], [1180, "#ff7a59"], [1620, "#f7b32b"], [2000, "#c78bff"], [2480, "#ff9f7a"]];
 
+
+const star5 = (x, y, r) => Array.from({ length: 10 }, (_, k) => { const a = -Math.PI / 2 + (k * Math.PI) / 5; const rr = k % 2 ? r * 0.45 : r; return `${(x + Math.cos(a) * rr).toFixed(1)},${(y + Math.sin(a) * rr).toFixed(1)}`; }).join(" ");
+
+const BgCreature = ({ kind }) => {
+  switch (kind) {
+    case "shark":
+      return (<svg width='132' height='56' viewBox='0 0 220 96' aria-hidden='true'><path d='M176 48 L216 8 Q202 48 216 88Z' fill='#6c8aa3' /><path d='M84 20 L112 -2 L132 22Z' fill='#6c8aa3' /><path d='M6 52 Q8 14 100 14 Q176 14 184 48 Q176 84 100 82 Q14 84 6 52Z' fill='#8aa7bd' /><path d='M20 58 Q100 92 178 58 Q176 82 100 82 Q30 82 20 58Z' fill='#eef4f9' /><circle cx='38' cy='40' r='7' fill='#fff' /><circle cx='36' cy='40' r='3.5' fill='#1a1209' /></svg>);
+    case "angel":
+      return (<svg width='78' height='78' viewBox='0 0 100 100' aria-hidden='true'><path d='M50 4 L74 40 L50 96 L26 40Z' fill='#ffd166' /><path d='M62 42 L96 20 L90 50 L96 80Z' fill='#ff9f43' /><path d='M40 18 L50 50 L40 82 M60 18 L50 50 L60 82' stroke='#7a4a10' strokeWidth='4' opacity='.5' fill='none' /><circle cx='38' cy='38' r='6' fill='#fff' /><circle cx='36' cy='38' r='3' fill='#1a1209' /></svg>);
+    case "ray":
+      return (<svg width='120' height='70' viewBox='0 0 160 90' aria-hidden='true'><path d='M80 8 Q150 4 156 34 Q130 40 100 52 L84 86 L72 52 Q30 40 4 34 Q10 4 80 8Z' fill='#7aa6c9' /><path d='M60 30 Q80 40 100 30' stroke='#fff' strokeWidth='3' fill='none' opacity='.6' /><circle cx='66' cy='24' r='4' fill='#1a1209' /><circle cx='94' cy='24' r='4' fill='#1a1209' /></svg>);
+    case "puffer":
+      return (<svg width='82' height='70' viewBox='0 0 120 100' aria-hidden='true'><g fill='#f2c46d'>{Array.from({ length: 12 }, (_, k) => { const t = (k / 12) * Math.PI * 2; return <path key={k} d={`M${55 + Math.cos(t) * 34} ${50 + Math.sin(t) * 34} L${55 + Math.cos(t) * 48} ${50 + Math.sin(t) * 46} L${55 + Math.cos(t + 0.2) * 34} ${50 + Math.sin(t + 0.2) * 34}Z`} />; })}</g><path d='M92 50 L116 34 L116 66Z' fill='#f2c46d' /><ellipse cx='55' cy='50' rx='40' ry='36' fill='#f2c46d' /><ellipse cx='55' cy='68' rx='30' ry='14' fill='#fff' opacity='.4' /><circle cx='34' cy='38' r='7' fill='#fff' /><circle cx='32' cy='38' r='3.5' fill='#1a1209' /></svg>);
+    case "whale":
+      return (<svg width='150' height='70' viewBox='0 0 220 96' aria-hidden='true'><path d='M170 56 Q196 30 214 18 Q210 52 214 84 Q192 76 170 66Z' fill='#4a79a8' /><path d='M6 56 Q8 12 96 12 Q176 12 182 60 Q176 86 96 84 Q16 86 6 56Z' fill='#5b8fc2' /><path d='M18 62 Q96 92 176 62 Q172 84 96 84 Q26 84 18 62Z' fill='#e9f2fb' /><circle cx='34' cy='42' r='6' fill='#fff' /><circle cx='32' cy='42' r='3' fill='#1a1209' /></svg>);
+    default:
+      return (<svg width='84' height='46' viewBox='0 0 220 96' aria-hidden='true'><path d='M184 48 L218 14 Q208 48 218 82Z' fill='#ff9f43' /><ellipse cx='98' cy='48' rx='92' ry='38' fill='#ffb86b' /><ellipse cx='98' cy='64' rx='80' ry='20' fill='#fff' opacity='.28' /><circle cx='38' cy='40' r='9' fill='#fff' /><circle cx='35' cy='40' r='4.5' fill='#1a1209' /></svg>);
+  }
+};
+
+const Starfish = ({ x, y, r, c }) => (
+  <g>
+    <polygon points={star5(x, y, r)} fill={c} stroke='#b4532a' strokeWidth='3' strokeLinejoin='round' />
+    {[0, 1, 2, 3, 4].map((k) => { const a = -Math.PI / 2 + (k * 2 * Math.PI) / 5; return <circle key={k} cx={x + Math.cos(a) * r * 0.45} cy={y + Math.sin(a) * r * 0.45} r='2.4' fill='#fff' opacity='.8' />; })}
+  </g>
+);
+const Scallop = ({ x, y, s = 1, c }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <path d='M0 0 L-26 -26 Q0 -50 26 -26 Z' fill={c} stroke='#a8553a' strokeWidth='3' strokeLinejoin='round' />
+    <path d='M0 0 L-14 -40 M0 0 L0 -44 M0 0 L14 -40 M0 0 L-24 -32 M0 0 L24 -32' stroke='#fff' strokeWidth='2' opacity='.55' fill='none' />
+    <rect x='-9' y='-2' width='18' height='8' rx='3' fill={c} stroke='#a8553a' strokeWidth='3' />
+  </g>
+);
+const Conch = ({ x, y, s = 1, c }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <path d='M-24 0 Q-30 -26 -4 -34 Q26 -38 30 -10 Q32 6 14 6 Z' fill={c} stroke='#a8553a' strokeWidth='3' strokeLinejoin='round' />
+    <path d='M-4 -30 Q18 -26 16 -10 Q12 0 2 -6 Q-4 -16 8 -20' stroke='#fff' strokeWidth='2.5' fill='none' opacity='.7' />
+    <ellipse cx='-24' cy='0' rx='6' ry='4' fill='#ffd7c7' stroke='#a8553a' strokeWidth='2' />
+  </g>
+);
+
 const Water = memo(() => (
   <div className='av-water' style={{ left: POOL.x0, top: GROUND, width: WATER_W, height: 810 }}>
     <svg width={WATER_W} height='810' viewBox={`0 0 ${WATER_W} 810`} aria-hidden='true'>
@@ -162,6 +203,12 @@ const Water = memo(() => (
           <circle cx={x} cy={POOL.seabed - GROUND - 6} r='22' /><circle cx={x + 30} cy={POOL.seabed - GROUND - 18} r='28' /><circle cx={x + 62} cy={POOL.seabed - GROUND - 6} r='20' />
         </g>
       ))}
+      {[[160, "#ff8a65", 20], [520, "#ffb74d", 16], [900, "#f06292", 22], [1420, "#ff8a65", 18], [1800, "#ffd54f", 20], [2240, "#f06292", 16], [2500, "#ffb74d", 22]].map(([x, c, r]) => (
+        <Starfish key={'st' + x} x={x} y={POOL.seabed - GROUND + 2} r={r} c={c} />
+      ))}
+      {[[300, "#ffd7c7", 0.9, 0], [740, "#ffc2d9", 1, 0], [1120, "#ffe0a3", 0.85, 1], [1600, "#ffc2d9", 1, 0], [2050, "#ffd7c7", 0.9, 1], [2380, "#ffe0a3", 1, 0]].map(([x, c, s, t]) => (
+        t ? <Conch key={'sh' + x} x={x} y={POOL.seabed - GROUND + 8} s={s} c={c} /> : <Scallop key={'sh' + x} x={x} y={POOL.seabed - GROUND + 10} s={s} c={c} />
+      ))}
       {[[380, 420], [1500, 300], [2200, 520]].map(([x, y], i) => (
         <g key={x} className='av-jelly' style={{ animationDelay: `${-i * 1.7}s`, transformOrigin: `${x}px ${y}px` }}>
           <path d={`M${x - 26} ${y} q26 -46 52 0Z`} fill='#f6b6ff' opacity='.85' />
@@ -169,8 +216,8 @@ const Water = memo(() => (
         </g>
       ))}
     </svg>
-    {[[120, 190, 34], [900, 330, 52], [1700, 250, 44], [2300, 410, 38]].map(([x, y, d], i) => (
-      <div key={x} className='av-bgfish' style={{ left: x, top: y, animationDuration: `${d}s`, animationDelay: `${-i * 9}s` }}>{i % 2 ? "🐠" : "🐟"}</div>
+    {[[120, 190, 34, "fish"], [900, 330, 52, "shark"], [1700, 250, 44, "angel"], [2300, 410, 38, "shark"], [600, 470, 60, "ray"], [1300, 150, 46, "puffer"], [1950, 520, 56, "fish"], [380, 290, 66, "whale"]].map(([x, y, d, k], i) => (
+      <div key={x} className='av-bgfish' style={{ left: x, top: y, animationDuration: `${d}s`, animationDelay: `${-i * 7}s` }}><BgCreature kind={k} /></div>
     ))}
     {Array.from({ length: 12 }, (_, i) => <i key={i} className='av-amb' style={{ left: 80 + ((i * 223) % 2480), animationDelay: `${-(i * 1.3) % 9}s`, animationDuration: `${7 + (i % 4)}s` }} />)}
     <div className='av-certs'>
@@ -204,13 +251,43 @@ const ItemVisual = ({ it }) => {
     case "skill": {
       const c = COLS[it.index % COLS.length];
       const s = SKILLS[it.index];
+      const kind = [0, 1, 2, 3, 4, 5][(it.index * 5) % 6];
+      const eye = (x, y) => <g><circle cx={x} cy={y} r='9' fill='#fff' /><circle cx={x - 3} cy={y} r='4.5' fill='#1a1209' /></g>;
+      const label = (x = 100, y = 56, k = 1) => <text x={x} y={y} fontSize={(s.length > 8 ? 17 : 21) * k} fontWeight='800' fill='#12324a' textAnchor='middle' fontFamily='DejaVu Sans, sans-serif'>{s}</text>;
       return (
         <svg width='150' height='72' viewBox='0 0 220 96'>
-          <path d='M184 48 L218 14 Q208 48 218 82Z' fill={c} /><path d='M80 14 Q110 -4 140 16 Z' fill={c} opacity='.8' />
-          <ellipse cx='98' cy='48' rx='92' ry='38' fill={c} /><ellipse cx='98' cy='64' rx='80' ry='20' fill='#fff' opacity='.28' />
-          <path d='M150 14 Q166 48 150 82' stroke='#12324a' strokeWidth='4' fill='none' opacity='.25' />
-          <circle cx='38' cy='40' r='9' fill='#fff' /><circle cx='35' cy='40' r='4.5' fill='#1a1209' />
-          <text x='100' y='56' fontSize={s.length > 8 ? 17 : 21} fontWeight='800' fill='#12324a' textAnchor='middle' fontFamily='DejaVu Sans, sans-serif'>{s}</text>
+          {kind === 0 && (<>
+            <path d='M184 48 L218 14 Q208 48 218 82Z' fill={c} /><path d='M80 14 Q110 -4 140 16 Z' fill={c} opacity='.8' />
+            <ellipse cx='98' cy='48' rx='92' ry='38' fill={c} /><ellipse cx='98' cy='64' rx='80' ry='20' fill='#fff' opacity='.28' />
+            <path d='M150 14 Q166 48 150 82' stroke='#12324a' strokeWidth='4' fill='none' opacity='.25' />{eye(38, 40)}{label()}
+          </>)}
+          {kind === 1 && (<>{/* shark */}
+            <path d='M176 48 L216 8 Q202 48 216 88Z' fill='#5d7a92' /><path d='M84 20 L112 -2 L132 22Z' fill='#5d7a92' />
+            <path d='M6 52 Q8 14 100 14 Q176 14 184 48 Q176 84 100 82 Q14 84 6 52Z' fill='#7f9db5' />
+            <path d='M20 58 Q100 92 178 58 Q176 82 100 82 Q30 82 20 58Z' fill='#f2f7fb' />
+            <path d='M26 62 l8 8 l8 -8 l8 8 l8 -8' stroke='#fff' strokeWidth='3' fill='none' />{eye(38, 40)}{label(104, 54)}
+          </>)}
+          {kind === 2 && (<>{/* pufferfish */}
+            <g fill={c} stroke={c}>{Array.from({ length: 14 }, (_, k) => { const t = (k / 14) * Math.PI * 2; return <path key={k} d={`M${105 + Math.cos(t) * 40} ${48 + Math.sin(t) * 36} L${105 + Math.cos(t) * 56} ${48 + Math.sin(t) * 50} L${105 + Math.cos(t + 0.18) * 40} ${48 + Math.sin(t + 0.18) * 36}Z`} />; })}</g>
+            <path d='M158 48 L200 26 L200 70Z' fill={c} /><ellipse cx='105' cy='48' rx='54' ry='44' fill={c} />
+            <ellipse cx='105' cy='70' rx='42' ry='18' fill='#fff' opacity='.35' />{eye(66, 34)}<ellipse cx='52' cy='54' rx='7' ry='5' fill='#e8453c' />{label(108, 56, s.length > 6 ? 0.72 : 0.9)}
+          </>)}
+          {kind === 3 && (<>{/* turtle */}
+            <ellipse cx='60' cy='60' rx='16' ry='10' fill='#7bbf6a' /><circle cx='30' cy='44' r='17' fill='#7bbf6a' />{eye(26, 40)}
+            <ellipse cx='150' cy='84' rx='22' ry='9' fill='#7bbf6a' /><ellipse cx='64' cy='84' rx='22' ry='9' fill='#7bbf6a' />
+            <path d='M172 62 l30 6 l-26 8Z' fill='#7bbf6a' />
+            <path d='M52 62 Q60 6 112 6 Q170 6 176 62Z' fill={c} stroke='#2d6a3a' strokeWidth='4' /><path d='M52 62 H176' stroke='#2d6a3a' strokeWidth='5' />
+            <path d='M92 12 L86 62 M132 10 L140 62' stroke='#2d6a3a' strokeWidth='3' opacity='.5' />{label(114, 48)}
+          </>)}
+          {kind === 4 && (<>{/* octopus */}
+            <g stroke={c} strokeWidth='11' strokeLinecap='round' fill='none'><path d='M52 64 q-18 12 -6 28' /><path d='M78 70 q-8 14 4 22' /><path d='M108 72 q0 14 12 20' /><path d='M136 68 q10 14 26 16' /><path d='M160 56 q22 4 30 22' /></g>
+            <ellipse cx='108' cy='42' rx='76' ry='38' fill={c} /><ellipse cx='108' cy='62' rx='60' ry='14' fill='#fff' opacity='.22' />{eye(56, 46)}<circle cx='58' cy='62' r='5' fill='#ff9db0' opacity='.7' />{label(116, 50)}
+          </>)}
+          {kind === 5 && (<>{/* whale */}
+            <path d='M170 56 Q196 30 214 18 Q210 52 214 84 Q192 76 170 66Z' fill='#4a79a8' />
+            <path d='M6 56 Q8 12 96 12 Q176 12 182 60 Q176 86 96 84 Q16 86 6 56Z' fill='#5b8fc2' /><path d='M18 62 Q96 92 176 62 Q172 84 96 84 Q26 84 18 62Z' fill='#e9f2fb' />
+            <path d='M100 12 Q96 -6 84 -4 M100 12 Q106 -8 120 -2' stroke='#a9d6f5' strokeWidth='5' fill='none' strokeLinecap='round' />{eye(34, 42)}{label(102, 56)}
+          </>)}
         </svg>
       );
     }
@@ -324,7 +401,7 @@ const Home = () => {
         <b>HOW TO PLAY</b>
         <span className='av-howtouch'>👈 Touch the left or right side to run · slide a finger up ☝ to jump (slide again for a double jump)</span>
         <span className='av-howkeys'><kbd>←</kbd><kbd>→</kbd> run · <kbd>Shift</kbd> sprint · <kbd>Space</kbd> jump (twice!)</span>
-        <span className='av-howkeys'><kbd>E</kbd> ride the tiger / balloon · <kbd>T</kbd> stay/follow · <kbd>C</kbd> call · <kbd>M</kbd> map</span>
+        <span className='av-howkeys'><kbd>E</kbd> ride your buddy / balloon · <kbd>T</kbd> stay/follow · <kbd>C</kbd> call · <kbd>M</kbd> map</span>
       </div>
       <div className='av-arrowhint'>RUN THIS WAY ▶▶▶</div>
     </>
@@ -399,7 +476,7 @@ const TD = () => {
       {Array.from({ length: 6 }, (_, i) => (
         <div key={i} className='gm-cheque' style={{ animationDelay: `${-i * 2.4}s` }}>CHEQUE<span className='m'>$ ……</span><span className='a'>✔ ACCEPTED</span></div>
       ))}
-      <Gate n={5} name='TD · Symcor' />
+      <Gate n={5} name='TD' />
       <div className='gm-card gm-meter' style={{ borderBottomColor: "#2f8a57" }}>
         <div className='gm-tag'>SYMCOR CHEQUE PROCESSING</div>
         <div className='big'>99%</div>
@@ -418,6 +495,68 @@ const TD = () => {
   );
 };
 
+const Medal = () => (
+  <svg viewBox='0 0 90 130' aria-hidden='true'>
+    <path d='M18 0 L45 62 L30 66 L2 6Z' fill='#e8453c' stroke='#9c2a22' strokeWidth='2' /><path d='M72 0 L45 62 L60 66 L88 6Z' fill='#2b8cc0' stroke='#1b5f86' strokeWidth='2' />
+    <circle cx='45' cy='92' r='34' fill='#f7b32b' stroke='#b9791a' strokeWidth='5' /><circle cx='45' cy='92' r='26' fill='#ffd75e' stroke='#e09a14' strokeWidth='3' />
+    <path d='M45 70 l6.5 14 15 1.8 -11 10 3.2 15 -13.7 -8 -13.7 8 3.2 -15 -11 -10 15 -1.8Z' fill='#fff6c8' stroke='#b9791a' strokeWidth='2.5' strokeLinejoin='round' />
+  </svg>
+);
+
+const MasterNinja = () => (
+  <svg viewBox='0 0 150 230' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>
+    {/* staff */}
+    <rect x='12' y='40' width='7' height='182' rx='3.5' fill='#8a5a1b' /><circle cx='15.5' cy='38' r='9' fill='#f7b32b' stroke='#b9791a' strokeWidth='3' />
+    {/* robe */}
+    <path d='M40 100 Q75 84 110 100 L124 206 Q75 220 26 206Z' fill='#7a1f3d' stroke='#4d1226' strokeWidth='3' />
+    <path d='M75 96 L75 212' stroke='#4d1226' strokeWidth='3' />
+    <path d='M34 154 Q75 170 116 154 V172 Q75 188 34 172Z' fill='#f7b32b' stroke='#b9791a' strokeWidth='3' />
+    {/* feet */}
+    <rect x='42' y='208' width='28' height='14' rx='7' fill='#3b2a1a' /><rect x='80' y='208' width='28' height='14' rx='7' fill='#3b2a1a' />
+    {/* arms */}
+    <path d='M42 108 Q24 128 20 150' stroke='#7a1f3d' strokeWidth='16' strokeLinecap='round' fill='none' /><circle cx='19' cy='154' r='9' fill='#f2c79a' stroke='#b98a5c' strokeWidth='2' />
+    <path d='M108 108 Q124 126 120 146' stroke='#7a1f3d' strokeWidth='16' strokeLinecap='round' fill='none' />
+    {/* STAR emblem on chest */}
+    <circle cx='75' cy='128' r='19' fill='#fff6c8' stroke='#b9791a' strokeWidth='3' />
+    <path d='M75 112 l5 11 12 1.4 -9 8 2.8 12 -10.8 -6.4 -10.8 6.4 2.8 -12 -9 -8 12 -1.4Z' fill='#f7b32b' stroke='#b9791a' strokeWidth='2' strokeLinejoin='round' />
+    {/* head */}
+    <circle cx='75' cy='62' r='34' fill='#f2c79a' stroke='#b98a5c' strokeWidth='3' />
+    {/* hood / headband */}
+    <path d='M40 56 Q42 24 75 22 Q108 24 110 56 Q75 44 40 56Z' fill='#7a1f3d' stroke='#4d1226' strokeWidth='3' />
+    <path d='M75 26 l3.5 7.5 8 1 -6 5.5 1.8 8 -7.3 -4.3 -7.3 4.3 1.8 -8 -6 -5.5 8 -1Z' fill='#ffd75e' stroke='#b9791a' strokeWidth='1.6' strokeLinejoin='round' />
+    {/* eyes + long white brows */}
+    <ellipse cx='62' cy='64' rx='5' ry='6' fill='#1b2e1f' /><ellipse cx='88' cy='64' rx='5' ry='6' fill='#1b2e1f' />
+    <circle cx='63.5' cy='62' r='1.8' fill='#fff' /><circle cx='89.5' cy='62' r='1.8' fill='#fff' />
+    <path d='M44 56 Q58 48 70 58 Q56 56 44 62Z' fill='#fff' stroke='#c9c9c9' strokeWidth='1.5' /><path d='M106 56 Q92 48 80 58 Q94 56 106 62Z' fill='#fff' stroke='#c9c9c9' strokeWidth='1.5' />
+    <path d='M72 70 Q75 74 78 70' stroke='#b98a5c' strokeWidth='2.5' fill='none' strokeLinecap='round' />
+    {/* moustache + beard */}
+    <path d='M75 76 Q58 70 48 80 Q60 82 75 80 Q90 82 102 80 Q92 70 75 76Z' fill='#fff' stroke='#c9c9c9' strokeWidth='1.5' />
+    <path d='M52 84 Q56 118 75 126 Q94 118 98 84 Q86 94 75 92 Q64 94 52 84Z' fill='#fff' stroke='#c9c9c9' strokeWidth='2' />
+  </svg>
+);
+
+const AwardScene = () => (
+  <div className='ab av-award' data-state='idle' style={{ left: 880, top: 380, width: 500, height: 262, zIndex: 11 }}>
+    <svg className='av-heli' viewBox='0 0 300 140' style={{ position: "absolute", left: 200, top: 100, width: 300 }} aria-hidden='true'>
+      <g className='av-rotor'><rect x='20' y='6' width='260' height='7' rx='3.5' fill='#3b3f46' /></g>
+      <rect x='146' y='10' width='8' height='22' fill='#3b3f46' />
+      <path d='M60 70 Q60 34 130 34 H190 Q230 36 236 70 Q236 100 196 102 H100 Q60 102 60 70Z' fill='#f7b32b' stroke='#b9791a' strokeWidth='4' />
+      <path d='M196 62 L296 56 L296 70 L206 84Z' fill='#e8453c' stroke='#9c2a22' strokeWidth='3' />
+      <g className='av-tailrot'><rect x='288' y='38' width='6' height='42' rx='3' fill='#3b3f46' /></g>
+      <path d='M82 48 Q96 40 128 40 V76 H76 Q72 56 82 48Z' fill='#bfe6ff' stroke='#b9791a' strokeWidth='3' />
+      <path d='M138 40 H184 Q214 42 218 70 H138Z' fill='#bfe6ff' stroke='#b9791a' strokeWidth='3' />
+      <text x='158' y='92' textAnchor='middle' fontSize='14' fontWeight='800' fill='#7a1f18'>EZ AIR</text>
+      <path d='M70 118 H230 M96 102 V118 M204 102 V118' stroke='#3b3f46' strokeWidth='6' strokeLinecap='round' fill='none' />
+    </svg>
+    <div className='av-master'>
+      <div className='av-mbubble'>🌟 Q2 2026 Star Award<br /><small>Best Performance · TD</small></div>
+      <div className='av-mflip'><MasterNinja /></div>
+      <div className='av-mtrophy'><Medal /></div>
+      <div className='av-mtag'>MASTER NINJA</div>
+    </div>
+  </div>
+);
+
 const Today = () => (
   <>
     <Gate n={6} name='Today' />
@@ -432,7 +571,7 @@ const Today = () => (
         <li>Python · SQL · Power BI · Tableau · Excel</li>
       </ul>
     </DetailCard>
-    <div className='ab' style={{ left: 1130, top: 470, zIndex: 12, width: 150 }}><Trophy /></div>
+    <AwardScene />
     <div className='av-tip' style={{ left: 600, top: 560 }}>Stand by the balloon and press <kbd>E</kbd> to fly ☁</div>
     {[[220, 220, 110], [900, 120, 130], [1260, 320, 100]].map(([x, y, w]) => (
       <div key={x} className='ab av-cloudy' style={{ left: x, top: y, width: w * 2, height: w * 0.6 }} />
@@ -716,7 +855,7 @@ export const WorldContent = memo(({ skillCount, opened, finished }) => (
   </>
 ));
 
-export const Entities = memo(({ refs }) => (
+export const Entities = memo(({ refs, buddy = "tiger" }) => (
   <>
     <div ref={refs.balloon} className='av-ent av-balloon' style={{ width: 260 }}>
       <svg width='260' height='322' viewBox='0 0 500 620' aria-hidden='true'>
@@ -728,15 +867,16 @@ export const Entities = memo(({ refs }) => (
         <rect x='190' y='470' width='120' height='80' rx='8' fill='#c98a2b' stroke='#6b4a2b' strokeWidth='5' />
       </svg>
     </div>
-    <div ref={refs.tiger} className='av-ent av-tiger' style={{ width: 280 }}>
+    <div ref={refs.tiger} className='av-ent av-tiger' data-buddy={buddy} style={{ width: 280 }}>
       <div ref={refs.tigerFlip} className='av-flip'>
-        <Tiger />
-        <Tiger roar className='av-roarsvg' />
+        <Tiger className='av-tsvg' />
+        <Tiger roar className='av-roarsvg av-tsvg' />
+        <Elephant className='av-esvg' />
       </div>
-      <div className='av-roarbub'>ROAR!</div>
+      <div className='av-roarbub'>{buddy === "elephant" ? "TOOOT!" : "ROAR!"}</div>
     </div>
     <div ref={refs.ninja} className='av-ent av-ninja' style={{ width: 120 }}>
-      <div ref={refs.ninjaFlip} className='av-flip'><Ninja /></div>
+      <div ref={refs.ninjaFlip} className='av-flip'><Ninja /><div className='av-pmedal'><Medal /></div></div>
     </div>
     {Array.from({ length: 14 }, (_, i) => <i key={i} className='av-bub' />)}
   </>

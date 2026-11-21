@@ -26,6 +26,7 @@ import shopify from "./company/shopify.png";
 import SI from "./company/SI.png";
 import tesla from "./company/tesla.png";
 import VT from "./company/vt.jpeg";
+import td from "./company/td.svg";
 import farmer from "./farmer.jpg";
 import telecom from "./telecom.jpg";
 import chatapp from "./chatapp.jpg";
@@ -61,5 +62,6 @@ export {
   telecom,
   chatapp,
   game,
-  VT
+  VT,
+  td
 };

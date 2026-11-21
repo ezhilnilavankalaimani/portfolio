@@ -17,6 +17,7 @@ import {
     walmart,
     SI,
     VT,
+    td,
     farmer,
     telecom,
     chatapp,
@@ -96,6 +97,34 @@ import {
   
   const experiences = [
     {
+      title: "Wealth Operations Officer III",
+      company_name: "TD, Toronto",
+      icon: td,
+      iconBg: "#0A8A35",
+      date: "Apr 2024 - Present",
+      points: [
+        "Process complex RSP and TFSA transactions (withdrawals, contributions, swaps, wires, in-kind and corrections) with 100% accuracy and timeliness, within regulatory, audit and SLA requirements.",
+        "Won the Q2 2026 Star Award for Best Performance for taking the Symcor process live in production and eliminating manual intervention.",
+        "Own BWeb, EasyLine reconciliation and high-volume PIC file processing, keeping data balanced and discrepancies resolved on time.",
+        "Act as the point of escalation for complex, high-risk items, investigating and documenting exceptions with Risk, Compliance and IT.",
+        "Drive Lean-based improvements and risk controls that reduced error rates and improved team productivity.",
+        "Train and coach new hires and interdepartmental transfers, and consistently deliver top departmental KPIs.",
+      ],
+    },
+    {
+      title: "OMNI",
+      company_name: "Walmart",
+      icon: walmart,
+      iconBg: "#E6DEDD",
+      date: "March 2022 - Present",
+      points: [
+        "Meeting the customers' needs and delivering them their respective online • grocery orders..",
+        "Changing and adapting to the constantly evolving working condition..",
+        "Attend to the customer's concerns if they have complaints about their order.",
+        "Letting customers know that their order is ready if it is ready ahead of time.",
+      ],
+    },
+    {
       title : "Automation Analyst",
       company_name: "Amazon",
       icon: VT,
@@ -111,19 +140,6 @@ import {
         "Undertook the Turing project, implemented and tested enhancement features",
         "During my 3 years, I have worked on different teams and monitored region specific amazon sales in the United States, Denmark, France, Canada and Mexico"
       ]
-    },
-    {
-      title: "OMNI",
-      company_name: "Walmart",
-      icon: walmart,
-      iconBg: "#E6DEDD",
-      date: "March 2022 - Present",
-      points: [
-        "Meeting the customers' needs and delivering them their respective online • grocery orders..",
-        "Changing and adapting to the constantly evolving working condition..",
-        "Attend to the customer's concerns if they have complaints about their order.",
-        "Letting customers know that their order is ready if it is ready ahead of time.",
-      ],
     },
   ];
   

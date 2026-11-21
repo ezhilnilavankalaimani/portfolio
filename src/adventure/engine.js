@@ -28,8 +28,8 @@ export const HURDLE_H = 58;
 export const HURDLES = [430, 930, 2220, 2440, 3310, 3780, 4900, 6190, 6660, 9920, 13540, 14940];
 export const ROOF = { x0: 8230, x1: 8600, y: 430 };
 export const LADDER = { x: 8255, top: 430, bottom: GROUND };
-export const BALLOON_HOME = { x: 8640 + 640, y: GROUND };
-export const FLY_BOUNDS = { x0: 8640 + 220, x1: 10080 - 200, y0: 350, y1: GROUND };
+export const BALLOON_HOME = { x: 5760 + 800, y: GROUND };
+export const FLY_BOUNDS = { x0: 5760 + 220, x1: 7200 - 200, y0: 350, y1: GROUND };
 
 const PLATFORMS = [
   ...HURDLES.map((h) => ({ x0: h + 4, x1: h + HURDLE_W - 4, y: GROUND - HURDLE_H })),
@@ -51,7 +51,7 @@ function buildItems() {
   for (let i = 0; i < 5; i++) push("pkg", 4320 + 340 + i * 90, GROUND - 34, 34);
   for (let i = 0; i < 5; i++) push("chq", 7200 + 360 + i * 170, 450, 34);
   [8370, 8440, 8510].forEach((x) => push("coin", x, ROOF.y - 80));
-  for (let i = 0; i < 8; i++) push("star", 8640 + 250 + i * 150, 360 + (i % 3) * 110, 30);
+  for (let i = 0; i < 8; i++) push("star", 5760 + 250 + i * 130, 360 + (i % 3) * 110, 30);
   for (let i = 0; i < SKILL_COUNT; i++) {
     const col = i % 4, row = Math.floor(i / 4);
     push("skill", 10420 + col * 620 + (row % 2) * 160, 790 + row * 240, 48, { index: i });
@@ -340,20 +340,20 @@ export class Engine {
   updateAward(dt) {
     const p = this.p;
     const AX = 8640 + 900;
-    if (this.awardT == null && p.x > AX - 450 && p.x < AX + 500 && p.mode === "land") { this.awardT = 0; this.setAward("give"); this.emit("award", "give"); }
+    if (this.awardT == null && p.x > AX - 560 && p.x < AX + 500 && p.mode === "land") { this.awardT = 0; this.setAward("give"); this.emit("award", "give"); }
     if (this.awardT == null || this.awardT >= 99) return;
     const near = Math.abs(p.x - 9660) < 800;
-    if (!this.awardPin && this.awardT > 2.4 && !near) return; // wait for the ninja to be there before handing over the medal
+    if (!this.awardPin && this.awardT > 0.8 && !near) return; // wait for the ninja to be there before handing over the medal
     this.awardT += dt;
-    if (this.awardT > 2.6 && !this.awardPin) {
+    if (this.awardT > 0.9 && !this.awardPin) {
       this.awardPin = true;
       const el = this.els.root.querySelector(".av-award");
       if (el) { el.style.setProperty("--dx", `${p.x - 9660}px`); el.style.setProperty("--dy", `${p.y - 125 - 490}px`); }
       this.setAward("pin");
     }
-    if (this.awardT > 3.5 && !this.awardPinned) { this.awardPinned = true; this.els.stage.classList.add("av-hasmedal"); this.emit("award", "pinned"); }
-    if (this.awardT > 5.5 && this.awardS !== "fly") { this.awardS = "fly"; this.setAward("fly"); }
-    if (this.awardT > 12 && this.awardS !== "gone") { this.awardS = "gone"; this.setAward("gone"); this.awardT = 100; }
+    if (this.awardT > 1.9 && !this.awardPinned) { this.awardPinned = true; this.els.stage.classList.add("av-hasmedal"); this.emit("award", "pinned"); }
+    if (this.awardT > 3.6 && this.awardS !== "fly") { this.awardS = "fly"; this.setAward("fly"); }
+    if (this.awardT > 11.5 && this.awardS !== "gone") { this.awardS = "gone"; this.setAward("gone"); this.awardT = 100; }
   }
 
   update(dt) {

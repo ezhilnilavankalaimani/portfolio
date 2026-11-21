@@ -236,10 +236,10 @@ const BuddyOverlay = ({ current, onPick, touch, ctl, onCtl }) => (
           <Tiger style={{ width: 190 }} /><b>🐯 Tiger</b><span>Fast and fierce. Roars!</span>
         </button>
         <button className={current === "elephant" ? "on" : ""} onClick={() => onPick("elephant")}>
-          <Elephant gear style={{ width: 160 }} /><b>🐘 Elephant</b><span>Big, gentle and strong. Trumpets!</span>
+          <Elephant style={{ width: 160 }} /><b>🐘 Elephant</b><span>Big, gentle and strong. Trumpets!</span>
         </button>
         <button className={current === "peacock" ? "on" : ""} onClick={() => onPick("peacock")}>
-          <Peacock gear style={{ width: 160 }} /><b>🦚 Peacock</b><span>Colourful! Lets you fly when you hop on.</span>
+          <Peacock style={{ width: 160 }} /><b>🦚 Peacock</b><span>Colourful! Lets you fly when you hop on.</span>
         </button>
       </div>
       {touch && (

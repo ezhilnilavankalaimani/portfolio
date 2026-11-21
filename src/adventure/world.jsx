@@ -416,6 +416,7 @@ const Ground = ({ id, n }) => {
       <Gate n={lv.n} name={lv.name} />
       <Big left={420} top={150} size={92}>{lv.big}</Big>
       <Sign sign={s.sign} left={430} />
+      {id === "work" && <div className='av-tip' style={{ left: 760, top: 560 }}>Stand by the balloon and press <kbd>E</kbd> to fly ☁</div>}
       <StageCard s={s} did={id} n={lv.n} style={{ left: 930, top: 180, width: 430 }} />
     </>
   );
@@ -572,7 +573,6 @@ const Today = () => (
       </ul>
     </DetailCard>
     <AwardScene />
-    <div className='av-tip' style={{ left: 600, top: 560 }}>Stand by the balloon and press <kbd>E</kbd> to fly ☁</div>
     {[[220, 220, 110], [900, 120, 130], [1260, 320, 100]].map(([x, y, w]) => (
       <div key={x} className='ab av-cloudy' style={{ left: x, top: y, width: w * 2, height: w * 0.6 }} />
     ))}

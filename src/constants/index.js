@@ -116,7 +116,7 @@ import {
       company_name: "Walmart",
       icon: walmart,
       iconBg: "#E6DEDD",
-      date: "March 2022 - Present",
+      date: "Feb 2022 - March 2023",
       points: [
         "Meeting the customers' needs and delivering them their respective online • grocery orders..",
         "Changing and adapting to the constantly evolving working condition..",

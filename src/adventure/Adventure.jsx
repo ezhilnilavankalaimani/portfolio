@@ -12,7 +12,7 @@ import "./adventure.css";
 
 const SAVE_KEY = "advSave.v2";
 // EmailJS: the first template is the existing contact-form one (mail to Ezhil); the second is the new "course clear" poster mail to the visitor.
-const EJ = { service: "service_3yf8wil", owner: "template_p3qaifo", visitor: "template_course_clear", key: "pmZPRYuPINkDLOE3c" };
+const EJ = { service: "service_3yf8wil", owner: "template_p3qaifo", visitor: "template_olacjjo", key: "pmZPRYuPINkDLOE3c" };
 
 const ACHIEVEMENTS = [
   { id: "first", icon: "👟", name: "First Adventure", desc: "Take your first steps." },

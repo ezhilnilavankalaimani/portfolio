@@ -21,7 +21,7 @@ const Navbar = () => {
          }}
         >
           <img src={logo} alt="logo" className="w-9 h-9 object-contain"/>
-          <p className="text-white text-[18px] font-bold cursor-pointer">Ezhil Nilavan&nbsp;<span className="sm:block hidden">| Analyst</span></p>
+          <p className="text-white text-[18px] font-bold cursor-pointer">Ezhil Nilavan Kalaimani&nbsp;<span className="sm:block hidden">| Analyst</span></p>
         </Link>
         <ul className='list-none hidden sm:flex flex-row gap-10'>
           {

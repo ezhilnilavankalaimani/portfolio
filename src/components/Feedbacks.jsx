@@ -12,6 +12,7 @@ const FeedbackCard = ({
   name,
   designation,
   company,
+  subtitle,
   image,
 }) => (
   <motion.div
@@ -29,7 +30,7 @@ const FeedbackCard = ({
             <span className='blue-text-gradient'>@</span> {name}
           </p>
           <p className='mt-1 text-secondary text-[12px]'>
-            {designation} of {company}
+            {subtitle || `${designation} of ${company}`}
           </p>
         </div>
 

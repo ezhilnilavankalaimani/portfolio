@@ -26,11 +26,17 @@ import shopify from "./company/shopify.png";
 import SI from "./company/SI.png";
 import tesla from "./company/tesla.png";
 import VT from "./company/vt.jpeg";
-import td from "./company/td.svg";
+import td from "./company/td.png";
+import kelly from "./company/kelly.png";
+import popeyes from "./company/popeyes.png";
+import conestoga from "./company/conestoga.png";
+import growth from "./company/growth.svg";
+import amazon from "./company/amazon.png";
 import farmer from "./farmer.jpg";
 import telecom from "./telecom.jpg";
 import chatapp from "./chatapp.jpg";
 import game from './game.jpg';
+import symcor from './symcor.jpg';
 
 export {
   logo,
@@ -62,6 +68,12 @@ export {
   telecom,
   chatapp,
   game,
+  symcor,
   VT,
-  td
+  td,
+  kelly,
+  popeyes,
+  conestoga,
+  growth,
+  amazon
 };

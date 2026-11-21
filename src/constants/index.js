@@ -16,13 +16,18 @@ import {
     adobe,
     walmart,
     SI,
-    VT,
     td,
+    kelly,
+    popeyes,
+    conestoga,
+    growth,
+    amazon,
     farmer,
     telecom,
     chatapp,
     threejs,
-    game
+    game,
+    symcor
   } from "../assets";
   
   export const navLinks = [
@@ -100,8 +105,8 @@ import {
       title: "Wealth Operations Officer III",
       company_name: "TD, Toronto",
       icon: td,
-      iconBg: "#0A8A35",
-      date: "Apr 2024 - Present",
+      iconBg: "#55B94B",
+      date: "Dec 2024 - Present",
       points: [
         "Process complex RSP and TFSA transactions (withdrawals, contributions, swaps, wires, in-kind and corrections) with 100% accuracy and timeliness, within regulatory, audit and SLA requirements.",
         "Won the Q2 2026 Star Award for Best Performance for taking the Symcor process live in production and eliminating manual intervention.",
@@ -112,11 +117,31 @@ import {
       ],
     },
     {
-      title: "OMNI",
-      company_name: "Walmart",
+      title: "Wealth Operations Officer II",
+      company_name: "TD, Toronto",
+      icon: td,
+      iconBg: "#55B94B",
+      date: "Apr 2024 - Dec 2024",
+      points: [
+        "Executed transactions accurately and on time, in line with established guidelines and procedures, while meeting formal and informal Service Level Agreements (SLAs).",
+      ],
+    },
+    {
+      title: "Technical Support Specialist",
+      company_name: "Kelly Science, Engineering, Technology & Telecom (Remote, Full-time)",
+      icon: kelly,
+      iconBg: "#FFFFFF",
+      date: "Oct 2023 - Jan 2024",
+      points: [
+        "Remote, full-time technical support. Skills: iOS, Client Relations.",
+      ],
+    },
+    {
+      title: "Customer Fulfillment Associate (OMNI)",
+      company_name: "Walmart, Waterloo (Part-time)",
       icon: walmart,
       iconBg: "#E6DEDD",
-      date: "Feb 2022 - March 2024",
+      date: "Feb 2022 - Nov 2023",
       points: [
         "Meeting the customers' needs and delivering them their respective online • grocery orders..",
         "Changing and adapting to the constantly evolving working condition..",
@@ -125,10 +150,43 @@ import {
       ],
     },
     {
+      title: "Crew Member and Cook",
+      company_name: "Popeyes Louisiana Kitchen, Kitchener (Contract, Part-time)",
+      icon: popeyes,
+      iconBg: "#FFFFFF",
+      date: "Dec 2021 - Jan 2022",
+      points: [
+        "Customer-facing contract role. Skills: Customer Experience.",
+      ],
+    },
+    {
+      title: "Postgraduate, Information Technology Business Analysis",
+      company_name: "Conestoga College, Ontario (Full-time study, GPA 3.84 - Distinction)",
+      icon: conestoga,
+      iconBg: "#231F20",
+      date: "Sep 2021 - Dec 2022",
+      points: [
+        "Completed a postgraduate program with a 3.84 GPA (Distinction) while working part-time.",
+        "Coursework: Advanced Data Analytics, Software Integration, Risk Analysis, Service Management, IT Infrastructure, ERP, UI/UX, Requirements Modeling and Visualization, SQL and Data Analysis, Business Process Analysis.",
+      ],
+    },
+    {
+      title: "Professional Development",
+      company_name: "Self-paced certifications",
+      icon: growth,
+      iconBg: "#0A8A35",
+      date: "Feb 2021 - Aug 2021",
+      points: [
+        "Certification in Football Analytics using Python (Mad About Sports), May 2021.",
+        "Certification in Data Science SQL (University of California, Davis), June 2021.",
+      ],
+    },
+    {
       title : "Automation Analyst",
-      company_name: "Amazon",
-      icon: VT,
-      date : "June 2018- Feb 2021",
+      company_name: "Amazon, Greater Chennai Area",
+      icon: amazon,
+      iconBg: "#FFFFFF",
+      date : "Feb 2020 - Feb 2021",
       points: [
        "Processed extensive data to evaluate and produce risk-free solutions using various statistical techniques and was involved in quality processes and support during the sale period to establish, monitor and streamline quality processes in the project.",
       "Debugged and analyzed e-commerce and other online competitors with the employer and designed and created weekly business reports with callouts on Spike / Low. Performed feasibility analysis and provided estimates to implement the new functionality.",
@@ -141,9 +199,37 @@ import {
         "During my 3 years, I have worked on different teams and monitored region specific amazon sales in the United States, Denmark, France, Canada and Mexico"
       ]
     },
+    {
+      title: "Support Automation Analyst",
+      company_name: "Amazon, Chennai",
+      icon: amazon,
+      iconBg: "#FFFFFF",
+      date: "Feb 2019 - Jan 2020",
+      points: [
+        "Skills: Customer Experience, Microsoft Excel.",
+      ],
+    },
+    {
+      title: "Market Analysis Associate",
+      company_name: "Amazon, Chennai",
+      icon: amazon,
+      iconBg: "#FFFFFF",
+      date: "Jul 2018 - Jan 2019",
+      points: [
+        "Skills: Customer Experience, Microsoft Excel.",
+      ],
+    },
   ];
   
   const testimonials = [
+    {
+      testimonial:
+        "Received the Q2 2026 Star Award at TD for automating the Symcor cheque process, moving it from manual handling to full automation.",
+      name: "Q2 2026 Star Award",
+      subtitle: "Recognition at Toronto-Dominion Bank",
+      company: "TD",
+      image: td,
+    },
     {
       testimonial:
         " Ezhil, our Automation Analyst, with three years of dedicated service at Amazon, consistently impressed with their automation prowess. His insights, problem-solving skills, and commitment to streamlining processes greatly contributed to our team's success and overall operational excellence. A valuable asset!.",
@@ -171,6 +257,30 @@ import {
   ];
   
   const projects = [
+    {
+      name: "Symcor Cheque Processing Automation",
+      description:[
+        "Automated the end-to-end Symcor cheque process at TD, taking it from a fully manual workflow to 99% automation.",
+        "Covers the complete flow: cheque verification, Accept / Review / Reject actions, Letter of Direction (LOD) tracking, rejection and return handling, and daily All Items / Reject reporting.",
+        "Documented the full process in a detailed SOP with timelines, quality checks and risk controls, so the team can run and audit it consistently.",
+      ],
+      tags: [
+        {
+          name: "Process Automation",
+          color: "blue-text-gradient",
+        },
+        {
+          name: "Symcor",
+          color: "green-text-gradient",
+        },
+        {
+          name: "SOP Documentation",
+          color: "pink-text-gradient",
+        },
+      ],
+      image: symcor,
+      source_code_link: "#",
+    },
     {
       name: "Toronto-Dominion Bank",
       description:[

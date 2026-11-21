@@ -47,9 +47,12 @@ const About = () => {
         variants={fadeIn("", "", 0.1, 1)}
         className='mt-4 text-secondary text-[17px] max-w-3xl leading-[30px]'
       >
-        I'm a skilled software developer with experience in python, regular expresssions, SQL and also in tools such as PowerBI, Tableau with strong knowledge in EXCEL. . I'm a quick learner and collaborate closely with clients to
-        create efficient, scalable, and user-friendly solutions that solve
-        real-world problems. Let's work together to bring your ideas to life!
+        I'm an Analyst at Toronto-Dominion Bank with a background in
+        process automation, data analysis and reporting. I work with Python, SQL, regular
+        expressions, Power BI, Tableau and advanced Excel to automate manual workflows,
+        strengthen quality and risk controls, and deliver accurate, well-documented
+        results. I'm a quick learner who works closely with stakeholders to build
+        efficient, reliable solutions to real operational problems.
       </motion.p>
 
       <div className='mt-20 flex flex-wrap gap-10'>

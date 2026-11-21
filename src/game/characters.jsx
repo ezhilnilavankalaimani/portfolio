@@ -12,7 +12,7 @@ const Leg = ({ x, y, cls, color, paw = "#FBD9A6" }) => (
   </g>
 );
 
-export const Tiger = ({ className = "", style, roar = false, ...rest }) => (
+export const Tiger = ({ className = "", style, roar = false, gear = false, ...rest }) => (
   <svg className={className} style={style} {...rest} viewBox='0 0 300 160' xmlns='http://www.w3.org/2000/svg'>
     {/* tail */}
     <g className='gm-tail'>
@@ -22,6 +22,7 @@ export const Tiger = ({ className = "", style, roar = false, ...rest }) => (
     {/* far legs */}
     <Leg x={96} y={100} cls='b' color={D} paw={D} />
     <Leg x={190} y={100} cls='a' color={D} paw={D} />
+    {gear && <Cape d='M176 54 Q130 34 82 62 Q110 80 98 102 Q150 88 190 94Z' ox={176} oy={60} />}
     {/* body */}
     <ellipse cx='140' cy='84' rx='80' ry='42' fill={O} />
     <ellipse cx='140' cy='106' rx='60' ry='16' fill='#FFE8C2' />
@@ -46,6 +47,7 @@ export const Tiger = ({ className = "", style, roar = false, ...rest }) => (
     <circle cx='224' cy='58' r='7' fill='#fff' /><circle cx='226' cy='59' r='4.5' fill={S} /><circle cx='228' cy='57' r='1.8' fill='#fff' />
     <ellipse cx='236' cy='74' rx='8' ry='5' fill='#FF8FA3' opacity='0.55' />
     <ellipse cx='272' cy='68' rx='7' ry='4.5' fill='#FF8FA3' opacity='0.55' />
+    {gear && <Band x={202} y={34} w={70} h={10} />}
     {roar ? <path d='M244 80 Q256 98 270 80 Z' fill='#7a0f0f' stroke={S} strokeWidth='2.5' /> : <path d='M246 80 Q254 87 262 80 M262 80 Q268 86 274 79' stroke={S} strokeWidth='3' fill='none' strokeLinecap='round' />}
   </svg>
 );
@@ -77,10 +79,11 @@ export const Ninja = ({ className = "", style, ...rest }) => (
   </svg>
 );
 
-export const Elephant = ({ className = "", style }) => (
+export const Elephant = ({ className = "", style, gear = false }) => (
   <svg viewBox="0 0 250 190" className={className} style={style} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <g fill="#8fa8c4"><rect x="56" y="118" width="34" height="62" rx="16"/><rect x="100" y="118" width="34" height="62" rx="16"/><rect x="146" y="118" width="34" height="62" rx="16"/><rect x="186" y="118" width="34" height="62" rx="16"/></g>
     <g fill="#e9eef5"><rect x="58" y="168" width="30" height="12" rx="6"/><rect x="102" y="168" width="30" height="12" rx="6"/><rect x="148" y="168" width="30" height="12" rx="6"/><rect x="188" y="168" width="30" height="12" rx="6"/></g>
+    {gear && <Cape d="M150 50 Q100 26 38 66 Q68 84 54 112 Q112 90 162 98Z" ox={150} oy={60} />}
     <ellipse cx="125" cy="98" rx="92" ry="62" fill="#a9c1da"/>
     <g className="av-etail"><path d="M40 84 q-30 22 -10 60" stroke="#a9c1da" strokeWidth="13" fill="none" strokeLinecap="round"/><path d="M30 130 q-8 10 -2 22" stroke="#6f86a3" strokeWidth="9" fill="none" strokeLinecap="round"/></g>
     <circle cx="208" cy="76" r="44" fill="#a9c1da"/>
@@ -90,6 +93,7 @@ export const Elephant = ({ className = "", style }) => (
     <ellipse cx="226" cy="92" rx="8" ry="5" fill="#ff8fa3" opacity="0.6"/>
     <path d="M200 96 q8 8 16 3" stroke="#1a1209" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
     <rect x="92" y="60" width="62" height="28" rx="12" fill="#d9382f"/><rect x="92" y="69" width="62" height="6" fill="#f7b32b"/>
+    {gear && <Band x={168} y={42} w={80} h={11} />}
   </svg>
 );
 
@@ -115,7 +119,7 @@ export const Trophy = ({ className = "", style }) => (
   <svg viewBox="0 0 150 190" className={className} style={style} xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 h90 v50 q0 46 -45 50 q-45 -4 -45 -50Z" fill="#f7b32b"/><path d="M30 34 q-26 0 -22 24 q4 22 28 24" fill="none" stroke="#f7b32b" strokeWidth="9"/><path d="M120 34 q26 0 22 24 q-4 22 -28 24" fill="none" stroke="#f7b32b" strokeWidth="9"/><rect x="66" y="118" width="18" height="30" fill="#e09a14"/><rect x="40" y="146" width="70" height="16" rx="5" fill="#c47f10"/><rect x="30" y="160" width="90" height="22" rx="6" fill="#8a5a1b"/><path d="M75 36 l7 16 17 2 -13 11 4 17 -15 -9 -15 9 4 -17 -13 -11 17 -2Z" fill="#fff6c8"/></svg>
 );
 
-export const Peacock = ({ className = "", style }) => (
+export const Peacock = ({ className = "", style, gear = false }) => (
   <svg viewBox="0 0 250 190" className={className} style={style} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <g className="av-pfan">
       {[-82, -56, -30, -4, 22, 48].map((a, i) => (
@@ -127,6 +131,7 @@ export const Peacock = ({ className = "", style }) => (
     </g>
     <path d="M110 150 L104 186 M138 150 L142 186" stroke="#b9791a" strokeWidth="6" strokeLinecap="round"/>
     <path d="M96 186 H112 M134 186 H152" stroke="#b9791a" strokeWidth="6" strokeLinecap="round"/>
+    {gear && <Cape d="M156 90 Q118 72 80 102 Q102 114 96 130 Q130 112 164 120Z" ox={156} oy={96} />}
     <ellipse cx="124" cy="120" rx="56" ry="38" fill="#1e7fc0" stroke="#145a8a" strokeWidth="3"/>
     <g className="av-pwing"><ellipse cx="116" cy="118" rx="34" ry="22" fill="#2ab3a6" stroke="#145a8a" strokeWidth="3"/><path d="M92 118 q24 12 50 0" stroke="#fff" strokeOpacity=".5" strokeWidth="3" fill="none"/></g>
     <path d="M160 104 Q192 90 198 56" stroke="#1e7fc0" strokeWidth="22" fill="none" strokeLinecap="round"/>
@@ -136,6 +141,7 @@ export const Peacock = ({ className = "", style }) => (
     <path d="M200 30 q-6 -14 -12 -20 M204 30 q0 -16 -2 -24 M208 30 q6 -14 12 -18" stroke="#145a8a" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
     <circle cx="188" cy="10" r="4" fill="#f7b32b"/><circle cx="202" cy="6" r="4" fill="#f7b32b"/><circle cx="220" cy="12" r="4" fill="#f7b32b"/>
     <ellipse cx="214" cy="56" rx="6" ry="4" fill="#ff8fa3" opacity=".6"/>
+    {gear && <Band x={187} y={37} w={34} h={7} />}
     <rect x="96" y="76" width="58" height="22" rx="10" fill="#d9382f"/><rect x="96" y="84" width="58" height="5" fill="#f7b32b"/>
   </svg>
 );
@@ -179,4 +185,19 @@ export const Hedgehog = ({ className = "", style }) => (
     <circle cx="94" cy="56" r="3.2" fill="#1a1209"/><circle cx="95" cy="55" r="1" fill="#fff"/><circle cx="108" cy="60" r="3.5" fill="#2b1a0a"/>
     <ellipse cx="82" cy="72" rx="7" ry="4" fill="#b98a5c"/><ellipse cx="46" cy="72" rx="7" ry="4" fill="#b98a5c"/>
   </svg>
+);
+
+const Band = ({ x, y, w, h }) => (
+  <g>
+    <rect x={x} y={y} width={w} height={h} rx={h / 2} fill="#d9382f" stroke="#9c2a22" strokeWidth="1.5"/>
+    <rect x={x + w / 2 - h * 1.1} y={y - h * 0.15} width={h * 2.2} height={h * 1.3} rx={h * 0.3} fill="#f7b32b" stroke="#b9791a" strokeWidth="1.2"/>
+    <path d={`M${x + w / 2 - h * 0.5} ${y + h * 0.5} l${h * .8} ${-h * .2} l${-h * .1} ${h * .5} Z`} fill="#d9382f"/>
+    <g className="av-btail"><path d={`M${x + 2} ${y + h / 2} q${-h * 1.4} ${-h * .2} ${-h * 2.2} ${h * .9} q${h * 1.1} ${-h * .1} ${h * 2} ${-h * .3}Z`} fill="#d9382f" stroke="#9c2a22" strokeWidth="1.2"/></g>
+  </g>
+);
+const Cape = ({ d, ox, oy }) => (
+  <g className="av-bcape" style={{ transformOrigin: `${ox}px ${oy}px` }}>
+    <path d={d} fill="#d9382f" stroke="#9c2a22" strokeWidth="2.5" strokeLinejoin="round"/>
+    <path d={d} fill="none" stroke="#f7b32b" strokeWidth="2" strokeDasharray="1 7" strokeLinecap="round" transform="translate(0 -3)"/>
+  </g>
 );

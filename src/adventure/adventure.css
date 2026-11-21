@@ -427,3 +427,19 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 .av-thanks-in b { display: block; font-size: 38px; line-height: 1.15; color: #14532d; }
 .av-thanks-in small { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #8a6d1f; font-weight: 800; }
 @keyframes av-thin { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: none; } }
+
+.av-bcape { animation: av-capefl .7s ease-in-out infinite alternate; }
+@keyframes av-capefl { from { transform: rotate(-3deg) skewY(-2deg); } to { transform: rotate(4deg) skewY(3deg); } }
+.av-btail { transform-box: fill-box; transform-origin: 100% 50%; animation: av-capefl .5s ease-in-out infinite alternate; }
+
+/* weather near the end: light overlays so every word stays readable */
+.av-wind { position: absolute; inset: 0; z-index: 29; pointer-events: none; opacity: var(--wind, 0); transition: opacity .3s; overflow: hidden; }
+.av-wind::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 46px, rgba(255,255,255,.22) 46px 48px, transparent 48px 96px); animation: av-gust .5s linear infinite; }
+.av-wind i { position: absolute; left: 0; font-style: normal; font-size: 30px; filter: drop-shadow(0 2px 2px #0003); animation: av-blow 1.6s linear infinite; }
+@keyframes av-blow { from { transform: translateX(-80px) rotate(0deg); } 50% { transform: translateX(760px) translateY(-24px) rotate(300deg); } to { transform: translateX(1540px) translateY(10px) rotate(640deg); } }
+@keyframes av-gust { to { transform: translateX(-96px); } }
+.av-flash { position: absolute; inset: 0; z-index: 29; pointer-events: none; background: #fff; opacity: 0; }
+.av-flash { animation: av-bolt 4.2s linear infinite; }
+@keyframes av-bolt { 0%, 86%, 100% { opacity: 0; } 88% { opacity: calc(var(--storm, 0) * .55); } 90% { opacity: 0; } 92% { opacity: calc(var(--storm, 0) * .4); } 95% { opacity: 0; } }
+.av-wxbadge { position: absolute; left: 30px; top: 100px; z-index: 61; background: #0c3b24dd; color: #fff; font-weight: 800; font-size: 14px; padding: 6px 12px; border-radius: 12px; }
+@media (prefers-reduced-motion: reduce) { .av-wind::before, .av-wind i, .av-flash { animation: none; } }

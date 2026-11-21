@@ -818,8 +818,7 @@ const Falling = memo(() => (
 /* ---------------------------------------------------------------- */
 
 const ELEPHANTS = [
-  { x: 1080, w: 170, d: 14 }, { x: 4050, w: 190, d: 18 }, { x: 4700, w: 150, d: 12 },
-  { x: 8920, w: 180, d: 16 }, { x: 13820, w: 190, d: 20 }, { x: 15600, w: 160, d: 15 },
+  { x: 4050, w: 190, d: 18 }, { x: 8920, w: 180, d: 16 }, { x: 13820, w: 190, d: 20 },
 ];
 const Elephants = memo(() => (
   <>
@@ -832,9 +831,9 @@ const Elephants = memo(() => (
 ));
 
 const CRITTERS = [
-  ["rabbit", 620, 84, 5], ["rabbit", 1900, 78, 6], ["rabbit", 3350, 90, 5], ["rabbit", 5200, 80, 6], ["rabbit", 6550, 86, 5], ["rabbit", 9150, 80, 6], ["rabbit", 13350, 88, 5], ["rabbit", 14750, 82, 6], ["rabbit", 15300, 80, 5],
-  ["deer", 330, 170, 22], ["deer", 2350, 160, 20], ["deer", 4650, 175, 24], ["deer", 7620, 165, 22], ["deer", 9720, 170, 21], ["deer", 13900, 168, 23], ["deer", 15100, 160, 20],
-  ["hog", 1250, 96, 18], ["hog", 3650, 90, 17], ["hog", 6150, 98, 19], ["hog", 7950, 92, 18], ["hog", 14150, 96, 18],
+  ["rabbit", 1900, 78, 6], ["rabbit", 6550, 86, 5], ["rabbit", 9150, 80, 6], ["rabbit", 14750, 82, 6],
+  ["deer", 330, 170, 22], ["deer", 7620, 165, 22], ["deer", 13900, 168, 23],
+  ["hog", 3650, 90, 17], ["hog", 14150, 96, 18],
 ];
 const Critters = memo(() => (
   <>
@@ -890,10 +889,10 @@ export const Entities = memo(({ refs, buddy = "tiger" }) => (
     </div>
     <div ref={refs.tiger} className='av-ent av-tiger' data-buddy={buddy} style={{ width: 280 }}>
       <div ref={refs.tigerFlip} className='av-flip'>
-        <Tiger className='av-tsvg' />
-        <Tiger roar className='av-roarsvg av-tsvg' />
-        <Elephant className='av-esvg' />
-        <Peacock className='av-psvg' />
+        <Tiger gear className='av-tsvg' />
+        <Tiger roar gear className='av-roarsvg av-tsvg' />
+        <Elephant gear className='av-esvg' />
+        <Peacock gear className='av-psvg' />
       </div>
       <div className='av-roarbub'>{buddy === "elephant" ? "TOOOT!" : buddy === "peacock" ? "PEE-OW!" : "ROAR!"}</div>
     </div>

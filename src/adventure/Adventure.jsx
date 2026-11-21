@@ -236,10 +236,10 @@ const BuddyOverlay = ({ current, onPick, touch, ctl, onCtl }) => (
           <Tiger style={{ width: 190 }} /><b>🐯 Tiger</b><span>Fast and fierce. Roars!</span>
         </button>
         <button className={current === "elephant" ? "on" : ""} onClick={() => onPick("elephant")}>
-          <Elephant style={{ width: 160 }} /><b>🐘 Elephant</b><span>Big, gentle and strong. Trumpets!</span>
+          <Elephant gear style={{ width: 160 }} /><b>🐘 Elephant</b><span>Big, gentle and strong. Trumpets!</span>
         </button>
         <button className={current === "peacock" ? "on" : ""} onClick={() => onPick("peacock")}>
-          <Peacock style={{ width: 160 }} /><b>🦚 Peacock</b><span>Colourful! Lets you fly when you hop on.</span>
+          <Peacock gear style={{ width: 160 }} /><b>🦚 Peacock</b><span>Colourful! Lets you fly when you hop on.</span>
         </button>
       </div>
       {touch && (
@@ -472,7 +472,8 @@ export default function Adventure({ onFormal }) {
   const [toasts, setToasts] = useState([]);
   const [buddy, setBuddy] = useState(() => loadBuddy() || "tiger");
   const [ctl, setCtl] = useState(loadCtl);
-  const [overlay, setOverlay] = useState(() => (loadBuddy() ? null : "buddy"));
+  const [wx, setWx] = useState("");
+  const [overlay, setOverlay] = useState("buddy");
   const portrait = usePortrait();
   const [playAnyway, setPlayAnyway] = useState(false);
   const rotate = portrait && !playAnyway;
@@ -529,6 +530,7 @@ export default function Adventure({ onFormal }) {
       }
       case "award": if (d === "give") { unlock("star"); toast("🌟 The Master Ninja is awarding you the Q2 2026 Star Medal!", "ach"); s.coins += 25; setCoins(s.coins); sfx("coin"); } break;
       
+      case "weather": setWx(d); if (d === "wind") toast("💨 Windstorm! Hold on to your headband!"); else if (d === "storm") toast("⛈ Thunderstorm ahead, almost at the castle!"); break;
       case "hurdle": s.hurdles = d; if (d >= 5) unlock("hurdler"); break;
       case "item":
         if (d.type === "coin" || d.type === "star" || d.type === "pkg") { s.coins += d.type === "star" ? 5 : 1; setCoins(s.coins); }
@@ -669,6 +671,9 @@ export default function Adventure({ onFormal }) {
       <div className='av-stage' ref={rootRef} aria-label='Interactive adventure' style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
         <div className='av-sky' />
         <div className='av-rain' aria-hidden='true' />
+        <div className='av-wind' aria-hidden='true'>{Array.from({ length: 9 }, (_, i) => <i key={i} style={{ top: `${8 + i * 10}%`, animationDelay: `${-i * 0.37}s`, animationDuration: `${1.2 + (i % 4) * 0.25}s` }}>{i % 3 === 0 ? "🍃" : i % 3 === 1 ? "🍂" : "🌿"}</i>)}</div>
+        <div className='av-flash' aria-hidden='true' />
+        {wx && wx !== "rain" && <div className='av-wxbadge'>{wx === "wind" ? "💨 Windstorm" : "⛈ Thunderstorm"}</div>}
         <div ref={(el) => (els.current.far = el)} className='av-layer'><FarLayer /></div>
         <div ref={(el) => (els.current.mid = el)} className='av-layer'><MidLayer /></div>
         <div ref={(el) => (els.current.world = el)} className='av-layer av-world'>
@@ -693,7 +698,7 @@ export default function Adventure({ onFormal }) {
 
         {/* HUD */}
         <div className='av-top'>
-          <button className='gm-name' onClick={() => goLevel(0)}>Ezhil Nilavan Kalaimani | Wealth Operations Officer III</button>
+          <button className='gm-name' onClick={() => goLevel(0)}>Ezhil Nilavan Kalaimani</button>
           <div className='gm-nav'>
             <button onClick={() => setOverlay("map")}>🗺 Map</button>
             <button onClick={() => setOverlay("ach")}>🏆 {ach.length}/{ACHIEVEMENTS.length}</button>

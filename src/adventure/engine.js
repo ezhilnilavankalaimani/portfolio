@@ -76,6 +76,17 @@ const rainAt = (x) => {
   }
   return r;
 };
+// windstorm and thunderstorm near the end of the adventure
+const WIND = [[13700, 14650]];
+const STORM = [[15050, 15800]];
+const zoneAt = (Z, x) => {
+  let r = 0;
+  for (const [a, b] of Z) {
+    const k = Math.max(0, Math.min(1, Math.min(x - a, b - x) / 260));
+    r = Math.max(r, k * k * (3 - 2 * k));
+  }
+  return r;
+};
 const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
 const mix = (a, b, t) => {
   const A = hex(a), B = hex(b);
@@ -326,8 +337,28 @@ export class Engine {
   }
 
   /* ---------- simulation ---------- */
+  updateAward(dt) {
+    const p = this.p;
+    const AX = 8640 + 900;
+    if (this.awardT == null && p.x > AX - 450 && p.x < AX + 500 && p.mode === "land") { this.awardT = 0; this.setAward("give"); this.emit("award", "give"); }
+    if (this.awardT == null || this.awardT >= 99) return;
+    const near = Math.abs(p.x - 9660) < 800;
+    if (!this.awardPin && this.awardT > 2.4 && !near) return; // wait for the ninja to be there before handing over the medal
+    this.awardT += dt;
+    if (this.awardT > 2.6 && !this.awardPin) {
+      this.awardPin = true;
+      const el = this.els.root.querySelector(".av-award");
+      if (el) { el.style.setProperty("--dx", `${p.x - 9660}px`); el.style.setProperty("--dy", `${p.y - 125 - 490}px`); }
+      this.setAward("pin");
+    }
+    if (this.awardT > 3.5 && !this.awardPinned) { this.awardPinned = true; this.els.stage.classList.add("av-hasmedal"); this.emit("award", "pinned"); }
+    if (this.awardT > 5.5 && this.awardS !== "fly") { this.awardS = "fly"; this.setAward("fly"); }
+    if (this.awardT > 12 && this.awardS !== "gone") { this.awardS = "gone"; this.setAward("gone"); this.awardT = 100; }
+  }
+
   update(dt) {
     this.time += dt;
+    this.updateAward(dt);
     const k = this.keys;
     const jp = this.take("jump");
     const ep = this.take("act");
@@ -407,22 +438,6 @@ export class Engine {
       p.anim = "climb";
       this.emit("climb");
       return;
-    }
-
-    // ---- Master ninja award ----
-    const AX = 8640 + 900;
-    if (this.awardT == null && p.x > AX - 450 && p.x < AX + 500 && p.mode === "land") { this.awardT = 0; this.setAward("give"); this.emit("award", "give"); }
-    if (this.awardT != null && this.awardT < 99) {
-      this.awardT += dt;
-      if (this.awardT > 2.6 && !this.awardPin) {
-        this.awardPin = true;
-        const el = this.els.root.querySelector(".av-award");
-        if (el) { el.style.setProperty("--dx", `${this.p.x - 9660}px`); el.style.setProperty("--dy", `${this.p.y - 125 - 490}px`); }
-        this.setAward("pin");
-      }
-      if (this.awardT > 3.5 && !this.awardPinned) { this.awardPinned = true; this.els.stage.classList.add("av-hasmedal"); this.emit("award", "pinned"); }
-      if (this.awardT > 5.5 && this.awardS !== "fly") { this.awardS = "fly"; this.setAward("fly"); }
-      if (this.awardT > 12 && this.awardS !== "gone") { this.awardS = "gone"; this.setAward("gone"); this.awardT = 100; }
     }
 
     if (this.ending) { this.updateEnding(dt); return; }
@@ -670,6 +685,12 @@ export class Engine {
       e.stage.style.setProperty("--depth", String(clamp(cam.y / 640, 0, 1)));
       const rn = rainAt(cam.x + 720) * (1 - clamp(cam.y / 300, 0, 1));
       e.stage.style.setProperty("--rain", rn.toFixed(2));
+      const wd = zoneAt(WIND, cam.x + 720), st = zoneAt(STORM, cam.x + 720);
+      if (st > rn) e.stage.style.setProperty("--rain", (st * 0.6).toFixed(2));
+      e.stage.style.setProperty("--wind", wd.toFixed(2));
+      e.stage.style.setProperty("--storm", st.toFixed(2));
+      const wx = wd > 0.5 ? "wind" : st > 0.5 ? "storm" : rn > 0.5 ? "rain" : "";
+      if (wx !== this.wx) { this.wx = wx; this.emit("weather", wx); }
     }
 
     // ninja

@@ -2,15 +2,30 @@
 const st = { on: false, ctx: null };
 
 export const isSoundOn = () => st.on;
-export const setSound = (v) => { st.on = !!v; };
+function ensure() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!st.ctx) {
+    st.ctx = new AC();
+    st.master = st.ctx.createGain();
+    st.master.gain.value = 2.6; // sound effects were too quiet
+    st.master.connect(st.ctx.destination);
+  }
+  if (st.ctx.state === "suspended") st.ctx.resume();
+  return st.ctx;
+}
+// browsers keep audio locked until the visitor touches the page: unlock on the first tap, click or key
+if (typeof window !== "undefined") {
+  const unlock = () => { if (st.on) ensure(); };
+  ["pointerdown", "touchstart", "keydown", "click"].forEach((ev) => window.addEventListener(ev, unlock, { passive: true }));
+}
+export const setSound = (v) => { st.on = !!v; if (v) ensure(); };
 
 export function sfx(kind) {
   if (!st.on) return;
   try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    if (!st.ctx) st.ctx = new AC();
-    const c = st.ctx;
+    const c = ensure();
+    if (!c) return;
     const tone = (type, f0, f1, dur, vol = 0.1, at = 0) => {
       const o = c.createOscillator();
       const g = c.createGain();
@@ -20,7 +35,7 @@ export function sfx(kind) {
       o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
       g.gain.setValueAtTime(vol, t);
       g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-      o.connect(g).connect(c.destination);
+      o.connect(g).connect(st.master);
       o.start(t);
       o.stop(t + dur + 0.02);
     };

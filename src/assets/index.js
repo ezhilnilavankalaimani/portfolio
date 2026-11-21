@@ -30,6 +30,7 @@ import td from "./company/td.png";
 import kelly from "./company/kelly.png";
 import popeyes from "./company/popeyes.png";
 import conestoga from "./company/conestoga.png";
+import anna from "./company/anna.png";
 import growth from "./company/growth.svg";
 import cap from "./company/cap.svg";
 import amazon from "./company/amazon.png";
@@ -75,6 +76,7 @@ export {
   kelly,
   popeyes,
   conestoga,
+  anna,
   growth,
   cap,
   amazon

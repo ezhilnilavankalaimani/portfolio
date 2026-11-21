@@ -771,7 +771,7 @@ const Contact = () => {
         </g>
       </svg>
       <div className='gm-block ab' style={{ left: 230, top: 120, fontSize: 118, color: "#9be3b4", zIndex: 6, textShadow: ex("#1f8a50", 17, -1, 1) }}>CONTACT</div>
-      <div className='ab' style={{ left: 240, top: 255, color: "#0c3b24", fontWeight: 800, fontSize: 18, zIndex: 6 }}>Say hello · வணக்கம் · नमस्ते</div>
+      <div className='ab' style={{ left: 240, top: 255, color: "#0c3b24", fontWeight: 800, fontSize: 18, zIndex: 6 }}>Say hello · வணக்கம்</div>
       <form onSubmit={submit}>
         <input className='gm-inp' name='name' value={form.name} onChange={onChange} placeholder='Your name' required style={{ left: 500, top: 338, width: 320, height: 42 }} />
         <input className='gm-inp' name='email' type='email' value={form.email} onChange={onChange} placeholder='you@example.com' required style={{ left: 500, top: 396, width: 320, height: 42 }} />

@@ -139,17 +139,19 @@ const EndOverlay = ({ score, coins, skills, achs, onClose, onAgain, onFormal }) 
     const v = validateName(name);
     if (!v.ok) { setStatus(v.reason); return; }
     setBusy(true); setStatus("Sending your poster…");
+    let ownerErr = "";
     const common = { score, coins, skills, achievements: achs, poster_url: `${window.location.origin}/posters/course-clear-${theme}.png`, theme, date };
     try {
       // tell Ezhil (existing template)
       await emailjs.send(EJ.service, EJ.owner, { from_name: v.clean, to_name: "Ezhil Nilavan Kalaimani", from_email: email, to_email: "iamezhilnilavan@gmail.com", message: `🎉 ${v.clean} (${email}) cleared the course! Score ${score}, ${coins} coins, ${skills}/12 skills, ${achs}/13 achievements. email is ${email}` }, EJ.key);
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error(err); ownerErr = (err && (err.text || err.message)) || String(err); }
     try {
       await emailjs.send(EJ.service, EJ.visitor, { ...common, to_name: v.clean, to_email: email, reply_to: "iamezhilnilavan@gmail.com" }, EJ.key);
-      setStatus("📬 Sent! Check your inbox (and spam) for your Course Clear poster.");
+      setStatus("📬 Sent! Check your inbox (and spam) for your Ninja Award poster.");
     } catch (err) {
       console.error(err);
-      setStatus("Could not mail the poster. You can download it instead. Ezhil has been told you finished!");
+      const why = (err && (err.text || err.message)) || String(err);
+      setStatus(`Could not mail the poster (${err && err.status ? err.status + ": " : ""}${why}). You can download it instead.${ownerErr ? "" : " Ezhil has been told you finished!"}`);
     }
     setBusy(false);
   };
@@ -163,7 +165,7 @@ const EndOverlay = ({ score, coins, skills, achs, onClose, onAgain, onFormal }) 
       <div className='av-endposter' ref={posterRef}><Poster theme={theme} name={check.ok ? check.clean : ""} score={score} coins={coins} skills={skills} achs={achs} date={date} /></div>
       <div className='av-endmain'>
       <div className='av-clear'>COURSE CLEAR!</div>
-      <h2>Thank you for playing, you made it to the castle 🏰</h2>
+      <h2>நன்றி · Nandri · Thank you for playing, you made it to the castle 🏰</h2>
       <div className='av-stats'>
         <span>⭐ {score} score</span><span>🪙 {coins} coins</span><span>🐟 {skills}/12 skills</span><span>🏆 {achs}/13 achievements</span>
       </div>
@@ -224,7 +226,7 @@ const Recruiter = ({ onClose, onAdventure }) => (
         <a href={LINKS.email}>Email</a>
         <button className='av-btn ghost' onClick={onAdventure}>🎮 Back to the adventure</button>
       </div>
-      <h3>Ezhil Nilavan Kalaimani · Analyst, Toronto-Dominion Bank</h3>
+      <h3>Ezhil Nilavan Kalaimani · Wealth Operations Officer III, TD</h3>
       <p>Toronto, Canada (originally from India). Postgraduate in IT Business Analysis (GPA 3.84, Distinction). Took cheque processing from manual to 99% automation and won the Q2 2026 Star Award.</p>
 
       <h4>Education</h4>
@@ -412,6 +414,41 @@ export default function Adventure({ onFormal }) {
     onPointerLeave: () => press(k, false),
   });
 
+  // touch gestures: hold the left / right half of the screen to run, slide a finger up to jump
+  const gest = useRef({});
+  const gDown = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    const g = { x0: e.clientX, y0: e.clientY, t0: Date.now(), baseY: e.clientY, side: null, jump: false, moved: false };
+    gest.current[e.pointerId] = g;
+    const side = e.clientX < r.left + r.width / 2 ? "left" : "right";
+    g.side = side; press(side, true);
+  };
+  const gMove = (e) => {
+    const g = gest.current[e.pointerId];
+    if (!g) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const side = e.clientX < r.left + r.width / 2 ? "left" : "right";
+    if (side !== g.side) { press(g.side, false); g.side = side; press(side, true); }
+    if (Math.abs(e.clientX - g.x0) > 12 || Math.abs(e.clientY - g.y0) > 12) g.moved = true;
+    if (g.baseY - e.clientY > 36) {          // slid up: jump (slide up again to double-jump, or hold to swim up)
+      if (g.jump) press("jump", false);
+      press("jump", true); g.jump = true; g.baseY = e.clientY;
+    }
+  };
+  const gUp = (e) => {
+    const g = gest.current[e.pointerId];
+    if (!g) return;
+    delete gest.current[e.pointerId];
+    press(g.side, false);
+    if (g.jump) press("jump", false);
+    // a quick tap on a card, link or form field underneath: pass it on
+    if (!g.moved && Date.now() - g.t0 < 350 && e.type === "pointerup") {
+      const hit = document.elementsFromPoint(e.clientX, e.clientY).find((n) => n.matches && n.matches("a, button, input, textarea, .gm-card.clickable, .av-pcard.clickable"));
+      if (hit) { if (/^(INPUT|TEXTAREA)$/.test(hit.tagName)) hit.focus(); else hit.click(); }
+    }
+  };
+
   const score = coins * 10 + skillCount * 50 + chq * 20 + ach.length * 100;
   const lv = LEVELS[level];
 
@@ -438,10 +475,11 @@ export default function Adventure({ onFormal }) {
         </div>
         <div ref={(el) => (els.current.fg = el)} className='av-layer av-fglayer'><FgLayer /></div>
         <div className='av-depth' />
+        {touch && <div className='av-gesture' onPointerDown={gDown} onPointerMove={gMove} onPointerUp={gUp} onPointerCancel={gUp} />}
 
         {/* HUD */}
         <div className='av-top'>
-          <button className='gm-name' onClick={() => goLevel(0)}>Ezhil Nilavan Kalaimani | Analyst</button>
+          <button className='gm-name' onClick={() => goLevel(0)}>Ezhil Nilavan Kalaimani | Wealth Operations Officer III</button>
           <div className='gm-nav'>
             <button onClick={() => setOverlay("map")}>🗺 Map</button>
             <button onClick={() => setOverlay("ach")}>🏆 {ach.length}/{ACHIEVEMENTS.length}</button>
@@ -461,7 +499,7 @@ export default function Adventure({ onFormal }) {
         </div>
         {touch && (
           <div className='av-touch'>
-            <div><button {...holdProps("left")}>◀</button><button {...holdProps("right")}>▶</button></div>
+            <div className='av-hint'>👈 touch left or right to run · slide up ☝ to jump</div>
             <div><button {...holdProps("down")}>▼</button><button {...holdProps("sprint")}>»</button><button className='big' {...holdProps("jump")}>⤒</button><button {...holdProps("act")}>E</button></div>
           </div>
         )}

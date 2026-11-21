@@ -383,8 +383,17 @@ export function posterToPng(svgEl, scale = 2) {
       const c = document.createElement("canvas");
       c.width = POSTER_W * scale; c.height = POSTER_H * scale;
       const ctx = c.getContext("2d");
+      // Safari paints SVG text only after the embedded font has decoded, so draw, wait, draw again.
       ctx.drawImage(img, 0, 0, c.width, c.height);
-      resolve(c.toDataURL("image/png"));
+      setTimeout(() => {
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        setTimeout(() => {
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL("image/png"));
+        }, 350);
+      }, 350);
     };
     img.onerror = reject;
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);

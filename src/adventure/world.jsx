@@ -1,10 +1,11 @@
 // Visual world for the adventure: parallax layers, level scenery, collectibles and characters.
 // Everything here is static markup (rendered once); the engine moves it with transforms.
 import { memo, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import emailjs from "@emailjs/browser";
 import { testimonials } from "../constants";
 import { Elephant, Ninja, Parrot, Plane, Tiger, Trophy } from "../game/characters";
-import { CERTS, GREETINGS, LINKS, PROJECTS, SKILLS, STAGES } from "../game/data";
+import { CERTS, DETAILS, GREETINGS, LINKS, PROJECTS, SKILLS, STAGES } from "../game/data";
 import { CASTLE_X, FLAG, GROUND, HURDLES, HURDLE_W, HURDLE_H, ITEMS, LADDER, LEVELS, POOL, ROOF, WORLD_W } from "./engine";
 
 export const RESUME_URL = "/Ezhil_Nilavan_Kalaimani_Resume.pdf";
@@ -94,6 +95,8 @@ export const FgLayer = memo(() => (
     <svg width={Math.round((WORLD_W - 1440) * 1.35 + 1440)} height='810' viewBox={`0 0 ${Math.round((WORLD_W - 1440) * 1.35 + 1440)} 810`}>
       {Array.from({ length: 60 }, (_, i) => {
         const x = i * 330 + ((i * 97) % 160);
+        // no bushes over the pool, so the skill fish stay visible
+        if (x / 1.35 > POOL.x0 - 500 && x / 1.35 < POOL.x1 + 400) return null;
         return (
           <g key={i} className='av-sway' style={{ animationDelay: `${-(i % 7) * 0.5}s` }}>
             <ellipse cx={x} cy={800} rx={90 + (i % 3) * 20} ry={46} fill={i % 2 ? "#2f8a4a" : "#3aa05a"} />
@@ -257,13 +260,44 @@ const Big = ({ children, left, top, color = "#f7b32b", shade = "#d97a1f", size =
   <div className='gm-block ab' style={{ left, top, fontSize: size, color, textShadow: ex(shade, depth), zIndex: 6, whiteSpace: "nowrap" }}>{children}</div>
 );
 
-const StageCard = ({ s, style, n }) => (
-  <div className='gm-card' style={style}>
+const DetailModal = ({ d, onClose }) => {
+  useEffect(() => {
+    const k = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [onClose]);
+  return createPortal(
+    <div className='av-detail' onClick={onClose} role='dialog' aria-modal='true'>
+      <div className='av-detailcard' onClick={(e) => e.stopPropagation()}>
+        <button className='av-detailx' onClick={onClose} aria-label='Close'>×</button>
+        <h2>{d.head}</h2>
+        <div className='org'>{d.org}</div>
+        <ul>{d.points.map((p) => <li key={p}>{p}</li>)}</ul>
+        <button className='av-btn' onClick={onClose}>Back to the adventure</button>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
+const DetailCard = ({ d, className = "gm-card", style, children }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`${className}${d ? " clickable" : ""}`} style={style} onClick={d ? () => setOpen(true) : undefined} role={d ? "button" : undefined} tabIndex={d ? 0 : undefined} onKeyDown={d ? (e) => { if (e.key === "Enter") setOpen(true); } : undefined}>
+      {children}
+      {d && <div className='gm-more'>👆 Click for full details</div>}
+      {open && <DetailModal d={d} onClose={() => setOpen(false)} />}
+    </div>
+  );
+};
+
+const StageCard = ({ s, style, n, did }) => (
+  <DetailCard d={DETAILS[did]} style={style}>
     <div className='gm-tag'>LEVEL {n || s.n} · EXPERIENCE</div>
     <h2>{s.title}</h2>
     <div className='gm-sub'>{s.sub}</div>
     <ul>{s.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
-  </div>
+  </DetailCard>
 );
 
 const Sign = ({ sign, left, top = 508 }) => (
@@ -288,8 +322,9 @@ const Home = () => {
       <Parrot className='ab' style={{ left: 228, top: 300, width: 80, zIndex: 14 }} />
       <div className='av-how'>
         <b>HOW TO PLAY</b>
-        <span><kbd>←</kbd><kbd>→</kbd> run · <kbd>Shift</kbd> sprint · <kbd>Space</kbd> jump (twice!)</span>
-        <span><kbd>E</kbd> ride the tiger / balloon · <kbd>T</kbd> stay/follow · <kbd>C</kbd> call · <kbd>M</kbd> map</span>
+        <span className='av-howtouch'>👈 Touch the left or right side to run · slide a finger up ☝ to jump (slide again for a double jump)</span>
+        <span className='av-howkeys'><kbd>←</kbd><kbd>→</kbd> run · <kbd>Shift</kbd> sprint · <kbd>Space</kbd> jump (twice!)</span>
+        <span className='av-howkeys'><kbd>E</kbd> ride the tiger / balloon · <kbd>T</kbd> stay/follow · <kbd>C</kbd> call · <kbd>M</kbd> map</span>
       </div>
       <div className='av-arrowhint'>RUN THIS WAY ▶▶▶</div>
     </>
@@ -304,7 +339,7 @@ const Ground = ({ id, n }) => {
       <Gate n={lv.n} name={lv.name} />
       <Big left={420} top={150} size={92}>{lv.big}</Big>
       <Sign sign={s.sign} left={430} />
-      <StageCard s={s} n={lv.n} style={{ left: 930, top: 180, width: 430 }} />
+      <StageCard s={s} did={id} n={lv.n} style={{ left: 930, top: 180, width: 430 }} />
     </>
   );
 };
@@ -313,7 +348,7 @@ const Education = () => (
   <>
     <Gate n={1} name='Education' />
     <Big left={420} top={100} size={92}>EDUCATION</Big>
-    <div className='gm-card' style={{ left: 420, top: 240, width: 440 }}>
+    <DetailCard d={DETAILS.anna} style={{ left: 420, top: 240, width: 440 }}>
       <div className='gm-tag'>STUDIES · BACHELOR'S</div>
       <h2>B.E. Computer Science and Engineering</h2>
       <div className='gm-sub'>Anna University, India · Graduated May 2018 · GPA 3.70</div>
@@ -322,8 +357,8 @@ const Education = () => (
         <li>General Secretary, Computer Society of India Student Chapter</li>
         <li>2nd of 25 teams · Android workshop by IIT Bombay</li>
       </ul>
-    </div>
-    <div className='gm-card' style={{ left: 900, top: 240, width: 440 }}>
+    </DetailCard>
+    <DetailCard d={DETAILS.conestoga} style={{ left: 900, top: 240, width: 440 }}>
       <div className='gm-tag'>STUDIES · POSTGRADUATE</div>
       <h2>IT Business Analysis</h2>
       <div className='gm-sub'>Conestoga College, Ontario · Sep 2021 – Dec 2022 · GPA 3.84 (Distinction)</div>
@@ -332,7 +367,7 @@ const Education = () => (
         <li>Project Management, Requirements Modeling, SQL</li>
         <li>Data Science SQL (UC Davis) · Football Analytics with Python</li>
       </ul>
-    </div>
+    </DetailCard>
     <div className='av-csm' style={{ left: 900, top: 470 }}>
       <svg width='46' height='46' viewBox='0 0 46 46' aria-hidden='true'><circle cx='23' cy='23' r='21' fill='#f7b32b' stroke='#b9791a' strokeWidth='3' /><circle cx='23' cy='23' r='15' fill='#d9382f' /><text x='23' y='29' textAnchor='middle' fontSize='15' fontWeight='900' fill='#fff' fontFamily='DejaVu Sans, sans-serif'>CSM</text></svg>
       <div><b>Certified ScrumMaster®</b><span>Scrum Alliance · May 2025</span></div>
@@ -372,7 +407,7 @@ const TD = () => {
         <div className='bar'><i /></div>
         <div className='av-chqc' style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: "#14532d" }}>Jump to grab the ✔ cheques</div>
       </div>
-      <StageCard s={s} n={5} style={{ left: 360, top: 250, width: 400, zIndex: 21 }} />
+      <StageCard s={s} did='td' n={5} style={{ left: 360, top: 250, width: 400, zIndex: 21 }} />
       <div className='av-roofbld' style={{ left: ROOF.x0 - 7200, top: ROOF.y, width: ROOF.x1 - ROOF.x0 - 50, height: GROUND - ROOF.y }}>
         <div className='slab' style={{ width: ROOF.x1 - ROOF.x0 + 10 }} />
         <span>CONTROL ROOM</span>
@@ -387,16 +422,16 @@ const Today = () => (
   <>
     <Gate n={6} name='Today' />
     <Big left={420} top={140} size={92} color='#f27d8c' shade='#8e1b3a'>TODAY</Big>
-    <div className='gm-card' style={{ left: 70, top: 300, width: 400 }}>
+    <DetailCard d={DETAILS.today} style={{ left: 70, top: 300, width: 400 }}>
       <div className='gm-tag'>LEVEL 5 · TODAY</div>
       <h2>Q2 2026 Star Award</h2>
-      <div className='gm-sub'>Analyst · Toronto-Dominion Bank</div>
+      <div className='gm-sub'>Wealth Operations Officer III · TD, Toronto</div>
       <ul>
         <li>Recognized for taking Symcor cheque processing to 99% automation</li>
         <li>100% accuracy on RSP / TFSA transactions</li>
         <li>Python · SQL · Power BI · Tableau · Excel</li>
       </ul>
-    </div>
+    </DetailCard>
     <div className='ab' style={{ left: 1130, top: 470, zIndex: 12, width: 150 }}><Trophy /></div>
     <div className='av-tip' style={{ left: 600, top: 560 }}>Stand by the balloon and press <kbd>E</kbd> to fly ☁</div>
     {[[220, 220, 110], [900, 120, 130], [1260, 320, 100]].map(([x, y, w]) => (
@@ -422,11 +457,11 @@ const Projects = ({ opened }) => (
     <Big left={430} top={110} size={96} color='#f27d8c' shade='#8e1b3a'>PROJECTS</Big>
     <div className='av-sub' style={{ left: 440, top: 232 }}>Open the treasure chests · {Object.keys(opened).length} / {PROJECTS.length}</div>
     {PROJECTS.map((p, i) => (
-      <div key={p.name} className={`av-pcard ${opened[i] ? "show" : ""}`} style={{ left: 82 + i * 250, top: 300 }}>
+      <DetailCard key={p.name} className={`av-pcard ${opened[i] ? "show" : ""}`} d={opened[i] ? (DETAILS.proj[p.name] || { head: p.name, org: p.tags.join(" · "), points: [p.text] }) : null} style={{ left: 82 + i * 250, top: 300 }}>
         <h3>{p.name}</h3>
         <p>{p.text}</p>
         <div className='gm-tg'>{p.tags.map((t) => <i key={t}>{t}</i>)}</div>
-      </div>
+      </DetailCard>
     ))}
   </>
 );
@@ -516,13 +551,26 @@ const Move = () => (
         <circle cx='105' cy='340' r='22' fill='#fff' stroke='#7a2f1e' strokeWidth='4' /><path d='M105 340 V326 M105 340 L116 346' stroke='#1a1209' strokeWidth='3' strokeLinecap='round' />
         {[14, 52, 140, 168].map((x) => <rect key={x} x={x} y='480' width='26' height='44' rx='13' fill='#f6d9a8' />)}
       </g>
-      {/* Toronto: CN Tower */}
-      <g transform='translate(910 0)'>
-        <path d='M104 640 L112 360 L118 360 L126 640Z' fill='#aab4bf' stroke='#6c7886' strokeWidth='3' />
-        <ellipse cx='115' cy='350' rx='46' ry='13' fill='#c9d2dc' stroke='#6c7886' strokeWidth='3' /><rect x='80' y='338' width='70' height='13' fill='#8d99a6' />
-        <path d='M113 338 V300 M117 338 V296' stroke='#6c7886' strokeWidth='3' /><path d='M115 300 V96' stroke='#6c7886' strokeWidth='5' strokeLinecap='round' />
-        <ellipse cx='115' cy='300' rx='15' ry='8' fill='#c9d2dc' stroke='#6c7886' strokeWidth='3' />
-        <circle cx='115' cy='92' r='5' fill='#e8453c' />
+      {/* Toronto: CN Tower (big, bold, easy to recognise) */}
+      <g transform='translate(902 0)'>
+        <ellipse cx='123' cy='640' rx='70' ry='10' fill='#2f3b48' opacity='.25' />
+        {/* three-legged base */}
+        <path d='M96 640 L108 560 L138 560 L150 640Z' fill='#8795a5' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
+        {/* concrete shaft */}
+        <path d='M110 560 L116 400 L130 400 L136 560Z' fill='#b9c4cf' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M118 560 L122 400' stroke='#fff' strokeWidth='3' opacity='.8' />
+        {/* main pod */}
+        <path d='M64 392 Q123 372 182 392 L172 410 Q123 424 74 410Z' fill='#7d8b9a' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M70 380 Q123 358 176 380 L182 392 Q123 372 64 392Z' fill='#dfe6ee' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M86 394 H160' stroke='#f7d36a' strokeWidth='4' strokeLinecap='round' strokeDasharray='2 7' />
+        {/* upper shaft + sky pod */}
+        <path d='M118 372 L120 262 L126 262 L128 372Z' fill='#b9c4cf' stroke='#2f3b48' strokeWidth='3' />
+        <ellipse cx='123' cy='256' rx='15' ry='7' fill='#dfe6ee' stroke='#2f3b48' strokeWidth='3' />
+        {/* antenna */}
+        <path d='M123 249 L123 168' stroke='#2f3b48' strokeWidth='6' strokeLinecap='round' />
+        <path d='M123 249 L123 168' stroke='#fff' strokeWidth='2' strokeLinecap='round' />
+        <circle cx='123' cy='164' r='11' fill='#e8453c' opacity='.35' />
+        <circle cx='123' cy='164' r='5' fill='#e8453c' stroke='#fff' strokeWidth='2' />
       </g>
       {/* Toronto: Rogers Centre dome + skyline */}
       <g transform='translate(1080 0)'>
@@ -559,6 +607,7 @@ const FlagCastle = () => {
         <path d='M80 40 V8 L112 20 L80 30' fill='#d9382f' stroke='#7a1d17' strokeWidth='2' />
         <rect x='78' y='8' width='4' height='36' fill='#7a4a22' />
       </svg>
+      <div className='ab' style={{ left: cx - 330, top: GROUND + 50, width: 340, textAlign: 'center', zIndex: 9, background: '#fffbea', border: '3px solid #f7b32b', borderRadius: 16, padding: '6px 10px', color: '#14532d', fontWeight: 900, fontSize: 22, boxShadow: '0 6px 16px rgba(0,0,0,.25)' }}>நன்றி · Nandri · Thanks!</div>
       <div className='av-firew'>{Array.from({ length: 7 }, (_, i) => <i key={i} style={{ left: 40 + i * 190, animationDelay: `${i * 0.35}s` }} />)}</div>
     </>
   );
@@ -590,7 +639,7 @@ const Contact = ({ finished }) => {
         </g>
       </svg>
       <Big left={520} top={120} size={118} color='#f27d8c' shade='#8e1b3a' depth={24}>CONTACT</Big>
-      <div className='ab' style={{ left: 530, top: 255, color: "#0c3b24", fontWeight: 800, fontSize: 18, zIndex: 6 }}>Say hello · வணக்கம் · नमस्ते</div>
+      <div className='ab' style={{ left: 530, top: 255, color: "#0c3b24", fontWeight: 800, fontSize: 18, zIndex: 6 }}>Say hello · வணக்கம்</div>
       <form onSubmit={submit}>
         <input className='gm-inp' name='name' value={form.name} onChange={onChange} placeholder='Your name' required style={{ left: 790, top: 338, width: 320, height: 42 }} />
         <input className='gm-inp' name='email' type='email' value={form.email} onChange={onChange} placeholder='you@example.com' required style={{ left: 790, top: 396, width: 320, height: 42 }} />

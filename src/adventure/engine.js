@@ -66,8 +66,8 @@ const SKY = [
   [5760, "#a8dca0", "#fff4c7"], [7200, "#9fc2ce", "#cfe8ef"], [8640, "#4fc3e8", "#e9f7c7"], [10080, "#6fcdf0", "#bfeef7"], [12960, "#7fd6c2", "#e9f7c7"],
   [14400, "#ffb86b", "#ffe6b3"], [15840, "#34296b", "#e8846e"], [17280, "#34296b", "#e8846e"],
 ];
-// places where it rains: Chennai monsoon (Amazon) and a grey Toronto day (Walmart · Kelly)
-const RAIN = [[3000, 4500], [5900, 7000]];
+// rain only on the Chennai → Toronto slide
+const RAIN = [[4320, 5760]];
 const rainAt = (x) => {
   let r = 0;
   for (const [a, b] of RAIN) {
@@ -624,7 +624,7 @@ export class Engine {
     const nin = e.ninja;
     const swimming = p.mode === "swim";
     let nx = p.x - 60, ny = p.y - 184;
-    if (p.mounted) { nx = p.x - 60 + p.face * 8; ny = p.y - 224; }
+    if (p.mounted) { nx = p.x - 60 + p.face * 8; ny = p.y - 204; }
     nin.style.transform = `translate3d(${nx}px,${ny}px,0)`;
     nin.style.opacity = p.hidden ? "0" : "";
     let rot = "";

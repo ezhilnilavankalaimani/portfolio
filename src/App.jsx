@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { About, Contact, Experience, Feedbacks, Hero, Navbar, Tech, Works, StarsCanvas } from './components';
-import GameSite from './game/GameSite';
+import { About, Contact, Education, Experience, Feedbacks, Hero, Navbar, Tech, Works, StarsCanvas } from './components';
+import Adventure from './adventure/Adventure';
 
 const KEY = 'siteMode';
 
-// Remembers the visitor's choice. Phones and small screens start on the formal version.
+// Remembers the visitor's choice. Upright phones start on the formal version.
 const initialMode = () => {
   try {
     const saved = localStorage.getItem(KEY);
@@ -13,7 +13,9 @@ const initialMode = () => {
   } catch (e) {
     /* storage unavailable */
   }
-  return typeof window !== 'undefined' && window.innerWidth < 900 ? 'formal' : 'game';
+  if (typeof window === 'undefined') return 'game';
+  // phones held upright start on the formal site; laptops, tablets and sideways phones start on the adventure
+  return window.innerWidth < 700 && window.innerHeight > window.innerWidth ? 'formal' : 'game';
 };
 
 const App = () => {
@@ -37,7 +39,7 @@ const App = () => {
   }, [mode]);
 
   if (mode === 'game') {
-    return <GameSite onFormal={() => choose('formal')} />;
+    return <Adventure onFormal={() => choose('formal')} />;
   }
 
   return (
@@ -48,6 +50,7 @@ const App = () => {
           <Hero />
         </div>
         <About />
+        <Education />
         <Experience />
         <Tech />
         <Works />

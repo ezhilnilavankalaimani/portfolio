@@ -21,6 +21,7 @@ import {
     popeyes,
     conestoga,
     growth,
+    cap,
     amazon,
     farmer,
     telecom,
@@ -34,6 +35,10 @@ import {
     {
       id: "about",
       title: "About",
+    },
+    {
+      id: "education",
+      title: "Education",
     },
     {
       id: "work",
@@ -113,7 +118,9 @@ import {
         "Own BWeb, EasyLine reconciliation and high-volume PIC file processing, keeping data balanced and discrepancies resolved on time.",
         "Act as the point of escalation for complex, high-risk items, investigating and documenting exceptions with Risk, Compliance and IT.",
         "Drive Lean-based improvements and risk controls that reduced error rates and improved team productivity.",
-        "Train and coach new hires and interdepartmental transfers, and consistently deliver top departmental KPIs.",
+        "Monitor daily workflow, prioritize task distribution and support the team so service levels are met, consistently achieving top departmental KPIs.",
+        "Analyze, develop, test and deploy operational enhancements and new procedures, with documentation and feedback for automation, system changes and macro development.",
+        "Train and coach new hires and interdepartmental transfers, supporting cross-training and knowledge transfer.",
       ],
     },
     {
@@ -160,33 +167,11 @@ import {
       ],
     },
     {
-      title: "Postgraduate, Information Technology Business Analysis",
-      company_name: "Conestoga College, Ontario (Full-time study, GPA 3.84 - Distinction)",
-      icon: conestoga,
-      iconBg: "#231F20",
-      date: "Sep 2021 - Dec 2022",
-      points: [
-        "Completed a postgraduate program with a 3.84 GPA (Distinction) while working part-time.",
-        "Coursework: Advanced Data Analytics, Software Integration, Risk Analysis, Service Management, IT Infrastructure, ERP, UI/UX, Requirements Modeling and Visualization, SQL and Data Analysis, Business Process Analysis.",
-      ],
-    },
-    {
-      title: "Professional Development",
-      company_name: "Self-paced certifications",
-      icon: growth,
-      iconBg: "#0A8A35",
-      date: "Feb 2021 - Aug 2021",
-      points: [
-        "Certification in Football Analytics using Python (Mad About Sports), May 2021.",
-        "Certification in Data Science SQL (University of California, Davis), June 2021.",
-      ],
-    },
-    {
       title : "Automation Analyst",
-      company_name: "Amazon, Greater Chennai Area",
+      company_name: "Amazon, India (Greater Chennai Area)",
       icon: amazon,
       iconBg: "#FFFFFF",
-      date : "Feb 2020 - Feb 2021",
+      date : "Jun 2018 - Feb 2021",
       points: [
        "Processed extensive data to evaluate and produce risk-free solutions using various statistical techniques and was involved in quality processes and support during the sale period to establish, monitor and streamline quality processes in the project.",
       "Debugged and analyzed e-commerce and other online competitors with the employer and designed and created weekly business reports with callouts on Spike / Low. Performed feasibility analysis and provided estimates to implement the new functionality.",
@@ -196,7 +181,11 @@ import {
         "Involved in process-level training for new employees and on-boarded them to BAU",
         "Involved in end-to-end management of assigned projects in compliance to project delivery schedules and enhanced project profitability through implementing effective project plans and resource and mitigation plans based on anticipated project risks.",
         "Undertook the Turing project, implemented and tested enhancement features",
-        "During my 3 years, I have worked on different teams and monitored region specific amazon sales in the United States, Denmark, France, Canada and Mexico"
+        "During my 3 years, I have worked on different teams and monitored region specific amazon sales in the United States, Denmark, France, Canada and Mexico",
+        "Developed and deployed automation using SQL, HTML parsing, XPath and Regular Expressions to extract, transform and validate high-volume data, improving processing accuracy by 35%.",
+        "Built automated weekly reporting pipelines with 90% coverage in monitoring key performance fluctuations, and real-time Power BI and Excel dashboards for senior leadership.",
+        "Designed workflow automation frameworks with error handling, logging and exception management, and ran UAT and regression testing before release.",
+        "Awarded 'Spotlight' and 'Star of the Month' at Amazon for outstanding performance."
       ]
     },
     {
@@ -217,6 +206,55 @@ import {
       date: "Jul 2018 - Jan 2019",
       points: [
         "Skills: Customer Experience, Microsoft Excel.",
+      ],
+    },
+  ];
+
+  const education = [
+    {
+      title: "Certified ScrumMaster (CSM)",
+      company_name: "Scrum Alliance",
+      icon: growth,
+      iconBg: "#0A8A35",
+      date: "May 2025",
+      points: [
+        "Earned the Certified ScrumMaster (CSM) designation from the Scrum Alliance.",
+      ],
+    },
+    {
+      title: "Postgraduate, Information Technology Business Analysis",
+      company_name: "Conestoga College, Ontario (Full-time study, GPA 3.84 - Distinction)",
+      icon: conestoga,
+      iconBg: "#231F20",
+      date: "Sep 2021 - Dec 2022",
+      points: [
+        "Completed a postgraduate program with a 3.84 GPA (Distinction) while working part-time.",
+        "Coursework: Advanced Data Analytics, Software Integration, Risk Analysis, Service Management, IT Infrastructure, ERP, UI/UX, Requirements Modeling and Visualization, SQL and Data Analysis, Business Process Analysis.",
+      ],
+    },
+    {
+      title: "Courses & Certifications",
+      company_name: "Self-paced learning",
+      icon: growth,
+      iconBg: "#0A8A35",
+      date: "2021",
+      points: [
+        "Certification in Football Analytics using Python (Mad About Sports), May 2021.",
+        "Certification in Data Science SQL (University of California, Davis), June 2021.",
+        "Microsoft Excel 2019 Introductory exam badge (Pearson), Oct 2021.",
+      ],
+    },
+    {
+      title: "Bachelor of Engineering, Computer Science and Engineering",
+      company_name: "Anna University, India (GPA 3.70)",
+      icon: cap,
+      iconBg: "#7A1F3D",
+      date: "Graduated May 2018",
+      points: [
+        "Coursework: Design and Analysis of Algorithms, Software Engineering, Compiler Design, Theory of Computation.",
+        "General Secretary of the Computer Society of India Student Chapter.",
+        "2nd place out of 25 teams in the Android application development workshop conducted by IIT Bombay.",
+        "Presented the 'Smart Irrigation' paper at MIT and other renowned institutions in India.",
       ],
     },
   ];
@@ -380,4 +418,4 @@ import {
     },
   ];
   
-  export { services, technologies, experiences, testimonials, projects };
+  export { services, technologies, experiences, education, testimonials, projects };

@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { cloneElement, useCallback, useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 
 import { testimonials } from "../constants";
 import { Elephant, Ninja, Parrot, Plane, Tiger, Trophy } from "./characters";
-import { GREETINGS, LINKS, NAV, PAGES, PROJECTS, SKILLS, STAGES } from "./data";
+import { CERTS, GREETINGS, LINKS, NAV, PAGES, PROJECTS, SKILLS, STAGES } from "./data";
 import "./game.css";
 
 /* ------------------------------------------------------------------ */
@@ -12,6 +12,9 @@ import "./game.css";
 
 const ex = (color, n, dx = 1, dy = 1) =>
   Array.from({ length: n - 1 }, (_, i) => `${dx * (i + 1)}px ${dy * (i + 1)}px 0 ${color}`).join(",");
+
+const HURDLES = { home: [430, 930], amazon: [780, 1000], conestoga: [430, 900], work: [430, 900] };
+const WALK_PAGES = ["home", "amazon", "conestoga", "work"];
 
 const SKY_BOTTOM = {
   home: "#8cd0e8",
@@ -106,16 +109,228 @@ const Backdrop = ({ theme }) => {
   );
 };
 
+/* ---------- tiny sound effects (muted until the visitor turns them on) ---------- */
+const sound = { on: false, ctx: null };
+function sfx(kind) {
+  if (!sound.on) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!sound.ctx) sound.ctx = new AC();
+    const c = sound.ctx;
+    const tone = (type, f0, f1, dur, vol = 0.12, at = 0) => {
+      const o = c.createOscillator();
+      const g2 = c.createGain();
+      o.type = type;
+      const t = c.currentTime + at;
+      o.frequency.setValueAtTime(f0, t);
+      o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+      g2.gain.setValueAtTime(vol, t);
+      g2.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.connect(g2).connect(c.destination);
+      o.start(t);
+      o.stop(t + dur);
+    };
+    if (kind === "tiger") tone("sawtooth", 180, 60, 0.7, 0.14);
+    else if (kind === "ninja") tone("triangle", 900, 200, 0.35, 0.1);
+    else if (kind === "elephant") { tone("sawtooth", 300, 500, 0.5, 0.08); tone("sawtooth", 500, 260, 0.4, 0.08, 0.35); }
+    else if (kind === "coin") { tone("square", 880, 880, 0.08, 0.06); tone("square", 1320, 1320, 0.18, 0.06, 0.08); }
+    else if (kind === "win") [523, 659, 784, 1047].forEach((f, i) => tone("triangle", f, f, 0.25, 0.1, i * 0.12));
+  } catch (e) {
+    /* audio unavailable */
+  }
+}
+
+const DROPS = [[70, -60], [110, -30], [150, 0], [95, -90], [135, -55], [175, -20], [60, -20], [120, 10]];
+
+const Burst = ({ kind }) => {
+  if (kind === "ninja")
+    return (
+      <svg className='gm-shuriken' viewBox='-20 -20 40 40' width='44' height='44' aria-hidden='true'>
+        <path d='M0 -18 L5 -5 L18 0 L5 5 L0 18 L-5 5 L-18 0 L-5 -5Z' fill='#cfd8dc' stroke='#37474f' strokeWidth='2' />
+        <circle r='3' fill='#37474f' />
+      </svg>
+    );
+  if (kind === "elephant")
+    return DROPS.map((d, i) => <i key={i} className='gm-drop' style={{ "--dx": `${d[0]}px`, "--dy": `${d[1]}px`, animationDelay: `${i * 0.04}s` }} />);
+  if (kind === "tiger") return <div className='gm-bubble' style={{ top: -14, left: "55%" }}>ROAR!</div>;
+  return null;
+};
+
+/* what a character does when clicked: ninja throws a star, elephant sprays water, tiger roars */
+function useAct(children, custom) {
+  const [burst, setBurst] = useState(0);
+  const timer = useRef(0);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const t = children && children.type;
+  const kind = t === Ninja ? "ninja" : t === Elephant ? "elephant" : t === Tiger ? "tiger" : null;
+  const act = custom || (kind
+    ? () => {
+        sfx(kind);
+        setBurst((v) => v + 1);
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => setBurst(0), 1300);
+      }
+    : undefined);
+  const child = kind === "tiger" && !custom ? cloneElement(children, { roar: burst > 0 }) : children;
+  return { act, child, fx: burst > 0 && !custom ? <Burst key={burst} kind={kind} /> : null };
+}
+
 /* a walking character: wrapper animates in, then idles */
-const Walker = ({ left, bottom = 170, width, children, flip, onClick, delay = 0 }) => (
-  <div
-    className={`gm-ch gm-walkin ${onClick ? "gm-click" : ""}`}
-    style={{ left, bottom, width, animationDelay: `${delay}s`, transform: flip ? "scaleX(-1)" : undefined }}
-    onClick={onClick}
-  >
-    <div className='gm-idle'>{children}</div>
-  </div>
+const Walker = ({ left, bottom = 170, width, children, flip, onClick, delay = 0, still }) => {
+  const { act, child, fx } = useAct(children, onClick);
+  const t = children && children.type;
+  const pace = !still && (t === Tiger || t === Elephant);
+  return (
+    <div
+      className={`gm-ch gm-walkin ${act ? "gm-click" : ""}`}
+      style={{ left, bottom, width, animationDelay: `${delay}s`, transform: flip ? "scaleX(-1)" : undefined }}
+      onClick={act}
+    >
+      {fx}
+      {pace ? (
+        <div className='gm-pace' style={{ "--pd": t === Tiger ? "90px" : "55px", animationDuration: t === Tiger ? "15s" : "22s", animationDelay: `${-delay * 9}s` }}>
+          <div className='gm-idle'>{child}</div>
+        </div>
+      ) : (
+        <div className='gm-idle'>{child}</div>
+      )}
+    </div>
+  );
+};
+
+const HURDLE_W = 72;
+const Hurdles = ({ xs }) => (
+  <>
+    {xs.map((x) => (
+      <svg key={x} className='ab' style={{ left: x, bottom: 168, zIndex: 17 }} width={HURDLE_W} height='64' viewBox='0 0 72 64' aria-hidden='true'>
+        <rect x='4' y='6' width='8' height='58' fill='#fff' stroke='#c9d3da' strokeWidth='2' />
+        <rect x='60' y='6' width='8' height='58' fill='#fff' stroke='#c9d3da' strokeWidth='2' />
+        <rect x='0' y='4' width='72' height='14' rx='3' fill='#d9382f' />
+        <rect x='14' y='4' width='12' height='14' fill='#fff' /><rect x='40' y='4' width='12' height='14' fill='#fff' />
+      </svg>
+    ))}
+  </>
 );
+
+/* the playable character: arrow keys walk it (the ninja runs), space jumps, and it hops hurdles on its own.
+   Walking off an edge changes level. */
+const Player = ({ start, width, bottom = 170, children, go, hurdles = [] }) => {
+  const [x, setX] = useState(start);
+  const [dir, setDir] = useState(1);
+  const [moving, setMoving] = useState(false);
+  const [jy, setJy] = useState(0);
+  const { act, child, fx } = useAct(children);
+  const isNinja = children && children.type === Ninja;
+  const speed = isNinja ? 560 : 340;
+  const st = useRef({ x: start, keys: {}, done: false, jt: -1 });
+  useEffect(() => {
+    const s = st.current;
+    const jump = () => { if (s.jt < 0) { s.jt = 0; sfx("ninja"); } };
+    const down = (e) => {
+      const tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        s.keys[e.key] = true;
+      } else if (e.key === " " || e.key === "ArrowUp") {
+        e.preventDefault();
+        jump();
+      }
+    };
+    const up = (e) => { delete s.keys[e.key]; };
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+    let prev = performance.now();
+    let raf = 0;
+    const H = isNinja ? 130 : 110;
+    const DUR = isNinja ? 0.62 : 0.8;
+    const tick = (now) => {
+      const dt = Math.min(0.05, (now - prev) / 1000);
+      prev = now;
+      const v = (s.keys.ArrowRight ? 1 : 0) - (s.keys.ArrowLeft ? 1 : 0);
+      if (v && s.jt < 0) {
+        const front = s.x + width / 2 + v * width * 0.32;
+        if (hurdles.some((hx) => { const d = (hx + HURDLE_W / 2 - front) * v; return d > 0 && d < 70; })) jump();
+      }
+      if (s.jt >= 0) {
+        s.jt += dt / DUR;
+        if (s.jt >= 1) { s.jt = -1; setJy(0); } else setJy(4 * H * s.jt * (1 - s.jt));
+      }
+      if (v && !s.done) {
+        s.x += v * speed * dt;
+        setX(s.x);
+        setDir(v);
+        if (s.x > 1440 - width * 0.6) { s.done = true; if (!go("next")) { s.x = 1440 - width * 0.6; s.done = false; } }
+        else if (s.x < -width * 0.4) { s.done = true; if (!go("prev")) { s.x = -width * 0.4; s.done = false; } }
+      }
+      setMoving((m) => (m !== (!!v || s.jt >= 0) ? !!v || s.jt >= 0 : m));
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+    };
+  }, [go, width, hurdles, isNinja]);
+  return (
+    <div
+      className={`gm-ch gm-click gm-player ${moving ? "moving" : ""} ${isNinja ? "ninja" : ""} ${jy > 0 ? "air" : ""}`}
+      style={{ left: x, bottom: bottom + jy, width, zIndex: 19 }}
+      onClick={act}
+    >
+      {fx}
+      <div className='gm-flip' style={{ transform: `scaleX(${dir < 0 ? -1 : 1})` }}>
+        <div className='gm-idle'>{child}</div>
+      </div>
+    </div>
+  );
+};
+
+/* the ninja really swims: he glides toward the cursor (or wanders), paddling, tilted into the swim */
+const Swimmer = () => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    const stage = el && el.closest(".gm-stage");
+    let tx = 1100, ty = 520, mouseAt = 0;
+    let x = 1100, y = 520, a = 0, face = 1, t = 0;
+    const move = (e) => {
+      if (!stage) return;
+      const r = stage.getBoundingClientRect();
+      const sc = r.width / 1440;
+      tx = Math.max(60, Math.min(1380, (e.clientX - r.left) / sc));
+      ty = Math.max(150, Math.min(600, (e.clientY - r.top) / sc));
+      mouseAt = performance.now();
+    };
+    window.addEventListener("mousemove", move);
+    let prev = performance.now();
+    let raf = 0;
+    const tick = (now) => {
+      const dt = Math.min(0.05, (now - prev) / 1000);
+      prev = now;
+      t += dt;
+      if (now - mouseAt > 4000) { tx = 720 + Math.sin(t * 0.35) * 560; ty = 400 + Math.sin(t * 0.8) * 150; }
+      const dx = tx - x, dy = ty - y;
+      x += dx * Math.min(1, dt * 1.6);
+      y += dy * Math.min(1, dt * 1.6);
+      if (Math.abs(dx) > 25) face = dx > 0 ? 1 : -1;
+      const ta = face * (90 + Math.max(-35, Math.min(35, dy * 0.18)));
+      a += (ta - a) * Math.min(1, dt * 5);
+      if (el) el.style.transform = `translate(${x - 60}px, ${y - 92 + Math.sin(t * 6) * 4}px) rotate(${a}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("mousemove", move); };
+  }, []);
+  return (
+    <div ref={ref} className='gm-swimmer' aria-hidden='true'>
+      <Ninja />
+      <i className='gm-sb' style={{ left: 8, top: -6 }} /><i className='gm-sb' style={{ left: 40, top: -26, animationDelay: '-.7s' }} /><i className='gm-sb' style={{ left: 70, top: -10, animationDelay: '-1.3s' }} />
+    </div>
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /* top bar, progress, hint                                             */
@@ -154,7 +369,7 @@ const Hint = ({ children }) => <div className='gm-hint'>{children}</div>;
 /* pages                                                               */
 /* ------------------------------------------------------------------ */
 
-const Opening = ({ go }) => {
+const Opening = ({ go, walk }) => {
   const [g, setG] = useState(0);
   const [roar, setRoar] = useState(false);
   const colors = ["#d9382f", "#14653a", "#c47f10", "#1f4d8a", "#7a2a8a", "#b0306a"];
@@ -173,12 +388,14 @@ const Opening = ({ go }) => {
       <div className='gm-block gm-title1' style={{ textShadow: ex("#d97a1f", 28) }}>EZHIL NILAVAN</div>
       <div className='gm-block gm-title2' style={{ textShadow: ex("#14653a", 24) }}>KALAIMANI</div>
       <Parrot className='ab' style={{ left: 228, top: 300, width: 80, zIndex: 14 }} />
-      <Walker left={330} width={120} delay={0.2}><Ninja /></Walker>
-      <Walker left={575} width={280} delay={0} onClick={roarNow}>
+      <Walker left={290} width={280} delay={0} onClick={roarNow}>
         {roar && <div className='gm-bubble' style={{ top: -10, left: 160 }}>ROAR!</div>}
         <Tiger roar={roar} />
       </Walker>
-      <Walker left={1030} width={240} delay={0.4}><Elephant /></Walker>
+      <Walker left={1030} width={240} delay={0.4} still><Elephant /></Walker>
+      <Player start={660} width={120} go={walk} hurdles={HURDLES.home}><Ninja /></Player>
+      <Hurdles xs={HURDLES.home} />
+      <div className='gm-where'><span>HOME · INDIA</span><b>✈</b><span className='now'>NOW · TORONTO, CANADA</span></div>
       <div className='gm-role'>ANALYST · TORONTO-DOMINION BANK</div>
       <button className='gm-start' onClick={() => go(1)}>▶ EXPLORE MY WORK</button>
     </>
@@ -187,7 +404,7 @@ const Opening = ({ go }) => {
 
 const StageCard = ({ s, style }) => (
   <div className='gm-card' style={style}>
-    <div className='gm-tag'>STAGE {s.n} OF 5</div>
+    <div className='gm-tag'>LEVEL {s.n}</div>
     <h2>{s.title}</h2>
     <div className='gm-sub'>{s.sub}</div>
     <ul>{s.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
@@ -201,6 +418,28 @@ const Sign = ({ sign, left = 150, top = 430 }) => (
   </div>
 );
 
+const Packages = () => {
+  const [m, setM] = useState({});
+  const n = Object.values(m).filter(Boolean).length;
+  return (
+    <>
+      {[330, 420, 510, 600, 690].map((x, i) => (
+        <button
+          type='button'
+          key={x}
+          className={`gm-pkg ${m[i] ? "on" : ""}`}
+          style={{ left: x, top: 566 }}
+          onClick={() => { if (!m[i]) { sfx("coin"); setM((v) => ({ ...v, [i]: true })); } }}
+          aria-label='Map package'
+        >
+          {m[i] ? "✔" : "📦"}
+        </button>
+      ))}
+      <div className='gm-pill' style={{ left: 330, top: 520 }}>{n >= 5 ? "All packages mapped ✔" : `Click packages to map them · ${n} / 5`}</div>
+    </>
+  );
+};
+
 const GroundStage = ({ id, theme, page, go, chars }) => {
   const s = STAGES[id];
   return (
@@ -208,14 +447,18 @@ const GroundStage = ({ id, theme, page, go, chars }) => {
       <Backdrop theme={theme} />
       <Sign sign={s.sign} />
       <StageCard s={s} style={{ right: 70, top: 180, width: 430 }} />
+      {id === "amazon" && <Packages />}
+      <Hurdles xs={HURDLES[id]} />
       {chars}
-      <Progress page={page} go={go} />
     </>
   );
 };
 
 const TDLevel = ({ page, go }) => {
   const s = STAGES.td;
+  const [done, setDone] = useState({});
+  const count = Object.values(done).filter(Boolean).length;
+  const [total, setTotal] = useState(0);
   return (
     <>
       <svg className='gm-bg' viewBox='0 0 1440 810' aria-hidden='true'>
@@ -237,7 +480,20 @@ const TDLevel = ({ page, go }) => {
         </svg>
       </div>
       {Array.from({ length: 6 }, (_, i) => (
-        <div key={i} className='gm-cheque' style={{ animationDelay: `${-i * 2.4}s` }}>
+        <div
+          key={i}
+          className={`gm-cheque ${done[i] ? "done" : ""}`}
+          style={{ animationDelay: `${-i * 2.4}s` }}
+          onClick={() => {
+            if (done[i]) return;
+            sfx("coin");
+            setDone((d) => ({ ...d, [i]: true }));
+            setTotal((t) => t + 1);
+          }}
+          onAnimationIteration={(e) => {
+            if (e.target === e.currentTarget) setDone((d) => ({ ...d, [i]: false }));
+          }}
+        >
           CHEQUE
           <span className='m'>$ ……</span>
           <span className='a'>✔ ACCEPTED</span>
@@ -252,11 +508,13 @@ const TDLevel = ({ page, go }) => {
         <div className='big'>99%</div>
         <div style={{ fontSize: 14, fontWeight: 700 }}>AUTOMATED</div>
         <div className='bar'><i /></div>
+        <div style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: "#14532d" }}>
+          {total > 0 ? `✔ You processed ${total} cheque${total > 1 ? "s" : ""}` : "Click a cheque to process it"}
+        </div>
       </div>
       <StageCard s={s} style={{ left: 50, top: 215, width: 420, zIndex: 21 }} />
       <Walker left={1130} bottom={40} width={230}><Elephant /></Walker>
       <Walker left={880} bottom={50} width={120} delay={0.3}><Ninja /></Walker>
-      <Progress page={page} go={go} />
     </>
   );
 };
@@ -301,7 +559,6 @@ const Balloon = ({ go, page }) => (
     <div className='ab' style={{ left: 0, right: 0, bottom: 0, height: 120, background: "#9ac655", borderTop: "10px solid #4aa05a", zIndex: 5 }} />
     <Walker left={140} bottom={90} width={120}><Ninja /></Walker>
     <Walker left={290} bottom={90} width={250}><Tiger /></Walker>
-    <Progress page={page} go={go} />
   </>
 );
 
@@ -313,29 +570,64 @@ const Skills = () => {
       <svg className='gm-bg' viewBox='0 0 1440 810' aria-hidden='true'>
         <defs>
           <linearGradient id='sea' x1='0' y1='0' x2='0' y2='1'>
-            <stop offset='0' stopColor='#4fc3e8' />
-            <stop offset='.6' stopColor='#1f6fb5' />
-            <stop offset='1' stopColor='#143e82' />
+            <stop offset='0' stopColor='#6fdcf0' />
+            <stop offset='.35' stopColor='#2a9fd6' />
+            <stop offset='.75' stopColor='#17559a' />
+            <stop offset='1' stopColor='#0e2f6b' />
+          </linearGradient>
+          <linearGradient id='ray' x1='0' y1='0' x2='0' y2='1'>
+            <stop offset='0' stopColor='#fff' stopOpacity='.55' />
+            <stop offset='1' stopColor='#fff' stopOpacity='0' />
           </linearGradient>
         </defs>
         <rect width='1440' height='810' fill='url(#sea)' />
-        <path d='M0 100 q60 -24 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 V0 H0Z' fill='#9be3f7' opacity='.7' />
-        <rect y='660' width='1440' height='150' fill='#d9b779' />
-        <rect y='660' width='1440' height='14' fill='#b8955a' />
-        {[[60, 200, "#ff7a59"], [300, 150, "#c78bff"], [900, 220, "#ff7a59"], [1250, 170, "#f7b32b"]].map(([x, h, c]) => (
-          <path key={x} d={`M${x + 45} 660 V${660 - h} M${x + 45} ${660 - h * 0.4} L${x + 12} ${660 - h * 0.65} M${x + 45} ${660 - h * 0.5} L${x + 78} ${660 - h * 0.75}`} stroke={c} strokeWidth='14' strokeLinecap='round' fill='none' />
+        {[[120, 90], [420, 130], [760, 100], [1080, 140], [1330, 90]].map(([x, w], i) => (
+          <polygon key={x} className='gm-ray' style={{ animationDelay: `${-i * 1.7}s` }} points={`${x},0 ${x + w},0 ${x + w * 2.2},660 ${x - w * 0.6},660`} fill='url(#ray)' />
         ))}
+        <path d='M0 560 Q120 470 260 540 T520 520 T800 545 T1100 505 T1440 540 V680 H0Z' fill='#1b4f93' opacity='.75' />
+        <path d='M0 610 Q200 540 400 600 T820 590 T1240 585 T1440 600 V690 H0Z' fill='#16407d' opacity='.9' />
+        <path d='M0 70 q60 -26 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 V0 H0Z' fill='#d8f7ff' opacity='.85' />
+        <path className='gm-wave' d='M0 88 q60 -22 120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 t120 0 V0 H0Z' fill='#9be9fa' opacity='.55' />
+        <path d='M0 668 Q180 650 360 668 T720 664 T1080 670 T1440 662 V810 H0Z' fill='#e2c48a' />
+        <path d='M0 668 Q180 650 360 668 T720 664 T1080 670 T1440 662' stroke='#c9a566' strokeWidth='6' fill='none' />
+        {[[90, 150], [240, 110], [1010, 170], [1290, 130]].map(([x, h]) => (
+          <g key={x} className='gm-sway' style={{ animationDelay: `${-(x % 7) * 0.4}s` }}>
+            <path d={`M${x} 670 C${x - 26} ${670 - h * 0.35} ${x + 26} ${670 - h * 0.65} ${x} ${670 - h}`} stroke='#2fae6a' strokeWidth='13' strokeLinecap='round' fill='none' />
+            <path d={`M${x + 22} 670 C${x} ${670 - h * 0.3} ${x + 40} ${670 - h * 0.55} ${x + 20} ${670 - h * 0.8}`} stroke='#1f8a52' strokeWidth='10' strokeLinecap='round' fill='none' />
+          </g>
+        ))}
+        <g fill='#ff7a59'>
+          <circle cx='330' cy='660' r='20' /><circle cx='358' cy='650' r='24' /><circle cx='388' cy='662' r='18' />
+        </g>
+        <g fill='#c78bff'>
+          <circle cx='860' cy='662' r='20' /><circle cx='890' cy='650' r='26' /><circle cx='922' cy='662' r='18' />
+        </g>
+        <path d='M1150 668 q-8 -70 14 -92 q10 36 22 6 q16 36 -2 86Z' fill='#f7b32b' />
+        <path d='M560 668 q-6 -60 10 -80 q8 30 18 4 q14 30 -2 76Z' fill='#ff9f7a' />
+        <g className='gm-jelly' style={{ transformOrigin: '1200px 300px' }}>
+          <path d='M1170 300 q30 -50 60 0Z' fill='#f6b6ff' opacity='.85' />
+          {[1180, 1195, 1210, 1222].map((x) => <path key={x} d={`M${x} 300 q-6 24 2 44`} stroke='#f6b6ff' strokeWidth='3' fill='none' opacity='.8' />)}
+        </g>
+        <g className='gm-jelly' style={{ transformOrigin: '110px 420px', animationDelay: '-2s' }}>
+          <path d='M85 420 q25 -44 50 0Z' fill='#ffd1a6' opacity='.85' />
+          {[92, 104, 116, 126].map((x) => <path key={x} d={`M${x} 420 q-5 20 2 38`} stroke='#ffd1a6' strokeWidth='3' fill='none' opacity='.8' />)}
+        </g>
+        <path d='M20 740 q40 -26 60 0 q-30 12 -60 0Z' fill='#fff2d6' />
+        <path d='M1380 730 q-34 -22 -52 0 q26 10 52 0Z' fill='#ffd9e2' />
       </svg>
+      <div className='gm-bgfish' style={{ top: 190, animationDuration: '36s' }}>🐟</div>
+      <div className='gm-bgfish' style={{ top: 430, animationDuration: '48s', animationDelay: '-18s', fontSize: 22 }}>🐠</div>
+      <div className='gm-bgfish' style={{ top: 330, animationDuration: '60s', animationDelay: '-40s', fontSize: 20 }}>🐟</div>
       {[40, 190, 310, 560, 760, 980, 1190, 1330].map((x, i) => (
         <div key={x} className='gm-bubble-dot' style={{ left: x, top: 560 + (i % 3) * 40, width: 10 + (i % 4) * 6, height: 10 + (i % 4) * 6, animationDelay: `${-i * 1.1}s` }} />
       ))}
       <div className='gm-sec'>
         <h1 style={{ textShadow: ex("#d97a1f", 11) }}>SKILLS</h1>
-        <p>Click a fish to catch it</p>
+        <p>{Object.values(caught).filter(Boolean).length >= SKILLS.length ? "🏆 ALL SKILLS UNLOCKED!" : `Click a fish to catch it · ${Object.values(caught).filter(Boolean).length} / ${SKILLS.length}`}</p>
       </div>
       {SKILLS.map((s, i) => {
-        const x = 110 + (i % 3) * 400;
-        const y = 230 + Math.floor(i / 3) * 150;
+        const x = 70 + (i % 4) * 340;
+        const y = 215 + Math.floor(i / 4) * 140;
         const c = cols[i % cols.length];
         return (
           <div
@@ -343,21 +635,31 @@ const Skills = () => {
             className={`gm-fish ${caught[s] ? "caught" : ""}`}
             style={{ left: x, top: y, animationDelay: `${-i * 0.9}s`, animationDuration: `${6 + (i % 3)}s` }}
             onClick={() => {
+              sfx(Object.values(caught).filter(Boolean).length + 1 >= SKILLS.length && !caught[s] ? "win" : "coin");
               setCaught((c0) => ({ ...c0, [s]: false }));
               requestAnimationFrame(() => setCaught((c0) => ({ ...c0, [s]: true })));
             }}
           >
-            <svg width='210' height='90' viewBox='0 0 210 90' aria-hidden='true'>
-              <path d='M180 45 L210 18 L210 72Z' fill={c} />
-              <ellipse cx='95' cy='45' rx='90' ry='36' fill={c} />
-              <circle cx='40' cy='38' r='6' fill='#fff' />
-              <circle cx='38' cy='38' r='3' fill='#1a1209' />
-              <text x='95' y='52' fontSize='19' fontWeight='800' fill='#12324a' textAnchor='middle' fontFamily='DejaVu Sans, sans-serif'>{s}</text>
+            <svg width='220' height='96' viewBox='0 0 220 96' aria-hidden='true'>
+              <path d='M184 48 L218 14 Q208 48 218 82Z' fill={c} />
+              <path d='M80 14 Q110 -4 140 16 Z' fill={c} opacity='.8' />
+              <path d='M92 78 Q112 96 132 80Z' fill={c} opacity='.8' />
+              <ellipse cx='98' cy='48' rx='92' ry='38' fill={c} />
+              <ellipse cx='98' cy='64' rx='80' ry='20' fill='#fff' opacity='.28' />
+              <path d='M150 14 Q166 48 150 82' stroke='#12324a' strokeWidth='4' fill='none' opacity='.25' />
+              <path d='M164 20 Q178 48 164 76' stroke='#12324a' strokeWidth='4' fill='none' opacity='.2' />
+              <circle cx='38' cy='40' r='9' fill='#fff' />
+              <circle cx='35' cy='40' r='4.5' fill='#1a1209' />
+              <path d='M12 54 q10 6 18 0' stroke='#12324a' strokeWidth='3' fill='none' strokeLinecap='round' />
+              <text x='100' y='56' fontSize={s.length > 8 ? 16 : 19} fontWeight='800' fill='#12324a' textAnchor='middle' fontFamily='DejaVu Sans, sans-serif'>{s}</text>
             </svg>
           </div>
         );
       })}
-      <Walker left={1180} bottom={110} width={120}><Ninja /></Walker>
+      <div className='gm-certs'>
+        {CERTS.map((t, i) => <div key={t} className={i === 0 ? 'hot' : ''}>🏅 {t}</div>)}
+      </div>
+      <Swimmer />
     </>
   );
 };
@@ -522,12 +824,19 @@ export default function GameSite({ onFormal }) {
     setPage(n);
   }, []);
 
+  const walk = useCallback((d) => {
+    const before = pageRef.current;
+    go(before + (d === "next" ? 1 : -1));
+    return pageRef.current !== before;
+  }, [go]);
+
   useEffect(() => {
     const onKey = (e) => {
       const tag = (e.target && e.target.tagName) || "";
       if (tag === "INPUT" || tag === "TEXTAREA") return;
-      if (e.key === "ArrowRight" || e.key === "PageDown") go(pageRef.current + 1);
-      else if (e.key === "ArrowLeft" || e.key === "PageUp") go(pageRef.current - 1);
+      const walkPage = WALK_PAGES.includes(PAGES[pageRef.current].id);
+      if (e.key === "PageDown" || (!walkPage && e.key === "ArrowRight")) go(pageRef.current + 1);
+      else if (e.key === "PageUp" || (!walkPage && e.key === "ArrowLeft")) go(pageRef.current - 1);
       else if (e.key === "Home") go(0);
       else if (e.key === "End") go(PAGES.length - 1);
     };
@@ -557,11 +866,20 @@ export default function GameSite({ onFormal }) {
   }, [go]);
 
   const id = PAGES[page].id;
+  const start = back ? 1440 - 330 : 40;
+  const [sndOn, setSndOn] = useState(false);
+  const stageRef = useRef(null);
+  const onMove = (e) => {
+    const el = stageRef.current;
+    if (!el) return;
+    el.style.setProperty("--mx", ((e.clientX / window.innerWidth) * 2 - 1).toFixed(3));
+    el.style.setProperty("--my", ((e.clientY / window.innerHeight) * 2 - 1).toFixed(3));
+  };
   let scene = null;
-  if (id === "home") scene = <Opening go={go} />;
-  else if (id === "amazon") scene = <GroundStage id='amazon' theme='amazon' page={page} go={go} chars={<Walker left={560} width={250}><Elephant /></Walker>} />;
-  else if (id === "conestoga") scene = <GroundStage id='conestoga' theme='conestoga' page={page} go={go} chars={<Walker left={600} width={120}><Ninja /></Walker>} />;
-  else if (id === "work") scene = <GroundStage id='work' theme='work' page={page} go={go} chars={<Walker left={540} width={280}><Tiger /></Walker>} />;
+  if (id === "home") scene = <Opening go={go} walk={walk} />;
+  else if (id === "amazon") scene = <GroundStage id='amazon' theme='amazon' page={page} go={go} chars={<Player start={start} width={250} go={walk} hurdles={HURDLES.amazon}><Elephant /></Player>} />;
+  else if (id === "conestoga") scene = <GroundStage id='conestoga' theme='conestoga' page={page} go={go} chars={<Player start={start} width={120} go={walk} hurdles={HURDLES.conestoga}><Ninja /></Player>} />;
+  else if (id === "work") scene = <GroundStage id='work' theme='work' page={page} go={go} chars={<Player start={start} width={280} go={walk} hurdles={HURDLES.work}><Tiger /></Player>} />;
   else if (id === "td") scene = <TDLevel page={page} go={go} />;
   else if (id === "today") scene = <Balloon page={page} go={go} />;
   else if (id === "skills") scene = <Skills />;
@@ -570,14 +888,24 @@ export default function GameSite({ onFormal }) {
   else scene = <Contact />;
 
   return (
-    <div className='gm-root' style={{ background: SKY_BOTTOM[id] }}>
-      <div className='gm-stage' style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
+    <div className='gm-root' style={{ background: SKY_BOTTOM[id] }} onMouseMove={onMove}>
+      <div className='gm-stage' ref={stageRef} style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
         <div className={`gm-scene ${back ? "back" : ""}`} key={page}>{scene}</div>
         <TopBar page={page} go={go} onFormal={onFormal} />
         {page > 0 && <button className='gm-arrow l' onClick={() => go(page - 1)} aria-label='Previous'>←</button>}
         {page < PAGES.length - 1 && <button className='gm-arrow r' onClick={() => go(page + 1)} aria-label='Next'>→</button>}
+        <button
+          type='button'
+          className='gm-snd'
+          onClick={() => { sound.on = !sound.on; setSndOn(sound.on); sfx("coin"); }}
+          aria-label='Toggle sound'
+        >
+          {sndOn ? "🔊 Sound on" : "🔇 Sound off"}
+        </button>
         <Hint>
-          <b>←</b><b>→</b> or scroll to move · {page + 1} / {PAGES.length}
+          {WALK_PAGES.includes(id)
+            ? <><b>←</b><b>→</b> run · <b>Space</b> jump · click characters · {page + 1} / {PAGES.length}</>
+            : <><b>←</b><b>→</b> or scroll to move · {page + 1} / {PAGES.length}</>}
         </Hint>
       </div>
     </div>

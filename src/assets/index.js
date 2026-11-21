@@ -31,6 +31,7 @@ import kelly from "./company/kelly.png";
 import popeyes from "./company/popeyes.png";
 import conestoga from "./company/conestoga.png";
 import growth from "./company/growth.svg";
+import cap from "./company/cap.svg";
 import amazon from "./company/amazon.png";
 import farmer from "./farmer.jpg";
 import telecom from "./telecom.jpg";
@@ -75,5 +76,6 @@ export {
   popeyes,
   conestoga,
   growth,
+  cap,
   amazon
 };

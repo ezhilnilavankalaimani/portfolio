@@ -42,11 +42,11 @@ export const STAGES = {
     n: 1,
     sign: ["AMAZON · CHENNAI", "2018 – 2021"],
     title: "Automation Analyst",
-    sub: "Amazon · Greater Chennai · Feb 2020 – Feb 2021",
+    sub: "Amazon · India · Jun 2018 – Feb 2021",
     bullets: [
-      "Built an automated Mapping Efficiency report to spot trends and irregularities",
-      "Ran week-on-week mapping variance and gap analysis for stakeholders",
-      "Monitored sales across the US, Denmark, France, Canada and Mexico",
+      "Automation with SQL, XPath and Regex lifted processing accuracy by 35%",
+      "Automated weekly reports with 90% coverage of key performance swings",
+      "Spotlight and Star of the Month awards for outstanding performance",
     ],
   },
   conestoga: {
@@ -57,7 +57,7 @@ export const STAGES = {
     bullets: [
       "Postgraduate program in IT Business Analysis",
       "GPA 3.84, graduated with Distinction",
-      "Studied while working part-time at Walmart",
+      "Coursework: Data Analytics, Business Process Modeling, Databases, Project Management",
     ],
   },
   work: {
@@ -79,7 +79,7 @@ export const STAGES = {
     bullets: [
       "Took cheque processing from manual to 99% automation",
       "100% accuracy on RSP / TFSA transactions",
-      "Q2 2026 Star Award · go-to for high-risk escalations",
+      "Q2 2026 Star Award · escalation point for high-risk items",
     ],
   },
 };
@@ -87,13 +87,23 @@ export const STAGES = {
 export const SKILLS = [
   "Python",
   "SQL",
+  "HTML",
   "Power BI",
   "Tableau",
   "Excel",
+  "MS Project",
   "Visio",
+  "QuickSight",
   "Regex",
   "Automation",
   "Reporting",
+];
+
+export const CERTS = [
+  "Certified ScrumMaster (CSM) · Scrum Alliance · May 2025",
+  "Excel 2019 badge · Pearson · Oct 2021",
+  "Data Science SQL · UC Davis · Jun 2021",
+  "Football Analytics with Python · May 2021",
 ];
 
 export const PROJECTS = [
@@ -128,4 +138,7 @@ export const LINKS = {
   linkedin: "https://www.linkedin.com/in/ezhil-nilavan/",
   github: "https://github.com/ezhilnilavankalaimani",
   email: "mailto:iamezhilnilavan@gmail.com",
+  facebook: "https://www.facebook.com/iam.ezhilnilavan/",
+  letterboxd: "https://letterboxd.com/EzhilNilavan/",
+  instagram: "https://www.instagram.com/ezhilnilavan_/",
 };

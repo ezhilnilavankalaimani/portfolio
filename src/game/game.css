@@ -140,6 +140,36 @@
 }
 @keyframes gm-belt { from { transform: translateX(0); } to { transform: translateX(880px); } }
 .gm-cheque .m, .gm-cheque .a { display: block; }
+/* interaction layer */
+.gm-pace { animation: gm-pace 16s ease-in-out infinite; }
+.gm-pace .gm-leg { animation-iteration-count: infinite; }
+@keyframes gm-pace {
+  0% { transform: translateX(0) scaleX(1); } 45% { transform: translateX(var(--pd, 80px)) scaleX(1); }
+  50% { transform: translateX(var(--pd, 80px)) scaleX(-1); } 95% { transform: translateX(0) scaleX(-1); } 100% { transform: translateX(0) scaleX(1); }
+}
+.gm-flip { transform-origin: 50% 100%; }
+.gm-player.ninja.moving .gm-leg { animation-duration: .2s; }
+.gm-player.ninja.moving .gm-flip { rotate: 11deg; }
+.gm-cheque { cursor: pointer; pointer-events: auto; }
+.gm-cheque.done .a { animation: none; opacity: 1; }
+.gm-cheque.done .m { animation: none; opacity: 0; }
+.gm-cheque.done { filter: drop-shadow(0 0 8px #2f8a57); }
+.gm-click { cursor: pointer; }
+.gm-player .gm-leg { animation-iteration-count: infinite; animation-play-state: paused; }
+.gm-player.moving .gm-leg { animation-play-state: running; }
+.gm-player.moving .gm-idle svg { animation: gm-bob 0.3s ease-in-out infinite; }
+.gm-bg { transform: translate(calc(var(--mx, 0) * -14px), calc(var(--my, 0) * -7px)) scale(1.04); transition: transform .25s ease-out; }
+.gm-idle { transform: translateX(calc(var(--mx, 0) * 7px)) rotate(calc(var(--mx, 0) * 2deg)); transition: transform .25s ease-out; }
+.gm-shuriken { position: absolute; left: 70%; top: 35%; z-index: 40; animation: gm-throw .9s ease-out forwards; pointer-events: none; }
+@keyframes gm-throw { from { transform: translateX(0) rotate(0); opacity: 1; } to { transform: translateX(620px) rotate(1080deg); opacity: 0; } }
+.gm-drop { position: absolute; left: 88%; top: 50%; width: 12px; height: 16px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: #5ac8fa; z-index: 40; opacity: 0; pointer-events: none; animation: gm-spray .8s ease-out forwards; }
+@keyframes gm-spray { 0% { opacity: 1; transform: translate(0, 0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 120px)); } }
+.gm-pkg { position: absolute; z-index: 17; width: 64px; height: 56px; border: 3px solid #5a3b1e; border-radius: 8px; background: #d9a65b; font-size: 28px; cursor: pointer; transition: transform .15s; font-family: inherit; }
+.gm-pkg:hover { transform: translateY(-4px); }
+.gm-pkg.on { background: #7ed6a0; border-color: #14653a; color: #14532d; font-weight: 900; }
+.gm-pill { position: absolute; z-index: 17; background: rgba(20,83,45,.88); color: #fff; font-weight: 700; font-size: 14px; padding: 6px 14px; border-radius: 999px; }
+.gm-snd { position: absolute; right: 24px; bottom: 24px; z-index: 60; background: rgba(20,83,45,.88); color: #fff; border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit; }
+.gm-snd:hover { background: #14653a; }
 .gm-cheque .a { position: absolute; left: 8px; top: 24px; color: #2f8a57; opacity: 0; animation: gm-acc 14s linear infinite; animation-delay: inherit; }
 .gm-cheque .m { animation: gm-man 14s linear infinite; animation-delay: inherit; }
 @keyframes gm-acc { 0%, 47% { opacity: 0; } 50%, 100% { opacity: 1; } }
@@ -192,8 +222,33 @@ textarea.gm-inp { padding: 10px 12px; resize: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .gm-scene, .gm-walkin, .gm-walkin svg, .gm-idle svg, .gm-leg, .gm-tail, .gm-flyer, .gm-plane, .gm-fish, .gm-bubble-dot,
-  .gm-cheque, .gm-cheque .a, .gm-cheque .m, .gm-arm, .gm-balloon, .gm-cloudy, .gm-meter .bar i { animation: none !important; }
-  .gm-flyer { transform: translateX(300px); }
+  .gm-ray, .gm-wave, .gm-sway, .gm-jelly, .gm-bgfish, .gm-pace,   .gm-flyer { transform: translateX(300px); }
   .gm-meter .bar i { width: 99%; }
   .gm-cheque .a { opacity: 1; } .gm-cheque .m { opacity: 0; }
 }
+
+/* underwater */
+.gm-ray { animation: gm-ray 7s ease-in-out infinite; opacity: .5; }
+@keyframes gm-ray { 0%, 100% { opacity: .25; } 50% { opacity: .7; } }
+.gm-wave { animation: gm-wave 5s ease-in-out infinite alternate; }
+@keyframes gm-wave { from { transform: translateX(-40px); } to { transform: translateX(40px); } }
+.gm-sway { transform-box: fill-box; transform-origin: 50% 100%; animation: gm-sway 4.5s ease-in-out infinite; }
+@keyframes gm-sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(6deg); } }
+.gm-jelly { animation: gm-jelly 5s ease-in-out infinite; }
+@keyframes gm-jelly { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(-26px) scale(1.08, .92); } }
+.gm-bgfish { position: absolute; left: 0; font-size: 26px; opacity: .55; z-index: 2; animation: gm-bgswim 40s linear infinite; pointer-events: none; }
+@keyframes gm-bgswim { from { transform: translateX(-80px) scaleX(-1); } to { transform: translateX(1520px) scaleX(-1); } }
+.gm-certs { position: absolute; left: 0; right: 0; top: 664px; z-index: 14; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; width: 900px; margin: 0 auto; transform: translateX(-60px); }
+.gm-certs div { background: rgba(138, 90, 43, .92); color: #fff3d6; border: 3px solid #5a3b1e; border-radius: 10px; padding: 2px 12px; font-weight: 700; font-size: 12.5px; text-align: center; white-space: nowrap; }
+.gm-certs .hot { background: #f7b32b; color: #4a2f08; border-color: #b9770e; }
+
+.gm-player.air .gm-leg { animation-play-state: running; }
+.gm-where { position: absolute; left: 0; right: 0; top: 414px; z-index: 19; text-align: center; font-weight: 800; font-size: 19px; letter-spacing: 2px; color: #fff; text-shadow: 0 2px 0 #14532d; }
+.gm-where span { background: rgba(20,83,45,.85); border-radius: 999px; padding: 5px 16px; }
+.gm-where span.now { background: #d9382f; }
+.gm-where b { margin: 0 14px; font-size: 24px; }
+.gm-swimmer { position: absolute; left: 0; top: 0; width: 120px; z-index: 16; pointer-events: none; will-change: transform; }
+.gm-swimmer svg { display: block; width: 100%; }
+.gm-swimmer .gm-leg { animation-iteration-count: infinite; animation-duration: .45s; }
+.gm-sb { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; opacity: .8; animation: gm-rise 1.6s ease-in infinite; }
+@keyframes gm-rise { from { transform: translateY(0); opacity: .9; } to { transform: translateY(-50px); opacity: 0; } }

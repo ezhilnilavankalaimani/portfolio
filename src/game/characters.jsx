@@ -82,9 +82,9 @@ export const Elephant = ({ className = "", style }) => (
     <g fill="#8fa8c4"><rect x="56" y="118" width="34" height="62" rx="16"/><rect x="100" y="118" width="34" height="62" rx="16"/><rect x="146" y="118" width="34" height="62" rx="16"/><rect x="186" y="118" width="34" height="62" rx="16"/></g>
     <g fill="#e9eef5"><rect x="58" y="168" width="30" height="12" rx="6"/><rect x="102" y="168" width="30" height="12" rx="6"/><rect x="148" y="168" width="30" height="12" rx="6"/><rect x="188" y="168" width="30" height="12" rx="6"/></g>
     <ellipse cx="125" cy="98" rx="92" ry="62" fill="#a9c1da"/>
-    <path d="M40 84 q-26 20 -8 62" stroke="#a9c1da" strokeWidth="10" fill="none" strokeLinecap="round"/>
+    <g className="av-etail"><path d="M40 84 q-30 22 -10 60" stroke="#a9c1da" strokeWidth="13" fill="none" strokeLinecap="round"/><path d="M30 130 q-8 10 -2 22" stroke="#6f86a3" strokeWidth="9" fill="none" strokeLinecap="round"/></g>
     <circle cx="208" cy="76" r="44" fill="#a9c1da"/>
-    <ellipse cx="174" cy="80" rx="30" ry="42" fill="#8fa8c4"/><ellipse cx="176" cy="82" rx="18" ry="30" fill="#f6b6c6"/>
+    <g className="av-eear"><ellipse cx="174" cy="80" rx="30" ry="42" fill="#8fa8c4"/><ellipse cx="176" cy="82" rx="18" ry="30" fill="#f6b6c6"/></g>
     <path d="M236 84 q20 24 4 66 q-4 14 -18 8" stroke="#a9c1da" strokeWidth="24" fill="none" strokeLinecap="round"/>
     <circle cx="216" cy="66" r="11" fill="#fff"/><circle cx="219" cy="68" r="7" fill="#1a1209"/><circle cx="221" cy="65" r="2.6" fill="#fff"/>
     <ellipse cx="226" cy="92" rx="8" ry="5" fill="#ff8fa3" opacity="0.6"/>
@@ -113,4 +113,70 @@ export const Plane = ({ className = "", style }) => (
 
 export const Trophy = ({ className = "", style }) => (
   <svg viewBox="0 0 150 190" className={className} style={style} xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M30 20 h90 v50 q0 46 -45 50 q-45 -4 -45 -50Z" fill="#f7b32b"/><path d="M30 34 q-26 0 -22 24 q4 22 28 24" fill="none" stroke="#f7b32b" strokeWidth="9"/><path d="M120 34 q26 0 22 24 q-4 22 -28 24" fill="none" stroke="#f7b32b" strokeWidth="9"/><rect x="66" y="118" width="18" height="30" fill="#e09a14"/><rect x="40" y="146" width="70" height="16" rx="5" fill="#c47f10"/><rect x="30" y="160" width="90" height="22" rx="6" fill="#8a5a1b"/><path d="M75 36 l7 16 17 2 -13 11 4 17 -15 -9 -15 9 4 -17 -13 -11 17 -2Z" fill="#fff6c8"/></svg>
+);
+
+export const Peacock = ({ className = "", style }) => (
+  <svg viewBox="0 0 250 190" className={className} style={style} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g className="av-pfan">
+      {[-82, -56, -30, -4, 22, 48].map((a, i) => (
+        <g key={a} transform={`rotate(${a} 96 112)`}>
+          <ellipse cx="96" cy="46" rx="15" ry="52" fill={i % 2 ? "#1fa37a" : "#2bb98a"} stroke="#0f6e52" strokeWidth="2.5"/>
+          <ellipse cx="96" cy="26" rx="8" ry="11" fill="#2b6fd6"/><circle cx="96" cy="26" r="4.5" fill="#f7b32b"/>
+        </g>
+      ))}
+    </g>
+    <path d="M110 150 L104 186 M138 150 L142 186" stroke="#b9791a" strokeWidth="6" strokeLinecap="round"/>
+    <path d="M96 186 H112 M134 186 H152" stroke="#b9791a" strokeWidth="6" strokeLinecap="round"/>
+    <ellipse cx="124" cy="120" rx="56" ry="38" fill="#1e7fc0" stroke="#145a8a" strokeWidth="3"/>
+    <g className="av-pwing"><ellipse cx="116" cy="118" rx="34" ry="22" fill="#2ab3a6" stroke="#145a8a" strokeWidth="3"/><path d="M92 118 q24 12 50 0" stroke="#fff" strokeOpacity=".5" strokeWidth="3" fill="none"/></g>
+    <path d="M160 104 Q192 90 198 56" stroke="#1e7fc0" strokeWidth="22" fill="none" strokeLinecap="round"/>
+    <circle cx="204" cy="46" r="16" fill="#2b8fd0" stroke="#145a8a" strokeWidth="3"/>
+    <path d="M218 46 L236 52 L218 58Z" fill="#f7b32b" stroke="#b9791a" strokeWidth="2"/>
+    <circle cx="208" cy="42" r="4.5" fill="#fff"/><circle cx="209.5" cy="42.5" r="2.4" fill="#1a1209"/>
+    <path d="M200 30 q-6 -14 -12 -20 M204 30 q0 -16 -2 -24 M208 30 q6 -14 12 -18" stroke="#145a8a" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    <circle cx="188" cy="10" r="4" fill="#f7b32b"/><circle cx="202" cy="6" r="4" fill="#f7b32b"/><circle cx="220" cy="12" r="4" fill="#f7b32b"/>
+    <ellipse cx="214" cy="56" rx="6" ry="4" fill="#ff8fa3" opacity=".6"/>
+    <rect x="96" y="76" width="58" height="22" rx="10" fill="#d9382f"/><rect x="96" y="84" width="58" height="5" fill="#f7b32b"/>
+  </svg>
+);
+
+export const Rabbit = ({ className = "", style }) => (
+  <svg viewBox="0 0 100 100" className={className} style={style} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="20" cy="70" r="9" fill="#fff"/>
+    <ellipse cx="48" cy="72" rx="28" ry="20" fill="#f4efe6" stroke="#cfc6b4" strokeWidth="2.5"/>
+    <ellipse cx="72" cy="86" rx="12" ry="6" fill="#f4efe6" stroke="#cfc6b4" strokeWidth="2"/>
+    <circle cx="72" cy="52" r="16" fill="#f4efe6" stroke="#cfc6b4" strokeWidth="2.5"/>
+    <g className="av-rear"><ellipse cx="66" cy="22" rx="6" ry="18" fill="#f4efe6" stroke="#cfc6b4" strokeWidth="2.5"/><ellipse cx="66" cy="24" rx="2.8" ry="12" fill="#ffb7c5"/></g>
+    <g className="av-rear b"><ellipse cx="80" cy="24" rx="6" ry="17" fill="#f4efe6" stroke="#cfc6b4" strokeWidth="2.5" transform="rotate(14 80 24)"/><ellipse cx="80" cy="26" rx="2.8" ry="11" fill="#ffb7c5" transform="rotate(14 80 26)"/></g>
+    <circle cx="78" cy="50" r="3" fill="#1a1209"/><circle cx="79" cy="49" r="1" fill="#fff"/><ellipse cx="86" cy="56" rx="3" ry="2.2" fill="#ff8fa3"/><ellipse cx="70" cy="58" rx="4" ry="2.5" fill="#ffb7c5" opacity=".7"/>
+  </svg>
+);
+
+export const Deer = ({ className = "", style }) => (
+  <svg viewBox="0 0 170 160" className={className} style={style} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M30 70 q-14 -4 -16 -16 q12 -2 20 8Z" fill="#c68a4a"/>
+    <rect x="44" y="96" width="11" height="58" rx="5" fill="#a86e35"/><rect x="104" y="96" width="11" height="58" rx="5" fill="#a86e35"/>
+    <ellipse cx="78" cy="82" rx="50" ry="28" fill="#c68a4a"/>
+    <ellipse cx="78" cy="96" rx="38" ry="12" fill="#f3dcb4"/>
+    <g fill="#fff6e0" opacity=".9"><circle cx="58" cy="72" r="3.5"/><circle cx="76" cy="66" r="3.5"/><circle cx="94" cy="72" r="3.5"/><circle cx="68" cy="82" r="3"/><circle cx="86" cy="82" r="3"/></g>
+    <rect x="58" y="100" width="11" height="54" rx="5" fill="#c68a4a"/><rect x="118" y="100" width="11" height="54" rx="5" fill="#c68a4a"/>
+    <path d="M114 70 Q132 56 138 34" stroke="#c68a4a" strokeWidth="20" fill="none" strokeLinecap="round"/>
+    <g className="av-dhead">
+      <ellipse cx="146" cy="30" rx="19" ry="15" fill="#c68a4a"/>
+      <ellipse cx="160" cy="36" rx="9" ry="7" fill="#f3dcb4"/><circle cx="165" cy="33" r="3" fill="#2b1a0a"/>
+      <circle cx="148" cy="24" r="4.5" fill="#fff"/><circle cx="149.5" cy="24.5" r="2.4" fill="#1a1209"/>
+      <ellipse cx="132" cy="18" rx="6" ry="11" fill="#a86e35" transform="rotate(-30 132 18)"/>
+      <path d="M142 14 q-4 -14 -14 -20 M136 4 q-6 0 -8 -6 M144 12 q4 -14 14 -18 M152 2 q6 0 8 -6" stroke="#8a5a2b" strokeWidth="4" fill="none" strokeLinecap="round"/>
+    </g>
+  </svg>
+);
+
+export const Hedgehog = ({ className = "", style }) => (
+  <svg viewBox="0 0 110 80" className={className} style={style} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M12 60 Q10 18 56 14 Q98 14 98 58Z" fill="#7a5a3c" stroke="#4d3822" strokeWidth="2.5"/>
+    {Array.from({ length: 11 }, (_, i) => <path key={i} d={`M${16 + i * 7.5} ${50 - Math.sin(i / 10 * Math.PI) * 30} l${-5 + i * .5} -${9 + Math.sin(i / 10 * Math.PI) * 4}`} stroke="#4d3822" strokeWidth="3" strokeLinecap="round"/>)}
+    <path d="M70 60 Q96 44 108 58 Q106 70 90 70 H70Z" fill="#f0cfa0" stroke="#b98a5c" strokeWidth="2"/>
+    <circle cx="94" cy="56" r="3.2" fill="#1a1209"/><circle cx="95" cy="55" r="1" fill="#fff"/><circle cx="108" cy="60" r="3.5" fill="#2b1a0a"/>
+    <ellipse cx="82" cy="72" rx="7" ry="4" fill="#b98a5c"/><ellipse cx="46" cy="72" rx="7" ry="4" fill="#b98a5c"/>
+  </svg>
 );

@@ -11,9 +11,9 @@ export const POOL = { x0: 10200, x1: 12840, seabed: 1390 };
 
 export const LEVELS = [
   { id: "home", x: 0, name: "Welcome", big: "" },
-  { id: "edu", x: 1440, name: "Education", big: "EDUCATION", n: 1 },
-  { id: "amazon", x: 2880, name: "Experience · Amazon", big: "AMAZON", n: 2 },
-  { id: "move", x: 4320, name: "Chennai → Toronto", big: "", n: 3 },
+  { id: "move", x: 1440, name: "India → Canada", big: "", n: 1 },
+  { id: "edu", x: 2880, name: "Education", big: "EDUCATION", n: 2 },
+  { id: "amazon", x: 4320, name: "Experience · Amazon", big: "AMAZON", n: 3 },
   { id: "work", x: 5760, name: "Experience · Walmart · Kelly", big: "WORK", n: 4 },
   { id: "td", x: 7200, name: "Experience · TD", big: "TD", n: 5 },
   { id: "today", x: 8640, name: "Today", big: "TODAY", n: 6 },
@@ -48,7 +48,7 @@ function buildItems() {
     [640, 700, 760].forEach((dx) => push("coin", x0 + dx, GROUND - 80));
     [1180, 1240, 1300].forEach((dx, k) => push("coin", x0 + dx, GROUND - 250 + (k === 1 ? -30 : 0)));
   });
-  for (let i = 0; i < 5; i++) push("pkg", 2880 + 340 + i * 90, GROUND - 34, 34);
+  for (let i = 0; i < 5; i++) push("pkg", 4320 + 340 + i * 90, GROUND - 34, 34);
   for (let i = 0; i < 5; i++) push("chq", 7200 + 360 + i * 170, 450, 34);
   [8370, 8440, 8510].forEach((x) => push("coin", x, ROOF.y - 80));
   for (let i = 0; i < 8; i++) push("star", 8640 + 250 + i * 150, 360 + (i % 3) * 110, 30);
@@ -62,12 +62,12 @@ function buildItems() {
 export const ITEMS = buildItems();
 
 const SKY = [
-  [0, "#4fc3e8", "#8cd0e8"], [1440, "#7fd6c2", "#e9f7c7"], [2880, "#8fd0ea", "#f0f8ff"], [4320, "#ffc98a", "#fff0cf"], [5040, "#8fd0ea", "#eaf6ff"],
+  [0, "#4fc3e8", "#8cd0e8"], [1440, "#ffc98a", "#fff0cf"], [2160, "#8fd0ea", "#eaf6ff"], [2880, "#7fd6c2", "#e9f7c7"], [4320, "#8fd0ea", "#f0f8ff"],
   [5760, "#a8dca0", "#fff4c7"], [7200, "#9fc2ce", "#cfe8ef"], [8640, "#4fc3e8", "#e9f7c7"], [10080, "#6fcdf0", "#bfeef7"], [12960, "#7fd6c2", "#e9f7c7"],
   [14400, "#ffb86b", "#ffe6b3"], [15840, "#34296b", "#e8846e"], [17280, "#34296b", "#e8846e"],
 ];
-// rain only on the Chennai → Toronto slide
-const RAIN = [[4320, 5760]];
+// rain only on the India → Canada slide
+const RAIN = [[1440, 2880]];
 const rainAt = (x) => {
   let r = 0;
   for (const [a, b] of RAIN) {
@@ -213,6 +213,7 @@ export class Engine {
     this.cam.x = clamp(x - 560, 0, WORLD_W - VW);
     this.cam.y = 0;
   }
+  buddySfx() { return this.buddy === "elephant" ? "trumpet" : this.buddy === "peacock" ? "peacock" : "roar"; }
   callTiger() {
     const t = this.t, p = this.p;
     t.mode = "follow";
@@ -224,12 +225,12 @@ export class Engine {
       t.x = nx; t.y = GROUND; t.vy = 0; t.swim = false; t.ground = true;
     }
     this.t.roar = 0.9;
-    sfx("roar");
+    sfx(this.buddySfx());
     this.emit("tiger", "call");
   }
   roar() {
     this.t.roar = 1;
-    sfx("roar");
+    sfx(this.buddySfx());
     this.emit("tiger", "roar");
   }
   toggleStay() {
@@ -457,7 +458,9 @@ export class Engine {
         if (ahead > 0 && ahead < 70 + Math.abs(p.vx) * 0.1) { wantJump = true; this.stats.hurdles += 0; break; }
       }
     }
-    if (wantJump) {
+    const flyP = p.mounted && this.buddy === "peacock";
+    if (wantJump && flyP) { p.vy = -600; p.ground = false; p.jumps = 1; sfx("flap"); }
+    else if (wantJump) {
       if (p.ground) {
         p.vy = p.mounted ? -980 : -880; p.ground = false; p.jumps = 1; sfx(p.mounted ? "mount" : "jump");
         this.emit("jump");
@@ -466,7 +469,14 @@ export class Engine {
       }
     }
 
-    p.vy += G * dt;
+    if (flyP) {
+      p.vy += G * dt * 0.28;
+      if (ay < 0) p.vy = approach(p.vy, -380, 2600 * dt);
+      else if (ay > 0) p.vy = approach(p.vy, 420, 2600 * dt);
+      p.vy = Math.min(p.vy, 300);
+      this.flapT = (this.flapT || 0) - dt;
+      if (!p.ground && ay < 0 && this.flapT <= 0) { this.flapT = 0.45; sfx("flap"); }
+    } else p.vy += G * dt;
     let nx = p.x + p.vx * dt;
     const half = p.mounted ? 100 : 26;
     // hurdles block the way if the player is below their top
@@ -479,6 +489,7 @@ export class Engine {
     p.x = clamp(nx, 40, WORLD_W - 40);
     const prevY = p.y;
     p.y += p.vy * dt;
+    if (flyP) { p.y = Math.max(p.y, 210); if (inPool(p.x) && p.y > GROUND - 40) { p.y = GROUND - 40; if (p.vy > 0) p.vy = 0; } }
     let landed = false;
     if (p.vy >= 0) {
       for (const pl of PLATFORMS) {
@@ -551,7 +562,12 @@ export class Engine {
       t.swim = inPool(t.x) ? false : false; t.ground = true;
       if (inPool(t.x)) t.x = p.x < POOL.x0 ? POOL.x0 - 60 : POOL.x1 + 60;
     }
-    const lim = t.swim ? (Math.abs(p.x - t.x) > 500 ? 600 : 300) : 2000;
+    const out = t.swim && p.mode === "land" && !p.mounted;
+    if (out) {
+      const shore = p.x < POOL.x0 ? POOL.x0 - 90 : POOL.x1 + 90;
+      desired = Math.sign(shore - t.x) * 1700;
+    }
+    const lim = out ? 1800 : t.swim ? (Math.abs(p.x - t.x) > 500 ? 600 : 300) : 2000;
     desired = clamp(desired, -lim, lim);
     t.vx = approach(t.vx, desired, (t.call ? 9000 : 2600) * dt);
     if (Math.abs(t.vx) > 25) t.face = Math.sign(t.vx);
@@ -562,8 +578,8 @@ export class Engine {
       t.y += (target - t.y) * Math.min(1, dt * 5);
       t.vy = 0;
       t.x += t.vx * dt;
-      if (!inPool(t.x)) { t.swim = false; t.y = GROUND; t.ground = true; }
-      else t.x = clamp(t.x, POOL.x0 + 80, POOL.x1 - 80);
+      if (!inPool(t.x)) { t.swim = false; t.y = GROUND; t.ground = true; t.vy = -500; }
+      else if (!out) t.x = clamp(t.x, POOL.x0 + 80, POOL.x1 - 80);
     } else {
       if (t.ground && Math.abs(t.vx) > 150) {
         const front = t.x + Math.sign(t.vx) * 80;
@@ -660,7 +676,7 @@ export class Engine {
     const nin = e.ninja;
     const swimming = p.mode === "swim";
     let nx = p.x - 60, ny = p.y - 184;
-    if (p.mounted) { nx = p.x - 60 + p.face * 8; ny = p.y - (this.buddy === "elephant" ? 236 : 204); }
+    if (p.mounted) { nx = p.x - 60 + p.face * 8; ny = p.y - (this.buddy === "elephant" ? 236 : this.buddy === "peacock" ? 214 : 204); }
     nin.style.transform = `translate3d(${nx}px,${ny}px,0)`;
     nin.style.opacity = p.hidden ? "0" : "";
     let rot = "";

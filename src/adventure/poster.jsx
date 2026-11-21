@@ -40,7 +40,7 @@ const Awarded = ({ who, nameless, achs = 0, color = "#8e1b3a", stroke = "#fff", 
       <text x='300' y={y + 57} textAnchor='middle' fontSize={who.length > 12 ? 36 : 46} fontWeight='900' fill={color} stroke={stroke} strokeWidth='9' {...BUB} opacity={who === "Type your name" ? 0.55 : 1}>{who}</text>
     )}
     <path d={`M110 ${y + 73} H490`} stroke={color} strokeWidth='3' strokeLinecap='round' strokeDasharray='2 9' />
-    <text x='300' y={y + 103} textAnchor='middle' fontSize='16' fill={sub}>★ {rankOf(achs)} ★ · Chennai → Toronto</text>
+    <text x='300' y={y + 103} textAnchor='middle' fontSize='16' fill={sub}>★ {rankOf(achs)} ★ · India → Canada</text>
   </>
 );
 
@@ -296,7 +296,7 @@ const JapanPoster = ({ who, nameless, score = 0, coins = 0, skills = 0, achs = 0
       ))}
       {[[180, 646], [305, 730], [430, 646], [56, 730], [545, 730]].map(([x, y], i) => <Sparkle key={i} x={x} y={y} s={.55} c='#f7b32b' />)}
       <text x='300' y='764' textAnchor='middle' fontSize='14' fontWeight='800' fill='#14532d'>Ezhil Nilavan Kalaimani · ezhilnilavan.netlify.app{date ? ` · ${date}` : ""}</text>
-      <text x='300' y='782' textAnchor='middle' fontSize='11' fontWeight='700' fill='#2f8a57' fontFamily={JP} letterSpacing='3'>CHENNAI → TORONTO · ありがとう</text>
+      <text x='300' y='782' textAnchor='middle' fontSize='11' fontWeight='700' fill='#2f8a57' fontFamily={JP} letterSpacing='3'>INDIA → CANADA · ありがとう</text>
     </Frame>
   );
 };

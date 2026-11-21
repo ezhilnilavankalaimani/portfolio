@@ -322,11 +322,11 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 .av-tiger[data-buddy='elephant'] .av-tsvg { display: none !important; }
 .av-tiger.roaring .av-esvg { animation: av-toot .22s ease-in-out infinite alternate; }
 @keyframes av-toot { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
-.av-card { background: #fffbea; border: 3px solid #f7b32b; border-radius: 22px; padding: 22px 26px; max-width: 640px; width: calc(100% - 32px); text-align: center; color: #14532d; }
+.av-card { background: #fffbea; border: 3px solid #f7b32b; border-radius: 22px; padding: 22px 26px; max-width: 720px; width: calc(100% - 32px); text-align: center; color: #14532d; }
 .av-card h2 { margin: 0 0 4px; font-size: 28px; }
 .av-lead.small { font-size: 12px; opacity: .8; }
 .av-buddies { display: flex; gap: 16px; justify-content: center; margin: 14px 0; flex-wrap: wrap; }
-.av-buddies button { background: #fff; border: 3px solid #e8dfb8; border-radius: 18px; padding: 14px 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: inherit; color: #14532d; width: 230px; }
+.av-buddies button { background: #fff; border: 3px solid #e8dfb8; border-radius: 18px; padding: 14px 18px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: inherit; color: #14532d; width: 190px; }
 .av-buddies button:hover, .av-buddies button.on { border-color: #2f8a57; background: #f1fbe9; }
 .av-buddies b { font-size: 20px; } .av-buddies span { font-size: 13px; opacity: .8; }
 /* flying parrot across the top */
@@ -389,3 +389,41 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 @keyframes av-takeoff { 0% { transform: translate(0,0); } 25% { transform: translate(0,-70px); } 100% { transform: translate(-1300px,-620px) scale(.5); } }
 .av-award[data-state='gone'] .av-heli { display: none; }
 .av-award[data-state='gone'] .av-mbubble, .av-award[data-state='gone'] .av-mtrophy { display: none; }
+
+/* peacock buddy */
+.av-tiger .av-psvg { display: none; width: 230px; margin: -25px 25px 0; }
+.av-tiger[data-buddy='peacock'] .av-psvg { display: block; }
+.av-tiger[data-buddy='peacock'] .av-tsvg, .av-tiger[data-buddy='peacock'] .av-esvg { display: none !important; }
+.av-tiger.roaring .av-psvg { animation: av-toot .22s ease-in-out infinite alternate; }
+.av-pfan { transform-origin: 96px 112px; animation: av-fansway 2.2s ease-in-out infinite alternate; }
+@keyframes av-fansway { from { transform: rotate(-3deg) scale(1); } to { transform: rotate(3deg) scale(1.03); } }
+.av-pwing { transform-origin: 140px 112px; }
+.av-tiger.t-air .av-pwing { animation: av-pflap .22s ease-in-out infinite alternate; }
+@keyframes av-pflap { from { transform: rotate(-22deg) scaleY(1.15); } to { transform: rotate(14deg) scaleY(.7); } }
+/* elephant ears + tail wiggle like the tiger */
+.av-etail { transform-origin: 40px 84px; animation: gm-wag 1.2s ease-in-out infinite; }
+.av-eear { transform-origin: 196px 64px; animation: av-earflap 1.1s ease-in-out infinite alternate; }
+@keyframes av-earflap { from { transform: rotate(-7deg); } to { transform: rotate(9deg); } }
+.av-eleph svg .av-eear { transform-origin: 196px 64px; }
+/* forest critters */
+.av-crit { position: absolute; z-index: 5; pointer-events: none; }
+.av-crit-in { animation: av-elwalk var(--d,16s) linear infinite; }
+.av-crit svg { display: block; width: 100%; height: auto; transform-origin: 50% 100%; }
+.av-crit.rabbit svg { animation: av-hop .7s ease-in-out infinite; }
+.av-crit.deer svg { animation: av-elbob 1.1s ease-in-out infinite; }
+.av-crit.hog svg { animation: av-elbob 1.4s ease-in-out infinite; }
+@keyframes av-hop { 0%,100% { transform: translateY(0) scale(1.06,.92); } 40% { transform: translateY(-26px) scale(.94,1.08); } 70% { transform: translateY(-4px); } }
+.av-rear { transform-origin: 70px 40px; animation: av-earfl .9s ease-in-out infinite alternate; }
+.av-rear.b { animation-delay: -.4s; }
+@keyframes av-earfl { from { transform: rotate(-5deg); } to { transform: rotate(8deg); } }
+.av-dhead { transform-origin: 138px 46px; animation: av-nod 2.4s ease-in-out infinite; }
+@keyframes av-nod { 0%,100% { transform: rotate(0); } 50% { transform: rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) { .av-crit-in, .av-crit svg, .av-etail, .av-eear, .av-pfan { animation: none; } }
+/* medal badge on the belt, clear of the E */
+.av-pmedal { left: 50%; top: 66%; width: 26px; margin-left: -13px; }
+
+.av-thanks { min-height: 74px; display: flex; align-items: center; justify-content: center; margin: 6px 0 10px; }
+.av-thanks-in { text-align: center; animation: av-thin .45s ease-out; }
+.av-thanks-in b { display: block; font-size: 38px; line-height: 1.15; color: #14532d; }
+.av-thanks-in small { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #8a6d1f; font-weight: 800; }
+@keyframes av-thin { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: none; } }

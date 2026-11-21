@@ -4,7 +4,7 @@ import { memo, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import emailjs from "@emailjs/browser";
 import { testimonials } from "../constants";
-import { Elephant, Ninja, Parrot, Plane, Tiger, Trophy } from "../game/characters";
+import { Deer, Elephant, Hedgehog, Ninja, Parrot, Peacock, Plane, Rabbit, Tiger, Trophy } from "../game/characters";
 import { CERTS, DETAILS, GREETINGS, LINKS, PROJECTS, SKILLS, STAGES } from "../game/data";
 import { CASTLE_X, FLAG, GROUND, HURDLES, HURDLE_W, HURDLE_H, ITEMS, LADDER, LEVELS, POOL, ROOF, WORLD_W } from "./engine";
 
@@ -423,7 +423,7 @@ const Ground = ({ id, n }) => {
 
 const Education = () => (
   <>
-    <Gate n={1} name='Education' />
+    <Gate n={2} name='Education' />
     <Big left={420} top={100} size={92}>EDUCATION</Big>
     <DetailCard d={DETAILS.anna} style={{ left: 420, top: 240, width: 440 }}>
       <div className='gm-tag'>STUDIES · BACHELOR'S</div>
@@ -495,9 +495,9 @@ const TD = () => {
   );
 };
 
-const Medal = () => (
-  <svg viewBox='0 0 90 130' aria-hidden='true'>
-    <path d='M18 0 L45 62 L30 66 L2 6Z' fill='#e8453c' stroke='#9c2a22' strokeWidth='2' /><path d='M72 0 L45 62 L60 66 L88 6Z' fill='#2b8cc0' stroke='#1b5f86' strokeWidth='2' />
+const Medal = ({ badge }) => (
+  <svg viewBox={badge ? '8 56 74 74' : '0 0 90 130'} aria-hidden='true'>
+    {!badge && <path d='M18 0 L45 62 L30 66 L2 6Z' fill='#e8453c' stroke='#9c2a22' strokeWidth='2' />}{!badge && <path d='M72 0 L45 62 L60 66 L88 6Z' fill='#2b8cc0' stroke='#1b5f86' strokeWidth='2' />}
     <circle cx='45' cy='92' r='34' fill='#f7b32b' stroke='#b9791a' strokeWidth='5' /><circle cx='45' cy='92' r='26' fill='#ffd75e' stroke='#e09a14' strokeWidth='3' />
     <path d='M45 70 l6.5 14 15 1.8 -11 10 3.2 15 -13.7 -8 -13.7 8 3.2 -15 -11 -10 15 -1.8Z' fill='#fff6c8' stroke='#b9791a' strokeWidth='2.5' strokeLinejoin='round' />
   </svg>
@@ -664,31 +664,34 @@ const SocialRibbon = () => {
 
 const Move = () => (
   <>
-    <Gate n={3} name='Chennai → Toronto' />
+    <Gate n={1} name='India → Canada' />
     <svg className='ab' style={{ left: 0, top: 0, zIndex: 2, pointerEvents: "none" }} width='1440' height='810' viewBox='0 0 1440 810' aria-hidden='true'>
       {/* ribbon */}
       <g>
         <path d='M300 70 H1140 V150 H300Z' fill='#d9382f' />
         <path d='M300 70 L255 92 L285 112 L255 132 L300 150Z' fill='#a9231b' />
         <path d='M1140 70 L1185 92 L1155 112 L1185 132 L1140 150Z' fill='#a9231b' />
-        <text x='720' y='126' textAnchor='middle' fontFamily='Georgia, serif' fontStyle='italic' fontWeight='700' fontSize='44' fill='#fff'>Previously in Chennai · Now in Toronto</text>
+        <text x='720' y='126' textAnchor='middle' fontFamily='Georgia, serif' fontStyle='italic' fontWeight='700' fontSize='44' fill='#fff'>Previously in India · Now in Canada</text>
       </g>
-      {/* Chennai: LIC building */}
-      <g transform='translate(330 0)'>
-        <rect x='60' y='250' width='190' height='390' fill='#e9e2d4' stroke='#8a7a62' strokeWidth='3' />
-        <rect x='88' y='214' width='134' height='36' fill='#d8d0be' stroke='#8a7a62' strokeWidth='3' />
-        <rect x='118' y='170' width='74' height='44' fill='#e9e2d4' stroke='#8a7a62' strokeWidth='3' />
-        <rect x='152' y='138' width='6' height='34' fill='#8a7a62' /><path d='M158 138 L184 148 L158 158Z' fill='#e8453c' />
-        {Array.from({ length: 11 }, (_, r) => Array.from({ length: 5 }, (_, c) => <rect key={r + '-' + c} x={78 + c * 34} y={266 + r * 32} width='20' height='20' rx='2' fill={(r + c) % 4 === 0 ? '#f7d36a' : '#7ea8c4'} />))}
-        <rect x='70' y='240' width='170' height='26' rx='4' fill='#d9382f' /><text x='155' y='260' textAnchor='middle' fontFamily='DejaVu Sans, sans-serif' fontWeight='900' fontSize='18' fill='#fff' letterSpacing='4'>LIC</text>
-      </g>
-      {/* Chennai: Central station clock tower */}
-      <g transform='translate(620 0)'>
-        <rect x='0' y='440' width='210' height='200' fill='#c8553d' stroke='#7a2f1e' strokeWidth='3' />
-        <rect x='70' y='300' width='70' height='140' fill='#d8664d' stroke='#7a2f1e' strokeWidth='3' />
-        <path d='M64 300 L105 240 L146 300Z' fill='#9b3a27' stroke='#7a2f1e' strokeWidth='3' />
-        <circle cx='105' cy='340' r='22' fill='#fff' stroke='#7a2f1e' strokeWidth='4' /><path d='M105 340 V326 M105 340 L116 346' stroke='#1a1209' strokeWidth='3' strokeLinecap='round' />
-        {[14, 52, 140, 168].map((x) => <rect key={x} x={x} y='480' width='26' height='44' rx='13' fill='#f6d9a8' />)}
+      {/* India: Taj Mahal */}
+      <g transform='translate(430 0)'>
+        <rect x='0' y='606' width='380' height='34' rx='4' fill='#efe7d2' stroke='#9c8f72' strokeWidth='3' />
+        {[28, 352].map((x) => (
+          <g key={x}>
+            <rect x={x - 12} y='400' width='24' height='206' fill='#faf6ea' stroke='#9c8f72' strokeWidth='3' />
+            <rect x={x - 16} y='430' width='32' height='9' fill='#e4dcc4' stroke='#9c8f72' strokeWidth='2' /><rect x={x - 16} y='500' width='32' height='9' fill='#e4dcc4' stroke='#9c8f72' strokeWidth='2' />
+            <ellipse cx={x} cy='394' rx='18' ry='13' fill='#fffdf5' stroke='#9c8f72' strokeWidth='3' /><path d={`M${x} 381 V362`} stroke='#9c8f72' strokeWidth='3' />
+          </g>
+        ))}
+        <rect x='86' y='470' width='208' height='136' fill='#fbf7ec' stroke='#9c8f72' strokeWidth='3' />
+        <path d='M164 606 V524 Q190 484 216 524 V606Z' fill='#d6cdb4' stroke='#9c8f72' strokeWidth='3' />
+        {[104, 262].map((x) => <path key={x} d={`M${x} 606 V540 Q${x + 12} 520 ${x + 24} 540 V606Z`} fill='#d6cdb4' stroke='#9c8f72' strokeWidth='2.5' />)}
+        {[108, 262].map((x) => <g key={x}><ellipse cx={x + 8} cy='470' rx='20' ry='23' fill='#fffdf5' stroke='#9c8f72' strokeWidth='3' /><path d={`M${x + 8} 447 V432`} stroke='#9c8f72' strokeWidth='3' /></g>)}
+        <rect x='160' y='424' width='60' height='48' fill='#fbf7ec' stroke='#9c8f72' strokeWidth='3' />
+        <path d='M120 430 Q190 330 260 430Z' fill='#fffdf5' stroke='#9c8f72' strokeWidth='3' transform='translate(0 20)' />
+        <ellipse cx='190' cy='418' rx='66' ry='72' fill='#fffdf5' stroke='#9c8f72' strokeWidth='3.5' />
+        <path d='M190 346 V316' stroke='#d9a62b' strokeWidth='4' strokeLinecap='round' /><circle cx='190' cy='312' r='6' fill='#f7b32b' stroke='#b9791a' strokeWidth='2' />
+        <path d='M150 380 Q190 350 230 380' stroke='#e9e1c8' strokeWidth='3' fill='none' />
       </g>
       {/* Toronto: CN Tower (big, bold, easy to recognise) */}
       <g transform='translate(902 0)'>
@@ -723,8 +726,8 @@ const Move = () => (
       <path d='M470 230 Q720 20 970 200' stroke='#fff' strokeWidth='4' strokeDasharray='4 12' strokeLinecap='round' fill='none' opacity='.9' />
     </svg>
     <div className='av-moveplane'>✈</div>
-    <div className='av-movetag' style={{ left: 150, top: 654 }}>CHENNAI · INDIA</div>
-    <div className='av-movetag now' style={{ left: 1030, top: 654 }}>TORONTO · CANADA</div>
+    <div className='av-movetag' style={{ left: 560, top: 654 }}>TAJ MAHAL · INDIA</div>
+    <div className='av-movetag now' style={{ left: 1030, top: 654 }}>CN TOWER · CANADA</div>
   </>
 );
 
@@ -746,7 +749,6 @@ const FlagCastle = () => {
         <path d='M80 40 V8 L112 20 L80 30' fill='#d9382f' stroke='#7a1d17' strokeWidth='2' />
         <rect x='78' y='8' width='4' height='36' fill='#7a4a22' />
       </svg>
-      <div className='ab' style={{ left: cx - 330, top: GROUND + 50, width: 340, textAlign: 'center', zIndex: 9, background: '#fffbea', border: '3px solid #f7b32b', borderRadius: 16, padding: '6px 10px', color: '#14532d', fontWeight: 900, fontSize: 22, boxShadow: '0 6px 16px rgba(0,0,0,.25)' }}>நன்றி · Nandri · Thanks!</div>
       <div className='av-firew'>{Array.from({ length: 7 }, (_, i) => <i key={i} style={{ left: 40 + i * 190, animationDelay: `${i * 0.35}s` }} />)}</div>
     </>
   );
@@ -829,6 +831,24 @@ const Elephants = memo(() => (
   </>
 ));
 
+const CRITTERS = [
+  ["rabbit", 620, 84, 5], ["rabbit", 1900, 78, 6], ["rabbit", 3350, 90, 5], ["rabbit", 5200, 80, 6], ["rabbit", 6550, 86, 5], ["rabbit", 9150, 80, 6], ["rabbit", 13350, 88, 5], ["rabbit", 14750, 82, 6], ["rabbit", 15300, 80, 5],
+  ["deer", 330, 170, 22], ["deer", 2350, 160, 20], ["deer", 4650, 175, 24], ["deer", 7620, 165, 22], ["deer", 9720, 170, 21], ["deer", 13900, 168, 23], ["deer", 15100, 160, 20],
+  ["hog", 1250, 96, 18], ["hog", 3650, 90, 17], ["hog", 6150, 98, 19], ["hog", 7950, 92, 18], ["hog", 14150, 96, 18],
+];
+const Critters = memo(() => (
+  <>
+    {CRITTERS.map(([k, x, w, d], i) => {
+      const h = k === "deer" ? w * 0.94 : k === "hog" ? w * 0.73 : w;
+      return (
+        <div key={i} className={`av-crit ${k}`} style={{ left: x, top: GROUND - h + 6, width: w, '--d': `${d}s` }}>
+          <div className='av-crit-in'>{k === "rabbit" ? <Rabbit /> : k === "deer" ? <Deer /> : <Hedgehog />}</div>
+        </div>
+      );
+    })}
+  </>
+));
+
 export const WorldContent = memo(({ skillCount, opened, finished }) => (
   <>
     <GroundLayer />
@@ -837,6 +857,7 @@ export const WorldContent = memo(({ skillCount, opened, finished }) => (
     <Hurdles />
     <Falling />
     <Elephants />
+    <Critters />
     {LEVELS.map((l, i) => {
       let body = null;
       if (l.id === "home") body = <Home />;
@@ -872,11 +893,12 @@ export const Entities = memo(({ refs, buddy = "tiger" }) => (
         <Tiger className='av-tsvg' />
         <Tiger roar className='av-roarsvg av-tsvg' />
         <Elephant className='av-esvg' />
+        <Peacock className='av-psvg' />
       </div>
-      <div className='av-roarbub'>{buddy === "elephant" ? "TOOOT!" : "ROAR!"}</div>
+      <div className='av-roarbub'>{buddy === "elephant" ? "TOOOT!" : buddy === "peacock" ? "PEE-OW!" : "ROAR!"}</div>
     </div>
     <div ref={refs.ninja} className='av-ent av-ninja' style={{ width: 120 }}>
-      <div ref={refs.ninjaFlip} className='av-flip'><Ninja /><div className='av-pmedal'><Medal /></div></div>
+      <div ref={refs.ninjaFlip} className='av-flip'><Ninja /><div className='av-pmedal'><Medal badge /></div></div>
     </div>
     {Array.from({ length: 14 }, (_, i) => <i key={i} className='av-bub' />)}
   </>

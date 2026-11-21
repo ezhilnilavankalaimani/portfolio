@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { education, experiences } from "../constants";
 import { CERTS, LINKS, PROJECTS, SKILLS, STAGES } from "../game/data";
-import { Elephant, Tiger } from "../game/characters";
+import { Elephant, Peacock, Tiger } from "../game/characters";
 import { isSoundOn, setSound, sfx } from "./audio";
 import { Engine, GROUND, ITEMS, LEVELS, POOL, SKILL_COUNT, VH, VW, WORLD_W } from "./engine";
 import { Poster, POSTER_THEMES, posterToPng } from "./poster";
@@ -15,7 +15,8 @@ const SAVE_KEY = "advSave.v2";
 const BUDDY_KEY = "advBuddy";
 const CTL_KEY = "advControls";
 const loadCtl = () => { try { return localStorage.getItem(CTL_KEY) === "buttons" ? "buttons" : "gesture"; } catch (e) { return "gesture"; } };
-const loadBuddy = () => { try { const b = localStorage.getItem(BUDDY_KEY); return b === "elephant" || b === "tiger" ? b : null; } catch (e) { return null; } };
+const BUD = { tiger: { n: "Tiger", e: "🐯" }, elephant: { n: "Elephant", e: "🐘" }, peacock: { n: "Peacock", e: "🦚" } };
+const loadBuddy = () => { try { const b = localStorage.getItem(BUDDY_KEY); return b === "elephant" || b === "tiger" || b === "peacock" ? b : null; } catch (e) { return null; } };
 // EmailJS: the first template is the existing contact-form one (mail to Ezhil); the second is the new "course clear" poster mail to the visitor.
 const EJ = { service: "service_3yf8wil", owner: "template_p3qaifo", visitor: "template_olacjjo", key: "pmZPRYuPINkDLOE3c" };
 
@@ -27,7 +28,7 @@ const ACHIEVEMENTS = [
   { id: "cheque", icon: "🧾", name: "Cheque Master", desc: "Collect all 5 cheques at TD." },
   { id: "roof", icon: "🪜", name: "Roof Climber", desc: "Climb the ladder to the control room." },
   { id: "sky", icon: "🎈", name: "Sky Pilot", desc: "Fly the hot-air balloon." },
-  { id: "rider", icon: "🐯", name: "Buddy Rider", desc: "Ride your tiger or elephant." },
+  { id: "rider", icon: "🐯", name: "Buddy Rider", desc: "Ride your tiger, elephant or peacock." },
   { id: "ocean", icon: "🌊", name: "Ocean Explorer", desc: "Reach the seabed." },
   { id: "skills", icon: "🐟", name: "Skills Explorer", desc: "Catch all 12 skills." },
   { id: "projects", icon: "🧰", name: "Project Hunter", desc: "Open all 5 project chests." },
@@ -120,8 +121,8 @@ const Minimap = ({ engine, visited, onOpen }) => {
 };
 
 const MAP_NODES = [
-  { x: 95, y: 455, ico: "🏡" }, { x: 215, y: 350, ico: "🎓" }, { x: 135, y: 220, ico: "📦" },
-  { x: 290, y: 120, ico: "✈️" }, { x: 420, y: 215, ico: "🛒" }, { x: 380, y: 355, ico: "🏦" },
+  { x: 95, y: 455, ico: "🏡" }, { x: 215, y: 350, ico: "✈️" }, { x: 135, y: 215, ico: "🎓" },
+  { x: 290, y: 120, ico: "📦" }, { x: 420, y: 215, ico: "🛒" }, { x: 380, y: 355, ico: "🏦" },
   { x: 520, y: 450, ico: "⭐" }, { x: 640, y: 340, ico: "🐠" }, { x: 740, y: 215, ico: "🚀" },
   { x: 840, y: 330, ico: "💬" }, { x: 880, y: 450, ico: "📮" },
 ];
@@ -148,8 +149,8 @@ const MapOverlay = ({ onClose, onGo, onRecruiter, onRestart, visited, level }) =
           <rect width='1000' height='580' fill='#7cc4e8' />
           <path d='M20 60 Q60 10 200 30 Q330 5 430 50 Q520 15 640 40 Q780 5 880 60 Q985 110 975 250 Q990 400 940 500 Q880 575 700 560 Q540 580 380 560 Q200 580 90 530 Q10 470 25 330 Q5 180 20 60Z' fill='url(#mgGrass)' stroke='#2f6b3a' strokeWidth='6' />
           <rect width='1000' height='580' fill='url(#mgGrid)' />
-          {/* Chennai -> Toronto sea strip */}
-          <path d='M175 40 Q240 90 300 75 Q380 60 440 110 L470 150 Q380 120 320 160 Q240 170 170 110Z' fill='#5fb6e6' stroke='#2b8cc0' strokeWidth='3' />
+          {/* India -> Canada sea bay */}
+          <path d='M0 255 Q90 245 160 285 Q190 335 160 395 Q90 415 0 400Z' fill='#5fb6e6' stroke='#2b8cc0' strokeWidth='3' />
           {/* lake for skills */}
           <ellipse cx='640' cy='345' rx='95' ry='62' fill='#4fb3e8' stroke='#2b8cc0' strokeWidth='4' />
           <path d='M600 335q15-10 30 0M650 360q15-10 30 0' stroke='#fff' strokeOpacity='.7' strokeWidth='3' fill='none' strokeLinecap='round' />
@@ -187,7 +188,7 @@ const MapOverlay = ({ onClose, onGo, onRecruiter, onRestart, visited, level }) =
                 <text y='8' textAnchor='middle' fontSize='22'>{n.ico}</text>
                 <g transform='translate(0 44)'>
                   <rect x='-62' y='-14' width='124' height='24' rx='12' fill='#0c3b24' opacity='.9' />
-                  <text y='3' textAnchor='middle' fontSize='11.5' fontWeight='800' fill='#fff'>{i === 0 ? "START" : `${l.n}`} · {l.name.replace("Experience · ", "").replace(" · Underwater", "").replace("Chennai → Toronto", "Chennai→Toronto").slice(0, 16)}</text>
+                  <text y='3' textAnchor='middle' fontSize='11.5' fontWeight='800' fill='#fff'>{i === 0 ? "START" : `${l.n}`} · {l.name.replace("Experience · ", "").replace(" · Underwater", "").slice(0, 16)}</text>
                 </g>
                 {here && <text y='-34' textAnchor='middle' fontSize='24'>🥷</text>}
               </g>
@@ -237,6 +238,9 @@ const BuddyOverlay = ({ current, onPick, touch, ctl, onCtl }) => (
         <button className={current === "elephant" ? "on" : ""} onClick={() => onPick("elephant")}>
           <Elephant style={{ width: 160 }} /><b>🐘 Elephant</b><span>Big, gentle and strong. Trumpets!</span>
         </button>
+        <button className={current === "peacock" ? "on" : ""} onClick={() => onPick("peacock")}>
+          <Peacock style={{ width: 160 }} /><b>🦚 Peacock</b><span>Colourful! Lets you fly when you hop on.</span>
+        </button>
       </div>
       {touch && (
         <>
@@ -264,6 +268,33 @@ const RestartOverlay = ({ onYes, onNo }) => (
     </div>
   </div>
 );
+
+const THANKS = [
+  ["Thank you", "English"], ["Gracias", "Español"], ["Merci", "Français"], ["Danke", "Deutsch"], ["Grazie", "Italiano"], ["Obrigado", "Português"],
+  ["ありがとう", "日本語"], ["谢谢", "中文"], ["감사합니다", "한국어"], ["شكراً", "العربية"], ["Спасибо", "Русский"], ["നന്ദി", "മലയാളം"],
+  ["ధన్యవాదాలు", "తెలుగు"], ["ಧನ್ಯವಾದಗಳು", "ಕನ್ನಡ"], ["Salamat", "Filipino"], ["Asante", "Kiswahili"], ["Teşekkürler", "Türkçe"], ["Dank je", "Nederlands"], ["Ευχαριστώ", "Ελληνικά"],
+];
+const ThanksBanner = () => {
+  const [i, setI] = useState(-1); // -1 = Tamil
+  useEffect(() => {
+    let t;
+    const next = (k) => {
+      const nk = (k + 1) % THANKS.length;
+      t = setTimeout(() => { setI(nk); next(nk); }, 2000);
+    };
+    t = setTimeout(() => { setI(0); next(0); }, 10000);
+    return () => clearTimeout(t);
+  }, []);
+  const tamil = i < 0;
+  return (
+    <div className='av-thanks' aria-live='polite'>
+      <div key={i} className='av-thanks-in'>
+        <b>{tamil ? "நன்றி · Nandri" : THANKS[i][0]}</b>
+        <small>{tamil ? "Tamil · Thank you" : THANKS[i][1]}</small>
+      </div>
+    </div>
+  );
+};
 
 const EndOverlay = ({ score, coins, skills, achs, onClose, onAgain, onFormal }) => {
   const [name, setName] = useState("");
@@ -315,7 +346,7 @@ const EndOverlay = ({ score, coins, skills, achs, onClose, onAgain, onFormal }) 
       <div className='av-endposter' ref={posterRef}><Poster theme={theme} name={check.ok ? check.clean : ""} score={score} coins={coins} skills={skills} achs={achs} date={date} /></div>
       <div className='av-endmain'>
       <div className='av-clear'>COURSE CLEAR!</div>
-      <h2>நன்றி · Nandri · Thank you for playing, you made it to the castle 🏰</h2>
+      <ThanksBanner />
       <div className='av-stats'>
         <span>⭐ {score} score</span><span>🪙 {coins} coins</span><span>🐟 {skills}/12 skills</span><span>🏆 {achs}/13 achievements</span>
       </div>
@@ -449,8 +480,8 @@ export default function Adventure({ onFormal }) {
   const [tigerMode, setTigerMode] = useState("follow");
   const buddyRef = useRef(buddy);
   buddyRef.current = buddy;
-  const bn = buddy === "elephant" ? "Elephant" : "Tiger";
-  const be = buddy === "elephant" ? "🐘" : "🐯";
+  const bn = BUD[buddy].n;
+  const be = BUD[buddy].e;
   const [riding, setRiding] = useState(false);
   const [finished, setFinished] = useState(!!saved?.ach?.includes("finish"));
   const [touch] = useState(() => typeof window !== "undefined" && window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
@@ -491,7 +522,7 @@ export default function Adventure({ onFormal }) {
         setLevel(d);
         setTitleKey((k) => k + 1);
         if (!s.visited.has(d)) { s.visited.add(d); setVisited([...s.visited]); }
-        if (d === 1) unlock("edu");
+        if (LEVELS[d].id === "edu") unlock("edu");
         if (["amazon", "work", "td"].every((id) => s.visited.has(LEVELS.findIndex((l) => l.id === id)))) unlock("career");
         persist();
         break;
@@ -506,15 +537,15 @@ export default function Adventure({ onFormal }) {
         if (d.type === "chest") { s.opened = { ...s.opened, [d.index]: true }; setOpened(s.opened); if (Object.keys(s.opened).length >= PROJECTS.length) unlock("projects"); }
         persist();
         break;
-      case "mount": setRiding(true); unlock("rider"); { const b = buddyRef.current === "elephant"; toast(`${b ? "🐘" : "🐯"} Riding the ${b ? "elephant" : "tiger"}! Press E to hop off.`); }; break;
+      case "mount": setRiding(true); unlock("rider"); { const B = BUD[buddyRef.current]; toast(buddyRef.current === "peacock" ? `🦚 Flying on the peacock! Hold ↑ or tap jump to flap. E to hop off.` : `${B.e} Riding the ${B.n.toLowerCase()}! Press E to hop off.`); }; break;
       case "dismount": setRiding(false); break;
       case "seabed": unlock("ocean"); break;
       case "flyhigh": unlock("sky"); break;
       case "board": toast("🎈 Up, up and away! Arrows to fly · E to land."); break;
       case "roof": unlock("roof"); break;
       case "splash": toast("🌊 Swimming! Arrows to swim, Shift to go faster."); break;
-      case "tigermode": setTigerMode(d); { const b = buddyRef.current === "elephant"; const n = `${b ? "🐘" : "🐯"} ${b ? "Elephant" : "Tiger"}`; toast(d === "stay" ? `${n} will wait here` : `${n} follows you`); }; break;
-      case "tiger": if (d === "call") toast(`${buddyRef.current === "elephant" ? "🐘 Elephant" : "🐯 Tiger"} is coming!`); break;
+      case "tigermode": setTigerMode(d); { const B = BUD[buddyRef.current]; const n = `${B.e} ${B.n}`; toast(d === "stay" ? `${n} will wait here` : `${n} follows you`); }; break;
+      case "tiger": if (d === "call") toast(`${BUD[buddyRef.current].e} ${BUD[buddyRef.current].n} is coming!`); break;
       default: break;
     }
   }, [persist, toast, unlock]);
@@ -562,6 +593,7 @@ export default function Adventure({ onFormal }) {
   const toggleSound = () => {
     setSound(!isSoundOn());
     setSnd(isSoundOn());
+    try { localStorage.setItem("advSound", isSoundOn() ? "on" : "off"); } catch (e) { /* ignore */ }
     sfx("coin");
   };
   const pickCtl = (m) => {
@@ -570,6 +602,7 @@ export default function Adventure({ onFormal }) {
     sfx("coin");
   };
   const pickBuddy = (b) => {
+    try { if (localStorage.getItem("advSound") !== "off" && !isSoundOn()) { setSound(true); setSnd(true); } } catch (e) { /* ignore */ }
     setBuddy(b);
     try { localStorage.setItem(BUDDY_KEY, b); } catch (e) { /* ignore */ }
     setOverlay(null);

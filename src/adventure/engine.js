@@ -688,6 +688,21 @@ export class Engine {
     e.far.style.transform = `translate3d(${-cx * 0.22}px,${-cy * 0.12}px,0)`;
     e.mid.style.transform = `translate3d(${-cx * 0.5}px,${-cy * 0.3}px,0)`;
     e.fg.style.transform = `translate3d(${-cx * 1.35}px,${-cy}px,0)`;
+    // Off-screen culling: only keep the sections near the camera in the DOM tree, so phones
+    // are not running thousands of nodes and hundreds of animations for the whole 17,000px world.
+    if (this._cullX === undefined || Math.abs(cx - this._cullX) > 200) {
+      this._cullX = cx;
+      if (!this._cullList) {
+        const mk = (root, sel, par) => (root ? Array.from(root.querySelectorAll(sel)).map((el) => ({ el, x: parseFloat(el.style.left) || 0, par })) : []);
+        this._cullList = [...mk(e.world, ":scope > .av-lv", 1), ...mk(e.mid, ".av-decor", 0.5)];
+      }
+      for (const c of this._cullList) {
+        const view = cx * c.par;
+        const on = c.x + 1440 > view - 900 && c.x < view + 1440 + 900;
+        const want = on ? "" : "none";
+        if (c.el.style.display !== want) c.el.style.display = want;
+      }
+    }
     this.skyT -= dt;
     if (this.skyT <= 0) {
       this.skyT = 0.06;

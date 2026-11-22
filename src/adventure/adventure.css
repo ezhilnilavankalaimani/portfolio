@@ -479,3 +479,8 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 .av-chute { display: none; position: absolute; left: -60px; top: -96px; width: 240px; height: 120px; pointer-events: none; transform-origin: 120px 118px; animation: av-chsway 1.6s ease-in-out infinite alternate; }
 .chuting .av-chute { display: block; }
 @keyframes av-chsway { from { transform: rotate(-4deg) } to { transform: rotate(4deg) } }
+
+/* Phones: stop the always-on ambient loops in the huge background layers (keeps the game from running out of memory) */
+@media (pointer: coarse), (max-width: 900px) {
+  .av-sway, .av-star, .av-cloud, .av-cloudy { animation: none; }
+}

@@ -5,6 +5,7 @@ import ApHero from './ApHero';
 import ApHighlights from './ApHighlights';
 import ApWork from './ApWork';
 import ApStudies from './ApStudies';
+import ApRest from './ApRest';
 import useReveal from './useReveal';
 
 // Apple-style scroll site. Built stage by stage; shown with ?apple=1 until every stage is in.
@@ -24,6 +25,7 @@ const AppleSite = ({ onGame }) => {
       <ApHighlights />
       <ApWork />
       <ApStudies />
+      <ApRest onGame={onGame} />
     </div>
   );
 };

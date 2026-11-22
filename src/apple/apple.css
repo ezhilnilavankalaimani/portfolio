@@ -651,3 +651,62 @@
 /* accolade cards: same text sizes across the grid */
 .ap .aw h3{font-size:21px}
 .ap .aw p{font-size:16px}
+
+/* Visible circle behind the memoji (matches the ring), hard circular clip for Safari */
+.ap .hero .orb.avatar .avin{
+  background:radial-gradient(circle at 50% 38%,#ffffff 0%,#eef6ff 62%,#dcecff 100%)!important;
+  box-shadow:inset 0 0 0 2px rgba(111,205,255,.6)!important;
+  clip-path:circle(50% at 50% 50%);
+  -webkit-clip-path:circle(50% at 50% 50%);
+  border-radius:50%!important;
+  overflow:hidden!important;
+}
+.ap .hero .orb.avatar .avin img{will-change:auto!important;width:100%!important;height:100%!important;border-radius:50%}
+
+/* Mobile nav: logo + full name + Contact + menu dropdown */
+.ap .gnav .mm,.ap .gnav .mdrop{display:none}
+@media(max-width:820px){
+  .ap .gnav{padding:0 8px 0 14px;gap:8px}
+  .ap .gnav b{max-width:none!important;overflow:visible!important;text-overflow:clip!important;white-space:nowrap;font-size:12px;flex:1 1 auto;min-width:0}
+  .ap .gnav .l{display:flex;flex:none}
+  .ap .gnav .l a:not(.btn){display:none!important}
+  .ap .gnav .l a.btn{margin-left:0;padding:7px 14px;font-size:13px}
+  .ap .gnav .mm{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;flex:none;width:38px;height:38px;border-radius:50%;border:1px solid rgba(0,0,0,.14);background:rgba(255,255,255,.7);cursor:pointer;padding:0}
+  .ap .gnav .mm i{display:block;width:15px;height:1.6px;background:#1d1d1f;border-radius:2px;transition:transform .25s,opacity .2s}
+  .ap .gnav.mopen .mm i:nth-child(1){transform:translateY(5.6px) rotate(45deg)}
+  .ap .gnav.mopen .mm i:nth-child(2){opacity:0}
+  .ap .gnav.mopen .mm i:nth-child(3){transform:translateY(-5.6px) rotate(-45deg)}
+  .ap .gnav .mdrop{display:flex;flex-direction:column;position:absolute;top:58px;left:0;right:0;padding:8px;border-radius:24px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(22px) saturate(190%);backdrop-filter:blur(22px) saturate(190%);box-shadow:0 14px 40px rgba(20,40,90,.2);border:1px solid rgba(255,255,255,.7);opacity:0;transform:translateY(-8px) scale(.98);transform-origin:top right;pointer-events:none;visibility:hidden;transition:opacity .2s,transform .2s,visibility 0s .2s}
+  .ap .gnav.mopen .mdrop{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition:opacity .2s,transform .2s}
+  .ap .gnav .mdrop a{display:block;padding:13px 16px;border-radius:16px;font-size:16px;color:#1d1d1f;text-decoration:none}
+  .ap .gnav .mdrop a:active,.ap .gnav .mdrop a:hover{background:rgba(111,205,255,.22);color:#3b6cff}
+  .ap .gnav .mdrop a.mg{margin-top:4px;border-top:1px solid rgba(0,0,0,.08);border-radius:0 0 16px 16px;color:#3b6cff;font-weight:500}
+}
+@media(max-width:360px){.ap .gnav b{font-size:11px}.ap .gnav b svg{width:28px}}
+
+/* Mobile: Game version stays on top, Contact moves into the dropdown */
+@media(max-width:820px){
+  .ap .gnav .l a.btn{display:none!important}
+  .ap .gnav .l a.pl{display:inline-block!important;margin-left:0;padding:7px 12px;font-size:13px;white-space:nowrap;border-color:rgba(0,0,0,.2)}
+  .ap .gnav .mdrop a.mg{color:#fff;background:#0071e3;text-align:center;border-radius:99px;margin-top:6px;border-top:0}
+  .ap .gnav .mdrop a.mg:hover,.ap .gnav .mdrop a.mg:active{background:#3b6cff;color:#fff}
+}
+@media(max-width:380px){.ap .gnav b{font-size:11px;gap:4px!important}.ap .gnav b svg{width:26px}.ap .gnav .l a.pl{padding:6px 9px;font-size:12px}}
+
+/* eyes stay closed, but the eyeballs drift under the lids (like a gentle dream) */
+.ap .hero .orb.avatar .avin .eyes{position:absolute;inset:0;pointer-events:none;transform-origin:50% 85%;animation:avlive 6.5s ease-in-out infinite}
+.ap .hero .orb.avatar .avin .eb{position:absolute;width:10.4%;height:5.6%;border-radius:50%;
+ background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.34) 0,rgba(255,255,255,.14) 45%,rgba(255,255,255,0) 72%);
+ filter:blur(1.2px);
+ animation:eyeDrift 3.5s ease-in-out infinite}
+.ap .hero .orb.avatar .avin .eb.l{left:33.6%;top:53.4%}
+.ap .hero .orb.avatar .avin .eb.r{left:52.8%;top:52.4%}
+@keyframes eyeDrift{
+ 0%,6%{transform:translate(0,0)}
+ 14%,30%{transform:translate(-26%,-4%)}
+ 36%{transform:translate(-24%,-4%)}
+ 40%,56%{transform:translate(28%,3%)}
+ 62%{transform:translate(8%,0)}
+ 66%,82%{transform:translate(-8%,5%)}
+ 88%,100%{transform:translate(0,0)}}
+@media (prefers-reduced-motion:reduce){.ap .hero .orb.avatar .avin .eyes,.ap .hero .orb.avatar .avin .eb{animation:none}}

@@ -4,9 +4,9 @@ import anna from '../assets/apple/logo_anna.png';
 import conestoga from '../assets/apple/logo_conestoga.png';
 
 const SCHOOLS = [
-  { logo: zion, alt: 'Zion Matriculation Higher Secondary School logo', yr: '2000 - 2014', h: 'Primary and Secondary Education', small: 'Zion Matriculation Higher Secondary School, Selaiyur', marks: [['86.2%', '10th, 431 / 500'], ['85.2%', '12th, 1022 / 1200']], p: 'English-medium schooling, finishing the 12th with Physics, Chemistry, Biology and Mathematics before moving on to engineering.' },
+  { logo: zion, alt: 'Zion Matriculation Higher Secondary School logo', yr: '2000 - 2014', h: 'Primary and Secondary Education', small: 'Zion Matriculation Higher Secondary School, Selaiyur', marks: [['86.2%', 'Grade 10'], ['85.2%', 'Grade 12']], p: 'English-medium schooling, finishing Grade 12 with Physics, Chemistry, Biology and Mathematics before moving on to engineering.' },
   { logo: anna, alt: 'Anna University logo', yr: '2014 - 2018', h: 'B.E. Computer Science and Engineering', small: 'Anna University, Chennai · GPA 3.70', p: 'General Secretary of the CSI Student Chapter, and chess in activities. 2nd place of 25 teams in the IIT Bombay Android workshop. Won 1st place with the Smart Irrigation paper at Sri Sai Ram, a Tamil Nadu-wide competition, and also presented it at SRM and MIT.' },
-  { logo: conestoga, alt: 'Conestoga College logo', yr: '2021 - 2022', h: 'Postgraduate, IT Business Analysis', small: 'Conestoga College, Ontario · GPA 3.84 Distinction', p: 'Advanced Data Analytics, Requirements Modeling and Visualization, Business Process Flow Analysis, Service Management, ERP, UI/UX and more, while working part-time.' },
+  { logo: conestoga, alt: 'Conestoga College logo', yr: '2021 - 2022', h: 'Postgraduate, IT Business Analysis', small: 'Conestoga College, Ontario · GPA 3.84, Distinction and course topper', p: 'Advanced Data Analytics, Requirements Modeling and Visualization, Business Process Flow Analysis, Service Management, ERP, UI/UX and more, while working part-time.' },
 ];
 
 const CERTS = [

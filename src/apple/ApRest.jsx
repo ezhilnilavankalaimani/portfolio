@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 import rest from './rest';
 
 // Skills, Projects, Accolades, Banyan, Popcorn Corner, Game card, Contact and Footer.
@@ -36,7 +37,26 @@ const ApRest = ({ onGame }) => {
     const pb = root.querySelector('#playbtn');
     const click = (e) => { e.preventDefault(); if (onGame) onGame(); };
     if (pb) pb.addEventListener('click', click);
+    const form = root.querySelector('form.cf');
+    const submit = (e) => {
+      e.preventDefault();
+      const [n, m, t] = form.querySelectorAll('input, textarea');
+      const btn = form.querySelector('button');
+      let st = form.querySelector('.cfstatus');
+      if (!st) { st = document.createElement('p'); st.className = 'cfstatus'; st.setAttribute('role', 'status'); st.style.cssText = 'margin:12px 0 0;font-size:15px;color:#a1a1a6;text-align:center'; form.appendChild(st); }
+      const name = n.value.trim(); const email = m.value.trim(); const msg = t.value.trim();
+      if (!name || !/^\S+@\S+\.\S+$/.test(email) || !msg) { st.textContent = 'Please add your name, a valid email and a message.'; return; }
+      btn.disabled = true; st.textContent = 'Sending…';
+      emailjs
+        .send('service_3yf8wil', 'template_p3qaifo', { from_name: name, to_name: 'Ezhil Nilavan Kalaimani', from_email: email, to_email: 'iamezhilnilavan@gmail.com', message: `${msg} email is ${email}` }, 'pmZPRYuPINkDLOE3c')
+        .then(
+          () => { st.textContent = 'Thank you! I will get back to you as soon as possible.'; n.value = ''; m.value = ''; t.value = ''; btn.disabled = false; },
+          (err) => { if (typeof console !== 'undefined') console.error(err); st.textContent = 'Something went wrong. Please try again, or email me directly.'; btn.disabled = false; }
+        );
+    };
+    if (form) { form.onsubmit = null; form.addEventListener('submit', submit); }
     return () => {
+      if (form) form.removeEventListener('submit', submit);
       timers.forEach(([k, id]) => (k === 'i' ? clearInterval(id) : clearTimeout(id)));
       if (pb) pb.removeEventListener('click', click);
       mo.disconnect();

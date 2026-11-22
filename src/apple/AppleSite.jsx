@@ -6,6 +6,8 @@ import ApHighlights from './ApHighlights';
 import ApWork from './ApWork';
 import ApStudies from './ApStudies';
 import ApRest from './ApRest';
+import ApBuddy from './ApBuddy';
+import ApLeaves from './ApLeaves';
 import useReveal from './useReveal';
 
 // Apple-style scroll site. Built stage by stage; shown with ?apple=1 until every stage is in.
@@ -26,6 +28,8 @@ const AppleSite = ({ onGame }) => {
       <ApWork />
       <ApStudies />
       <ApRest onGame={onGame} />
+      <ApBuddy onGame={onGame} />
+      <ApLeaves />
     </div>
   );
 };

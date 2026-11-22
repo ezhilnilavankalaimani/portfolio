@@ -19,7 +19,7 @@ const dayLabel = (d) => new Date(d).toLocaleDateString('en-CA', { month: 'short'
 
 async function football(team) {
   const token = process.env.FOOTBALL_DATA_TOKEN;
-  if (!token) return { line: 'Live score will appear once the football key is added' };
+  if (!token) return { nokey: true, line: '' };
   const now = new Date();
   const from = iso(new Date(now.getTime() - 75 * 86400000));
   const to = iso(new Date(now.getTime() + 2 * 86400000));
@@ -48,7 +48,7 @@ async function football(team) {
 
 async function cricket() {
   const key = process.env.CRICAPI_KEY;
-  if (!key) return { line: 'Live score will appear once the cricket key is added' };
+  if (!key) return { nokey: true, line: '' };
   const r = await fetch(`https://api.cricapi.com/v1/currentMatches?apikey=${key}&offset=0`);
   if (!r.ok) throw new Error('cricket ' + r.status);
   const { data = [] } = await r.json();

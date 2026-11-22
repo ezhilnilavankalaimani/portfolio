@@ -710,3 +710,8 @@
  66%,82%{transform:translate(-8%,5%)}
  88%,100%{transform:translate(0,0)}}
 @media (prefers-reduced-motion:reduce){.ap .hero .orb.avatar .avin .eyes,.ap .hero .orb.avatar .avin .eb{animation:none}}
+
+/* Hard circle: clip the whole avatar block to a circle so no square outline/border/shadow can ever show (Safari) */
+.ap .hero .orb.avatar{clip-path:circle(50% at 50% 50%)!important;-webkit-clip-path:circle(50% at 50% 50%)!important;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;-webkit-appearance:none;appearance:none}
+.ap .hero .orb.avatar::before,.ap .hero .orb.avatar::after{content:none!important;display:none!important}
+.ap .hero .orb.avatar .ring,.ap .hero .orb.avatar .ring *{outline:0!important;border:0!important;box-shadow:none!important}

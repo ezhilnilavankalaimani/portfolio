@@ -52,7 +52,7 @@ export const Tiger = ({ className = "", style, roar = false, gear = false, ...re
   </svg>
 );
 
-export const Ninja = ({ className = "", style, ...rest }) => (
+export const Ninja = ({ className = "", style, face = "happy", ...rest }) => (
   <svg viewBox="0 0 130 200" className={className} style={style} {...rest} xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     {/* hero cape */}
     <path d="M40 84 C4 92 -4 140 6 172 C22 160 34 150 44 140Z" fill="#c92b24"/>
@@ -69,10 +69,20 @@ export const Ninja = ({ className = "", style, ...rest }) => (
     <g className="av-arm a" style={{ transformOrigin: "101px 98px" }}><rect x="92" y="92" width="18" height="42" rx="9" fill="#2b6b50"/><circle cx="101" cy="138" r="10" fill="#f3c9a0"/></g>
     <circle cx="66" cy="50" r="42" fill="#2b6b50"/>
     <rect x="32" y="34" width="68" height="34" rx="17" fill="#f3c9a0"/>
-    <circle cx="51" cy="50" r="14" fill="#fff"/><circle cx="83" cy="50" r="14" fill="#fff"/>
-    <circle cx="55" cy="52" r="8" fill="#1a1209"/><circle cx="87" cy="52" r="8" fill="#1a1209"/><circle cx="58" cy="48" r="3" fill="#fff"/><circle cx="90" cy="48" r="3" fill="#fff"/>
+    {face === "surprised" ? <>
+      <circle cx="51" cy="50" r="16" fill="#fff"/><circle cx="83" cy="50" r="16" fill="#fff"/>
+      <circle cx="53" cy="51" r="5" fill="#1a1209"/><circle cx="85" cy="51" r="5" fill="#1a1209"/>
+      <path d="M104 30 q4 6 0 10 q-4 -4 0 -10Z" fill="#7fd3f7"/>
+    </> : face === "sad" ? <>
+      <circle cx="51" cy="54" r="14" fill="#fff"/><circle cx="83" cy="54" r="14" fill="#fff"/>
+      <circle cx="52" cy="58" r="8" fill="#1a1209"/><circle cx="84" cy="58" r="8" fill="#1a1209"/><circle cx="55" cy="55" r="3" fill="#fff"/><circle cx="87" cy="55" r="3" fill="#fff"/>
+      <path d="M44 74 q-5 9 0 13 q5 -4 0 -13Z" fill="#7fd3f7"/>
+    </> : <>
+      <circle cx="51" cy="50" r="14" fill="#fff"/><circle cx="83" cy="50" r="14" fill="#fff"/>
+      <circle cx="55" cy="52" r="8" fill="#1a1209"/><circle cx="87" cy="52" r="8" fill="#1a1209"/><circle cx="58" cy="48" r="3" fill="#fff"/><circle cx="90" cy="48" r="3" fill="#fff"/>
+    </>}
     <ellipse cx="40" cy="64" rx="7" ry="4" fill="#ff8fa3" opacity="0.7"/><ellipse cx="94" cy="64" rx="7" ry="4" fill="#ff8fa3" opacity="0.7"/>
-    <path d="M42 34 q10 -6 20 -1 M72 33 q10 -5 20 1" stroke="#1a1209" strokeWidth="4" fill="none" strokeLinecap="round"/>
+    <path d={face === "surprised" ? "M40 28 q10 -7 20 0 M72 28 q10 -7 20 0" : face === "sad" ? "M40 40 l22 -8 M94 40 l-22 -8" : "M42 34 q10 -6 20 -1 M72 33 q10 -5 20 1"} stroke="#1a1209" strokeWidth="4" fill="none" strokeLinecap="round"/>
     <path d="M32 72 q34 16 68 0 l-4 14 q-30 10 -60 0Z" fill="#1f4d3a"/>
     <path d="M56 78 q10 7 20 0" stroke="#f3c9a0" strokeWidth="3.5" fill="none" strokeLinecap="round" opacity="0.0"/>
     <rect x="28" y="20" width="76" height="14" rx="5" fill="#d9382f"/><rect x="55" y="17" width="24" height="19" rx="5" fill="#f7b32b"/><path d="M101 26 q18 -4 24 8 q-12 0 -22 6Z" fill="#d9382f"/>

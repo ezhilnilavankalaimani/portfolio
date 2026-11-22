@@ -732,7 +732,7 @@ export default function Adventure({ onFormal }) {
         {(level === 0 || level === LEVELS.length - 1) && (
           <div className='av-credit'>
             <span>&copy; {new Date().getFullYear()} Ezhil Nilavan Kalaimani. All rights reserved.</span>
-            {level === LEVELS.length - 1 && <span className='inspo'>Inspired from Robby Leonardi</span>}
+            {level === LEVELS.length - 1 && <span className='inspo'>Partially inspired from Robby Leonardi</span>}
           </div>
         )}
         <div className='av-toasts'>{toasts.map((t) => <div key={t.id} className={`av-toast ${t.kind}`}>{t.text}</div>)}</div>

@@ -133,7 +133,8 @@
 @media(max-width:800px){.ap .cards{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.ap .reveal{opacity:1;transform:none;transition:none}}
 .ap .hero .orb.avatar{background:none!important;box-shadow:none!important;overflow:visible!important;position:relative;width:min(560px,86vw);font-size:0}
-.ap .hero .orb.avatar .avin{position:absolute;inset:15%;border-radius:50%;overflow:hidden;background:#d6e4fd;box-shadow:0 30px 70px #1b6bff44}
+.ap .hero .orb.avatar::before{content:'';position:absolute;inset:6%;border-radius:50%;background:radial-gradient(circle,#1b6bff40 0%,#1b6bff14 55%,transparent 72%);pointer-events:none}
+.ap .hero .orb.avatar .avin{position:absolute;inset:15%;border-radius:50%;overflow:hidden;background:#fff;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);transform:translateZ(0)}
 .ap .avin img{width:100%;height:100%;object-fit:cover;display:block}
 .ap .ring{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .ap .ring line{stroke-linecap:round}
@@ -585,3 +586,20 @@
 .ap .so b{font-size:17px}
 .ap .so span{font-size:13px;color:#8e8e93;line-height:1.35;overflow-wrap:anywhere}
 
+
+@media(max-width:480px){.ap .gnav b{font-size:11.5px;gap:5px!important;white-space:nowrap}.ap .gnav b svg{width:34px;height:20px}}
+
+/* Liquid glass nav: a floating capsule that blurs and tints what scrolls under it */
+.ap .gnav{top:10px;left:14px;right:14px;height:48px;border-radius:99px;background:rgba(255,255,255,.52);-webkit-backdrop-filter:blur(22px) saturate(190%);backdrop-filter:blur(22px) saturate(190%);border:1px solid rgba(255,255,255,.65);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.3),0 8px 28px rgba(20,40,90,.14)}
+@media(max-width:820px){.ap .gnav{left:8px;right:8px}}
+
+.ap .lgb{background:none;border:0;padding:6px 8px;border-radius:12px;cursor:pointer;transition:background .2s,transform .2s}
+.ap .lgb:hover{transform:translateY(-2px);background:rgba(0,0,0,.05)}
+.ap .lgb.on{background:#eaf3ff;box-shadow:inset 0 0 0 1.5px #0071e3}
+.ap .lgd{display:none;margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff;font-size:14px;line-height:1.45;color:#6e6e73;text-align:left}
+.ap .lgd.open{display:block}
+.ap .lgd b{display:block;color:#1d1d1f;margin-bottom:2px;font-size:14px}
+.ap .aw .lgs{gap:10px;flex-wrap:nowrap}
+.ap .lgb{width:84px;height:84px;display:flex;align-items:center;justify-content:center;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.ap .lgb img,.ap .aw .lgs .lgb img{height:64px !important;width:64px !important;max-width:64px !important;object-fit:contain;display:block;mix-blend-mode:normal}
+@media(max-width:480px){.ap .lgb{width:76px;height:76px}.ap .lgb img,.ap .aw .lgs .lgb img{height:56px !important;width:56px !important;max-width:56px !important}}

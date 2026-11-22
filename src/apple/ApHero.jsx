@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import ApWorldClock from './ApWorldClock';
 import memoji from '../assets/apple/memoji_sq.png';
 
 const N = 150;
@@ -41,7 +42,6 @@ const useRing = (svgRef) => {
         l.setAttribute('stroke', `hsl(${hue},100%,${55 - bias * 8}%)`);
         l.setAttribute('stroke-width', 2.2 + bias * 2);
         l.setAttribute('stroke-opacity', 0.3 + bias * 0.7);
-        l.style.filter = `drop-shadow(0 0 3px hsla(${hue},100%,55%,.7))`;
       }
       raf = requestAnimationFrame((x) => draw(x / 1000));
     };
@@ -70,6 +70,7 @@ const ApHero = ({ onGame }) => {
         </svg>
         <div className='avin'><img src={memoji} alt='Memoji of Ezhil' width={822} height={822} /></div>
       </div>
+      <ApWorldClock />
     </section>
   );
 };

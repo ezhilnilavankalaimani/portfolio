@@ -4,7 +4,7 @@ import { memo, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import emailjs from "@emailjs/browser";
 import { testimonials } from "../constants";
-import { Deer, Elephant, Hedgehog, Ninja, Parrot, Peacock, Plane, Rabbit, Tiger, Trophy } from "../game/characters";
+import { Deer, Elephant, Hedgehog, Ninja, Peacock, Plane, Rabbit, Tiger, Trophy } from "../game/characters";
 import { CERTS, DETAILS, GREETINGS, LINKS, PROJECTS, SKILLS, STAGES } from "../game/data";
 import { CASTLE_X, FLAG, GROUND, HURDLES, HURDLE_W, HURDLE_H, ITEMS, LADDER, LEVELS, POOL, ROOF, WORLD_W, ZONES, sh } from "./engine";
 
@@ -417,12 +417,11 @@ const Home = () => {
       </div>
       <div className='gm-block gm-title1' style={{ textShadow: ex("#d97a1f", 28) }}>EZHIL NILAVAN</div>
       <div className='gm-block gm-title2' style={{ textShadow: ex("#14653a", 24) }}>KALAIMANI</div>
-      <Parrot className='ab' style={{ left: 228, top: 300, width: 80, zIndex: 14 }} />
       <div className='av-how'>
         <b>HOW TO PLAY</b>
         <span className='av-howtouch'>👈 Touch the left or right side to run · slide a finger up ☝ to jump (slide again for a double jump)</span>
         <span className='av-howkeys'><kbd>←</kbd><kbd>→</kbd> run · <kbd>Shift</kbd> sprint · <kbd>Space</kbd> jump (twice!)</span>
-        <span className='av-howkeys'><kbd>E</kbd> ride your buddy / balloon · <kbd>T</kbd> stay/follow · <kbd>C</kbd> call · <kbd>M</kbd> map</span>
+        <span className='av-howkeys'><kbd>E</kbd> ride your buddy / balloon · <kbd>T</kbd> stay/follow · <kbd>C</kbd> call · <kbd>P</kbd> paraglider · <kbd>M</kbd> map</span>
       </div>
       <div className='av-arrowhint'>RUN THIS WAY ▶▶▶</div>
     </>
@@ -980,7 +979,7 @@ const Monkey = () => (
 
 const Gull = () => (
   <svg viewBox='0 0 60 30' width='100%' height='100%' aria-hidden='true'>
-    <g className='av-wing'><path d='M30 16 Q16 -2 0 8 Q16 6 30 18Z' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' strokeLinejoin='round' /><path d='M30 16 Q44 -2 60 8 Q44 6 30 18Z' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' strokeLinejoin='round' /></g>
+    <g className='av-gwing'><path d='M30 16 Q16 -2 0 8 Q16 6 30 18Z' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' strokeLinejoin='round' /><path d='M30 16 Q44 -2 60 8 Q44 6 30 18Z' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' strokeLinejoin='round' /></g>
     <ellipse cx='30' cy='19' rx='9' ry='5' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' />
     <circle cx='38' cy='17' r='3.500' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' /><path d='M41 17 l5 1.500 l-5 1.500Z' fill='#f7b32b' /><circle cx='39' cy='16' r='.9' fill='#222' />
   </svg>
@@ -1095,8 +1094,6 @@ const Rainforest = () => (
       <Hibiscus x={240} y={590} /><Hibiscus x={1000} y={596} /><Hibiscus x={1260} y={594} />
       <Mushroom x={430} /><Mushroom x={920} /><Mushroom x={1090} />
     </svg>
-    <Parrot className='ab' style={{ left: 520, top: 360, width: 66, zIndex: 14 }} />
-    <Parrot className='ab' style={{ left: 1190, top: 400, width: 58, zIndex: 14 }} />
     <div className='av-mist' />
     <Fact left={90} top={258} w={230} ico='🏅' head='Certified ScrumMaster'>Scrum Alliance · May 2025. Led projects through every SDLC phase.</Fact>
     <Fact left={900} top={258} w={230} ico='⚽' head='Football Analytics'>Python certification, Mad About Sports. Plus SQL (UC Davis) and Excel 2019 (Pearson).</Fact>
@@ -1156,7 +1153,7 @@ export const Entities = memo(({ refs, buddy = "tiger" }) => (
       <div className='av-roarbub'>{buddy === "elephant" ? "TOOOT!" : buddy === "peacock" ? "PEE-OW!" : "ROAR!"}</div>
     </div>
     <div ref={refs.ninja} className='av-ent av-ninja' style={{ width: 120 }}>
-      <div ref={refs.ninjaFlip} className='av-flip'><Ninja /><div className='av-pmedal'><Medal badge /></div></div>
+      <div ref={refs.ninjaFlip} className='av-flip'><div className='av-chute'><svg viewBox='0 0 240 120' width='240' height='120'><path d='M4 50 Q120 -26 236 50 Q232 66 222 70 Q120 22 18 70 Q8 66 4 50Z' fill='#f7b32b' stroke='#9a5a00' strokeWidth='4' strokeLinejoin='round' /><path d='M4 50 Q40 20 74 10 L82 42 Q50 40 18 70 Q8 66 4 50Z' fill='#e8453c' /><path d='M236 50 Q200 20 166 10 L158 42 Q190 40 222 70 Q232 66 236 50Z' fill='#e8453c' /><path d='M74 10 Q120 -4 166 10 L158 42 Q120 28 82 42Z' fill='#fff' opacity='.92' /><path d='M40 28 L44 62 M74 10 L82 42 M120 0 L120 30 M166 10 L158 42 M200 28 L196 62' stroke='#9a5a00' strokeWidth='2' fill='none' opacity='.7' /><path d='M22 66 L112 118 M60 56 L114 118 M120 34 L120 118 M180 56 L126 118 M218 66 L128 118' stroke='#4a3a2a' strokeWidth='2' fill='none' /></svg></div><Ninja /><div className='av-pmedal'><Medal badge /></div></div>
     </div>
     {Array.from({ length: 14 }, (_, i) => <i key={i} className='av-bub' />)}
   </>

@@ -330,10 +330,13 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 .av-buddies button:hover, .av-buddies button.on { border-color: #2f8a57; background: #f1fbe9; }
 .av-buddies b { font-size: 20px; } .av-buddies span { font-size: 13px; opacity: .8; }
 /* flying parrot across the top */
-.av-flyparrot { position: absolute; top: 118px; left: 0; z-index: 40; pointer-events: none; animation: av-pfly 46s linear infinite; }
+.av-flyparrot { position: absolute; top: 118px; left: 0; z-index: 40; pointer-events: none; animation: av-ptake 5s ease-in-out forwards, av-pfly 40s linear 5s infinite; }
+.av-flyparrot.perch { animation: none; transform: translate(228px, 182px); }
+.av-flyparrot.perch svg { animation: av-pbob 2.4s ease-in-out infinite alternate; }
+@keyframes av-ptake { 0% { transform: translate(228px, 182px) } 25% { transform: translate(380px, 40px) } 100% { transform: translate(1700px, 0) } }
 .av-flyparrot svg { display: block; animation: av-pbob 1.6s ease-in-out infinite alternate; }
 .av-flyparrot .av-wing { transform-box: fill-box; transform-origin: 20% 90%; animation: av-flap .28s ease-in-out infinite alternate; }
-@keyframes av-pfly { 0% { transform: translateX(-180px) scaleX(1); } 49% { transform: translateX(1520px) scaleX(1); } 50% { transform: translateX(1520px) scaleX(-1); } 99% { transform: translateX(-180px) scaleX(-1); } 100% { transform: translateX(-180px) scaleX(1); } }
+@keyframes av-pfly { from { transform: translateX(-180px); } to { transform: translateX(1700px); } }
 @keyframes av-pbob { from { translate: 0 -10px; } to { translate: 0 14px; } }
 @keyframes av-flap { from { transform: rotate(-26deg) scaleY(1); } to { transform: rotate(18deg) scaleY(.6); } }
 
@@ -467,7 +470,10 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 }
 .av-flock { position: absolute; left: 0; top: 70px; width: 900px; height: 150px; z-index: 5; pointer-events: none; animation: av-flock 34s linear infinite; }
 .av-gull { position: absolute; animation: av-bob 1.8s ease-in-out infinite; }
-.av-wing { transform-origin: 30px 17px; animation: av-flap .55s ease-in-out infinite alternate; }
+.av-gwing { transform-origin: 30px 17px; animation: av-gflap .55s ease-in-out infinite alternate; }
 @keyframes av-flock { from { transform: translateX(-300px) } to { transform: translateX(2500px) } }
 @keyframes av-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-14px) } }
-@keyframes av-flap { from { transform: scaleY(1) } to { transform: scaleY(.35) } }
+@keyframes av-gflap { from { transform: scaleY(1) } to { transform: scaleY(.35) } }
+.av-chute { display: none; position: absolute; left: -60px; top: -96px; width: 240px; height: 120px; pointer-events: none; transform-origin: 120px 118px; animation: av-chsway 1.6s ease-in-out infinite alternate; }
+.chuting .av-chute { display: block; }
+@keyframes av-chsway { from { transform: rotate(-4deg) } to { transform: rotate(4deg) } }

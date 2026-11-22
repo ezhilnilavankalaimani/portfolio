@@ -192,6 +192,7 @@ export class Engine {
       case "t": case "T": return "stay";
       case "c": case "C": return "call";
       case "v": case "V": return "roar";
+      case "p": case "P": return "chute";
       default: return null;
     }
   }
@@ -298,6 +299,7 @@ export class Engine {
     p.mode = "land";
     p.ground = false;
     p.vy = 0;
+    this.autoChute = true;
     this.b.flying = false;
     this.b.release = 3;
     this.emit("unboard");
@@ -499,6 +501,9 @@ export class Engine {
       this.flapT = (this.flapT || 0) - dt;
       if (!p.ground && ay < 0 && this.flapT <= 0) { this.flapT = 0.45; sfx("flap"); }
     } else p.vy += G * dt;
+    if (p.ground || p.mode !== "land" || p.mounted) this.autoChute = false;
+    this.chuting = !p.ground && !p.mounted && p.mode === "land" && p.vy > 40 && !!(this.keys.chute || this.autoChute);
+    if (this.chuting) { p.vy = Math.min(p.vy, 110); if (!ax) p.vx += (p.face * 280 - p.vx) * Math.min(1, dt * 1.5); }
     let nx = p.x + p.vx * dt;
     const half = p.mounted ? 100 : 26;
     // hurdles block the way if the player is below their top
@@ -713,7 +718,8 @@ export class Engine {
     else if (p.anim === "sprint") rot = " rotate(14deg)";
     else if (p.anim === "run") rot = " rotate(8deg)";
     e.ninjaFlip.style.transform = `scaleX(${p.face < 0 ? -1 : 1})${rot}`;
-    if (nin.dataset.anim !== p.anim) { nin.dataset.anim = p.anim; nin.className = `av-ent av-ninja s-${p.anim}${p.mounted ? " mounted" : ""}`; }
+    if (nin.dataset.anim !== p.anim) { nin.dataset.anim = p.anim; nin.className = `av-ent av-ninja s-${p.anim}${p.mounted ? " mounted" : ""}`; nin.classList.toggle("chuting", !!this.chuting); }
+    else if (nin.classList.contains("chuting") !== !!this.chuting) nin.classList.toggle("chuting", !!this.chuting);
 
     // tiger
     const tg = e.tiger;

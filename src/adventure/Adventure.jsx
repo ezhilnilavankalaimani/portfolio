@@ -487,6 +487,11 @@ export default function Adventure({ onFormal }) {
   const [ctl, setCtl] = useState(loadCtl);
   const [wx, setWx] = useState("");
   const [overlay, setOverlay] = useState("buddy");
+  const [parrotUp, setParrotUp] = useState(false);
+  useEffect(() => {
+    if (overlay === null || overlay === false) { const t = setTimeout(() => setParrotUp(true), 2500); return () => clearTimeout(t); }
+  }, [overlay]);
+  useEffect(() => { if (level > 0) setParrotUp(true); }, [level]);
   const portrait = usePortrait();
   const [playAnyway, setPlayAnyway] = useState(false);
   const rotate = portrait && !playAnyway;
@@ -696,7 +701,7 @@ export default function Adventure({ onFormal }) {
         </div>
         <div ref={(el) => (els.current.fg = el)} className='av-layer av-fglayer'><FgLayer /></div>
         <div className='av-depth' />
-        <div className='av-flyparrot' aria-hidden='true'>
+        <div className={`av-flyparrot${parrotUp ? "" : " perch"}`} aria-hidden='true'>
           <svg viewBox='0 0 140 80' width='110' height='63'>
             <path d='M18 44 L-6 58 L8 62 L-8 74 L22 62Z' fill='#d9382f' />
             <ellipse cx='56' cy='46' rx='38' ry='16' fill='#2fb56a' />
@@ -729,6 +734,7 @@ export default function Adventure({ onFormal }) {
           <button onClick={() => engine.current.callTiger()}>{be} Call <kbd>C</kbd></button>
           <button onClick={() => engine.current.toggleStay()}>{tigerMode === "follow" ? "Stay" : "Follow"} <kbd>T</kbd></button>
           <button onClick={() => engine.current.roar()}>Roar <kbd>V</kbd></button>
+          <button {...holdProps("chute")}>🪂 Paraglider <kbd>P</kbd></button>
           <button onClick={() => { const e = engine.current; if (e.p.mode === "fly") e.dismountBalloon(); else if (!e.p.mounted && e.nearBalloon()) e.boardBalloon(); else e.tryMount(); }}>{riding ? "Hop off" : "Ride / Board"} <kbd>E</kbd></button>
         </div>
         {touch && (

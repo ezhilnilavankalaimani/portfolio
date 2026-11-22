@@ -63,7 +63,13 @@ const CH_CSS = `
 @media (prefers-reduced-motion: reduce) { .ch-ninja, .ch-me, .ch-wv, .ch-ninja svg > path { animation: none; } .ch-ninja { transform: translateY(40px); } .ch-me { transform: translateY(8px); } }
 `;
 
-const initialMode = () => null;
+// After "Restart adventure" the page reloads; go straight back to the start of the game instead of the chooser.
+const initialMode = () => {
+  try {
+    if (sessionStorage.getItem('advRestart')) { sessionStorage.removeItem('advRestart'); return 'game'; }
+  } catch (e) { /* ignore */ }
+  return null;
+};
 
 const Chooser = ({ onPick }) => {
   const [face, setFace] = useState('surprised');

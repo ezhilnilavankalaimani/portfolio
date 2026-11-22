@@ -608,6 +608,7 @@ export default function Adventure({ onFormal }) {
   };
   const restart = () => {
     try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* ignore */ }
+    try { sessionStorage.setItem("advRestart", "1"); } catch (e) { /* ignore */ }
     window.location.reload();
   };
   const toggleSound = () => {

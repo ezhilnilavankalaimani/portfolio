@@ -809,3 +809,41 @@
 @media(max-width:700px){.ap .pt3.pc{height:520px}}
 .ap .pt3.pc .pl3{font-size:26px;line-height:1;padding-bottom:3px;padding-left:2px}
 .ap .pt3.pc:hover .pl3{transform:none}
+
+/* tool-name tooltips */
+.ap .tt{position:relative;display:inline-flex}
+.ap .tt::after{content:attr(data-n);position:absolute;left:0;top:calc(100% + 8px);transform:translateY(-4px);background:#1d1d1f;color:#fff;font:600 12px/1 Inter,system-ui,sans-serif;padding:6px 9px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:9}
+.ap .tt:hover::after{opacity:1;transform:none}
+.ap .pt3 .tech .tt{display:inline-flex}
+
+/* light project sheet */
+.ap .case{background:#f5f5f7;color:#1d1d1f}
+.ap .case .x{background:#1d1d1f14;color:#1d1d1f}
+.ap .case .kk,.ap .case h6{color:#6e6e73}
+.ap .case ul{color:#424245}
+.ap .case .lead2{color:#6e6e73}.ap .case .lead2 b{color:#1d1d1f}
+.ap .case .cst div{background:#fff}
+.ap .case .cst b{color:#1d1d1f}.ap .case .cst span{color:#6e6e73}
+.ap .case .ctags span{background:#fff;color:#1d1d1f}
+.ap .case .cart{border-radius:24px;height:min(300px,42vw);margin-bottom:14px;overflow:clip}
+.ap .case .cart svg{width:100%;height:100%;display:block}
+.ap .case .bt{background:#fff}
+.ap .case .bt::before{background:radial-gradient(360px circle at var(--mx) var(--my),#0000000a,transparent 60%)}
+.ap .case .bt .c{color:#6e6e73}.ap .case .bt .c b{color:#1d1d1f}
+.ap .case .bt .bgx{color:#1d1d1f}.ap .case .bt .bgx small{color:#6e6e73}
+.ap .case .bt svg.ic{stroke:#1d1d1f;filter:none}
+.ap .case .bt .glow{display:none}
+.ap .case .bt .v img{box-shadow:0 8px 28px #00000026;border:1px solid #e5e5ea}
+.ap .case .ringx i{color:#1d1d1f}
+.ap .case .ringx line{stroke:#e5e5ea}.ap .case .ringx line.l{stroke:#7c5cff;filter:none}
+.ap .case .barsx em{color:#1d1d1f}
+.ap .case .barsx u{background:#ececf0}
+.ap .case .barsx u::after{box-shadow:none}
+.ap .case .flowx span{background:#f0f0f5;color:#6e6e73}
+.ap .case .flowx span.l{background:#ede8ff;color:#1d1d1f;box-shadow:none}
+.ap .case .flowx b{color:#aeaeb2}
+.ap .case .bt.hero{background:#fff;min-height:150px;padding:34px 30px}
+.ap .case .bt.hero .hico{display:none}
+.ap .case .bt.hero .hc{color:#6e6e73;text-shadow:none}.ap .case .bt.hero .hc b{color:#1d1d1f}
+.ap .case .f1cap{color:#6e6e73}.ap .case .f1cap b{color:#1d1d1f}
+.ap .crumb .cb{display:inline-flex;line-height:0}

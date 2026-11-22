@@ -133,7 +133,6 @@
 @media(max-width:800px){.ap .cards{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.ap .reveal{opacity:1;transform:none;transition:none}}
 .ap .hero .orb.avatar{background:none!important;box-shadow:none!important;overflow:visible!important;position:relative;width:min(560px,86vw);font-size:0}
-.ap .hero .orb.avatar::before{content:'';position:absolute;inset:6%;border-radius:50%;background:radial-gradient(circle,#1b6bff40 0%,#1b6bff14 55%,transparent 72%);pointer-events:none}
 .ap .hero .orb.avatar .avin{position:absolute;inset:15%;border-radius:50%;overflow:hidden;background:#fff;isolation:isolate;-webkit-mask-image:-webkit-radial-gradient(white,black);transform:translateZ(0)}
 .ap .avin img{width:100%;height:100%;object-fit:cover;display:block}
 .ap .ring{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -603,3 +602,52 @@
 .ap .lgb{width:84px;height:84px;display:flex;align-items:center;justify-content:center;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
 .ap .lgb img,.ap .aw .lgs .lgb img{height:64px !important;width:64px !important;max-width:64px !important;object-fit:contain;display:block;mix-blend-mode:normal}
 @media(max-width:480px){.ap .lgb{width:76px;height:76px}.ap .lgb img,.ap .aw .lgs .lgb img{height:56px !important;width:56px !important;max-width:56px !important}}
+
+/* avatar: glow lives inside the circle as an inset shadow, so no box edge can show */
+.ap .hero .orb.avatar{border-radius:50%!important;box-shadow:none!important;background:none!important;outline:none!important;border:0!important;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.ap .hero .orb.avatar *{outline:none!important;-webkit-user-drag:none}
+.ap .hero .orb.avatar .avin img{pointer-events:none}
+
+/* top menu hover: the banyan blue, with the soft light blue of the halo ring */
+.ap .gnav .l a:not(.btn){transition:color .2s ease,background .2s ease,box-shadow .2s ease,border-color .2s ease;border-radius:99px;padding:5px 11px;margin-left:10px}
+.ap .gnav .l a:not(.btn):not(.pl):hover{color:#3b6cff;opacity:1;background:rgba(111,205,255,.22)}
+.ap .gnav .l a.pl:hover{color:#3b6cff;border-color:#6fcdff;background:rgba(111,205,255,.22);box-shadow:0 0 14px rgba(111,205,255,.45)}
+.ap .gnav .l a.btn{transition:background .2s ease}
+.ap .gnav .l a.btn:hover{background:#3b6cff}
+
+/* the memoji feels alive: slow breathing, a tiny sway and a gentle nod, eyes stay closed with a small smile */
+@keyframes avlive{0%,100%{transform:translateY(0) rotate(-1deg) scale(1.02)}25%{transform:translateY(-4px) rotate(0deg) scale(1.03)}50%{transform:translateY(-6px) rotate(1deg) scale(1.035)}75%{transform:translateY(-3px) rotate(0deg) scale(1.03)}}
+@keyframes avnod{0%,86%,100%{filter:none}92%{filter:brightness(1.03)}}
+.ap .hero .orb.avatar .avin img{transform-origin:50% 85%;animation:avlive 6.5s ease-in-out infinite,avnod 9s ease-in-out infinite;will-change:transform}
+@keyframes avhalo{0%,100%{opacity:.9}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ap .hero .orb.avatar .avin img{animation:none}}
+
+
+/* a light that travels around the halo, corner to corner, like the ring is catching the sun */
+@property --hs{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes haloSpin{to{--hs:360deg}}
+.ap .hero .orb.avatar .avin .halo-sweep{position:absolute;left:20.7%;top:9.6%;width:53%;height:16.6%;border-radius:50%;pointer-events:none;
+ background:conic-gradient(from var(--hs),rgba(255,255,255,0) 0deg,rgba(255,255,255,0) 215deg,rgba(150,225,255,.55) 285deg,#fff 330deg,rgba(150,225,255,.6) 348deg,rgba(255,255,255,0) 360deg);
+ -webkit-mask-image:radial-gradient(closest-side,transparent 80%,#000 84%,#000 100%);mask-image:radial-gradient(closest-side,transparent 80%,#000 84%,#000 100%);
+ filter:drop-shadow(0 0 5px rgba(120,210,255,.95)) drop-shadow(0 0 12px rgba(59,108,255,.7));animation:haloSpin 3.6s linear infinite;transform-origin:50% 85%}
+.ap .hero .orb.avatar .avin .halo-sweep{animation:haloSpin 3.6s linear infinite,avlive 6.5s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.ap .hero .orb.avatar .avin .halo-sweep{animation:none}}
+
+/* featured credential: the Certified ScrumMaster card, in the same soft style as the other accolade cards */
+.ap .aw.csm{flex:1 1 100%!important;max-width:100%;margin:0 0 4px;display:flex;align-items:center;gap:36px;text-align:left;padding:30px 40px;background:var(--soft);color:var(--ink,#1d1d1f);position:relative}
+.ap .aw.csm .csmb{flex:none;width:150px;height:150px;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(0,0,0,.12))}
+.ap .aw.csm .csmt{position:relative}
+.ap .aw.csm .csmk{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#b9791a;margin-bottom:6px}
+.ap .aw.csm h3{margin:0 0 8px;font-size:28px;color:#1d1d1f;letter-spacing:-.01em}
+.ap .aw.csm p{color:var(--mute);font-size:16px;line-height:1.5;max-width:640px}
+.ap .aw.csm .csmm{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.ap .aw.csm .csmm span{display:inline-block;font-size:13px;font-weight:500;color:#1d1d1f;background:#fff;border-radius:99px;padding:6px 13px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+@media(max-width:700px){.ap .aw.csm{flex-direction:column;text-align:center;padding:28px 20px;gap:16px}.ap .aw.csm .csmm{justify-content:center}.ap .aw.csm h3{font-size:23px}.ap .aw.csm .csmb{width:124px;height:124px}}
+
+/* tidy spacing: the empty Amazon quote placeholder no longer leaves a blank gap */
+.ap .quote:has(> p:empty){display:none}
+.ap .quote p{min-height:120px}
+.ap #accolades{padding-bottom:84px}
+/* accolade cards: same text sizes across the grid */
+.ap .aw h3{font-size:21px}
+.ap .aw p{font-size:16px}

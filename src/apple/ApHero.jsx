@@ -68,7 +68,7 @@ const ApHero = ({ onGame }) => {
         <svg className='ring' ref={ring} viewBox='-300 -300 600 600' aria-hidden='true'>
           {Array.from({ length: N }, (_, i) => <line key={i} />)}
         </svg>
-        <div className='avin'><img src={memoji} alt='Memoji of Ezhil' width={822} height={822} /></div>
+        <div className='avin'><img src={memoji} alt='Memoji of Ezhil' width={822} height={822} /><i className='halo-sweep' aria-hidden='true' /></div>
       </div>
       <ApWorldClock />
     </section>

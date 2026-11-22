@@ -1,3 +1,10 @@
+import ronaldoImg from "../assets/projects/ronaldo.jpg";
+import f1Img from "../assets/projects/f1.jpg";
+import housingImg from "../assets/projects/housing.jpg";
+import superstoreImg from "../assets/projects/superstore.jpg";
+import simImg from "../assets/projects/simulation.jpg";
+import vsmImg from "../assets/projects/vsm.jpg";
+import healthImg from "../assets/projects/health.jpg";
 import {
     mobile,
     backend,
@@ -112,8 +119,9 @@ import {
       company_name: "TD, Toronto",
       icon: td,
       iconBg: "#55B94B",
-      date: "Dec 2024 - Present",
+      date: "Apr 2024 - Present",
       points: [
+        "Execute transactions accurately and on time, in line with established guidelines and procedures, while meeting formal and informal Service Level Agreements (SLAs).",
         "Process complex RSP and TFSA transactions (withdrawals, contributions, swaps, wires, in-kind and corrections) with 100% accuracy and timeliness, within regulatory, audit and SLA requirements.",
         "Won the Q2 2026 Star Award for Best Performance for taking the Symcor process live in production and eliminating manual intervention.",
         "Own BWeb, EasyLine reconciliation and high-volume PIC file processing, keeping data balanced and discrepancies resolved on time.",
@@ -125,23 +133,18 @@ import {
       ],
     },
     {
-      title: "Wealth Operations Officer II",
-      company_name: "TD, Toronto",
-      icon: td,
-      iconBg: "#55B94B",
-      date: "Apr 2024 - Dec 2024",
-      points: [
-        "Executed transactions accurately and on time, in line with established guidelines and procedures, while meeting formal and informal Service Level Agreements (SLAs).",
-      ],
-    },
-    {
       title: "Technical Support Specialist",
       company_name: "Kelly Science, Engineering, Technology & Telecom (Remote, Full-time)",
       icon: kelly,
       iconBg: "#FFFFFF",
       date: "Oct 2023 - Jan 2024",
       points: [
-        "Remote, full-time technical support. Skills: iOS, Client Relations.",
+        "Supported customer calls for assistance and troubleshooting on smartphones, computers and other devices, as a full-time remote member of the KellyConnect team.",
+        "Reset security questions, unlocked accounts and reported fraud activity to keep customer accounts secure.",
+        "Guided customers through device backups and data transfers to a new device (contacts, apps, music, photos and videos) and resolved issues along the way.",
+        "Isolated hardware faults and arranged mail-in repairs or store appointments; explained protection plans, warranties and repair options.",
+        "Followed documentation and training materials to diagnose, resolve and escalate calls, and logged every call in the support database and knowledge base.",
+        "Skills: iOS, Client Relations.",
       ],
     },
     {
@@ -373,13 +376,121 @@ import {
       source_code_link: "#",
     },
     {
+      name: "Coffee Bean Value Stream Map",
+      description: [
+        "Mapped a five-step coffee bean production line (hulling, cleaning, grading, roasting, packaging) as a current-state value stream map in Visio (Conestoga College, QUAL8340 Business Process Flow Analysis).",
+        "Calculated cycle time, setup time, uptime, takt time (202.5 seconds per unit), total cycle time (503 seconds) and total lead time (10.5 days).",
+        "Found a process cycle efficiency of only 0.0591%. The main delays were the 5-day supplier shipment and grading, which ran at 33% uptime.",
+        "Recommended shortening supplier lead time and improving grading uptime to cut lead time and waste."
+      ],
+      tags: [
+        { name: "Visio", color: "blue-text-gradient" },
+        { name: "Value Stream Mapping", color: "green-text-gradient" },
+        { name: "Lean", color: "pink-text-gradient" },
+      ],
+      image: vsmImg,
+      source_code_link: "#",
+    },
+    {
+      name: "Canadian Health Expenditure Dashboard",
+      description: [
+        "Built an interactive Tableau dashboard on Canadian health spending by province (1975-2018), age group and type of use (Conestoga College, INFO8675 Advanced Data Analytics).",
+        "Showed that Ontario's spending has risen almost every year since 1976 and is well above Quebec and Alberta; hospitals account for about half of total expenditure.",
+        "Compared the largest and smallest provinces against Ontario and found which age groups drive the most spending.",
+        "Wrote up eight data-backed insights to go with the dashboard."
+      ],
+      tags: [
+        { name: "Tableau", color: "pink-text-gradient" },
+        { name: "Data Visualization", color: "blue-text-gradient" },
+        { name: "Excel", color: "green-text-gradient" },
+      ],
+      image: healthImg,
+      source_code_link: "#",
+    },
+    {
+      name: "Housing Sales Dashboard",
+      description: [
+        "Analyzed home sale data in Tableau (INFO8675 Advanced Data Analytics) to find what drives sale price: year sold, number of rooms and type of sale.",
+        "Found that 2007 and 2009 together brought in far more than 2006, 2008 and 2010 combined, and that 2010 sales were roughly half of 2007.",
+        "Showed that homes with 7 rooms sold most (516 homes) and that more rooms does not mean more sales.",
+        "Showed that warranty deed (WD) sales make up over 80% of total sale value, with newly built homes second."
+      ],
+      tags: [
+        { name: "Tableau", color: "pink-text-gradient" },
+        { name: "Data Storytelling", color: "blue-text-gradient" },
+      ],
+      image: housingImg,
+      source_code_link: "#",
+    },
+    {
+      name: "Superstore Sales and Profit Analysis",
+      description: [
+        "Built a Tableau dashboard on Superstore orders (2011-2014) as the final exam for Advanced Data Analytics.",
+        "Sales grew every year from 414k in 2011 to 755k in 2014, and the analysis compared sales and profit by year, category and region.",
+        "Looked at how discounts affected sales and which countries ran at a loss.",
+        "Summarized averages (profit 35.20, sales 291.85, discount 11%), the most profitable country (United Kingdom) and the most ordered item."
+      ],
+      tags: [
+        { name: "Tableau", color: "pink-text-gradient" },
+        { name: "Dashboards", color: "blue-text-gradient" },
+        { name: "Excel", color: "green-text-gradient" },
+      ],
+      image: superstoreImg,
+      source_code_link: "#",
+    },
+    {
+      name: "Profit Risk Simulation",
+      description: [
+        "Built a cost and profit simulation model in Excel for a manufacturing case (INFO8675 Advanced Data Analytics).",
+        "Compared best, worst and average scenarios against a $45 selling price: profit per unit of $12 at best, $3 at worst and about $7 on average.",
+        "Concluded the project stays profitable even in the worst case and recommended the CEO go ahead."
+      ],
+      tags: [
+        { name: "Excel", color: "green-text-gradient" },
+        { name: "Simulation", color: "blue-text-gradient" },
+        { name: "Risk Analysis", color: "pink-text-gradient" },
+      ],
+      image: simImg,
+      source_code_link: "#",
+    },
+    {
+      name: "Formula 1 Data Story",
+      description: [
+        "Group project for Advanced Data Analytics: turned Formula 1 race, driver, constructor and tyre data into a data report, a Tableau story and a short slide deck.",
+        "Found that podiums peak for drivers aged 28 to 34 (a 34-year-old driver has almost 3x the podiums of a 24-year-old) and drop off after 35.",
+        "Showed that the UK produced 10 world champions, far more than the US (2) or Canada (1).",
+        "Compared tyres and teams: Goodyear leads with 16 title wins and Ferrari leads constructors with 15 fastest laps, ahead of McLaren with 12."
+      ],
+      tags: [
+        { name: "Tableau", color: "pink-text-gradient" },
+        { name: "Data Storytelling", color: "blue-text-gradient" },
+        { name: "Teamwork", color: "green-text-gradient" },
+      ],
+      image: f1Img,
+      source_code_link: "#",
+    },
+    {
+      name: "Football Analytics: The Next Ronaldo?",
+      description: [
+        "Learning project from the Football Analytics using Python workshop (Mad About Sports, 2021): used Python to ask which young striker could become the next Ronaldo.",
+        "Learned the workflow end to end: scrape football data from the web (including ISL standings from Sofascore), clean it into pandas DataFrames, and chart it with matplotlib.",
+        "My 2021 conclusion: Erling Haaland and Kylian Mbappe were a tie for the next Ronaldo."
+      ],
+      tags: [
+        { name: "Python", color: "blue-text-gradient" },
+        { name: "pandas", color: "green-text-gradient" },
+        { name: "Web Scraping", color: "pink-text-gradient" },
+      ],
+      image: ronaldoImg,
+      source_code_link: "#",
+    },
+    {
       name: "Starbucks",
       description:[
-            "The project aims to identify Starbucks' major customer demographics across various regions in Canada.",
-            "Through comprehensive data analysis, we will discern patterns in customer preferences, age groups, and buying behavior",
-            "By analyzing sales data, social media interactions, and customer surveys, we will pinpoint key customer segments in each region",
-            "This insight will enable Starbucks to tailor its marketing strategies, menu offerings, and store layouts to better cater to the specific needs and tastes of customers in different Canadian regions, ultimately enhancing customer satisfaction and brand loyalty"
-
+            "Built a Power BI-style sales and production dashboard for a coffee company case study (Conestoga College, INFO8655 Requirements Modelling and Visualization), so a VP of Operations could oversee several production locations at once.",
+            "Mapped the data ecosystem (production entries in Office 365, SQL sales database, SharePoint access) and identified the primary concerns: monthly production checks, month-on-month comparison and inventory tracking against sales.",
+            "Designed linked views: province-wise sales pie chart that filters the whole dashboard, production vs. sales by month, last-30-days trend, sales and production cost by province, and a map of cities. For example, Ontario is the top province with $18K in sales, 32.2% of the total.",
+            "Added year, month and quarter filters and highlighted the gap between production and sales so slow-moving inventory is easy to spot."
       ],
       tags: [
         {

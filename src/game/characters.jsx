@@ -92,7 +92,7 @@ export const Elephant = ({ className = "", style, gear = false }) => (
     <circle cx="216" cy="66" r="11" fill="#fff"/><circle cx="219" cy="68" r="7" fill="#1a1209"/><circle cx="221" cy="65" r="2.6" fill="#fff"/>
     <ellipse cx="226" cy="92" rx="8" ry="5" fill="#ff8fa3" opacity="0.6"/>
     <path d="M200 96 q8 8 16 3" stroke="#1a1209" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-    <rect x="92" y="60" width="62" height="28" rx="12" fill="#d9382f"/><rect x="92" y="69" width="62" height="6" fill="#f7b32b"/>
+    
     {gear && <Band x={168} y={42} w={80} h={11} />}
   </svg>
 );
@@ -142,7 +142,7 @@ export const Peacock = ({ className = "", style, gear = false }) => (
     <circle cx="188" cy="10" r="4" fill="#f7b32b"/><circle cx="202" cy="6" r="4" fill="#f7b32b"/><circle cx="220" cy="12" r="4" fill="#f7b32b"/>
     <ellipse cx="214" cy="56" rx="6" ry="4" fill="#ff8fa3" opacity=".6"/>
     {gear && <Band x={187} y={37} w={34} h={7} />}
-    <rect x="96" y="76" width="58" height="22" rx="10" fill="#d9382f"/><rect x="96" y="84" width="58" height="5" fill="#f7b32b"/>
+    
   </svg>
 );
 

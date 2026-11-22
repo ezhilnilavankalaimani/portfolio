@@ -6,30 +6,34 @@ import { sfx } from "./audio";
 export const VW = 1440;
 export const VH = 810;
 export const GROUND = 640;
-export const WORLD_W = 17280;
-export const POOL = { x0: 10200, x1: 12840, seabed: 1390 };
+// Two scenery zones are slotted into the journey (a desert after Education, a rainforest after Black Belt).
+// Everything that used to sit at a fixed x after them is pushed along by `sh`.
+export const sh = (x) => x + (x >= 4320 ? 1440 : 0) + (x >= 10080 ? 1440 : 0);
+export const ZONES = [{ id: "desert", x: 4320, w: 1440 }, { id: "rain", x: 11520, w: 1440 }];
+export const WORLD_W = sh(17280);
+export const POOL = { x0: sh(10200), x1: sh(12840), seabed: 1390 };
 
 export const LEVELS = [
   { id: "home", x: 0, name: "Welcome", big: "" },
   { id: "move", x: 1440, name: "India → Canada", big: "", n: 1 },
   { id: "edu", x: 2880, name: "Education", big: "EDUCATION", n: 2 },
-  { id: "amazon", x: 4320, name: "Experience · Amazon", big: "AMAZON", n: 3 },
-  { id: "work", x: 5760, name: "Experience · Walmart · Kelly", big: "WORK", n: 4 },
-  { id: "td", x: 7200, name: "Experience · TD", big: "TD", n: 5 },
-  { id: "today", x: 8640, name: "Today", big: "TODAY", n: 6 },
-  { id: "skills", x: 10080, name: "Skills · Underwater", big: "SKILLS", n: 7 },
-  { id: "projects", x: 12960, name: "Projects", big: "PROJECTS", n: 8 },
-  { id: "kudos", x: 14400, name: "Testimonials", big: "KUDOS", n: 9 },
-  { id: "contact", x: 15840, name: "Contact", big: "CONTACT", n: 10 },
+  { id: "amazon", x: sh(4320), name: "Experience · Amazon", big: "WORK", n: 3 },
+  { id: "work", x: sh(5760), name: "Experience · Walmart · Kelly", big: "WALMART\n& KELLY", bigSize: 66, bigTop: 130, n: 4 },
+  { id: "td", x: sh(7200), name: "Experience · TD", big: "TD", n: 5 },
+  { id: "today", x: sh(8640), name: "Black Belt", big: "BLACK BELT", n: 6 },
+  { id: "skills", x: sh(10080), name: "Skills · Underwater", big: "SKILLS", n: 7 },
+  { id: "projects", x: sh(12960), name: "Projects", big: "PROJECTS", n: 8 },
+  { id: "kudos", x: sh(14400), name: "Testimonials", big: "KUDOS", n: 9 },
+  { id: "contact", x: sh(15840), name: "Contact", big: "CONTACT", n: 10 },
 ];
 
 export const HURDLE_W = 72;
 export const HURDLE_H = 58;
-export const HURDLES = [430, 930, 2220, 2440, 3310, 3780, 4900, 6190, 6660, 9920, 13540, 14940];
-export const ROOF = { x0: 8230, x1: 8600, y: 430 };
-export const LADDER = { x: 8255, top: 430, bottom: GROUND };
-export const BALLOON_HOME = { x: 5760 + 800, y: GROUND };
-export const FLY_BOUNDS = { x0: 5760 + 220, x1: 7200 - 200, y0: 350, y1: GROUND };
+export const HURDLES = [430, 930, 2220, 2440, 3310, 3780, 4900, 6190, 6660, 9920, 13540, 14940].map(sh).concat([4800, 5300, 12080, 12520]).sort((a, b) => a - b);
+export const ROOF = { x0: sh(8230), x1: sh(8600), y: 430 };
+export const LADDER = { x: sh(8255), top: 430, bottom: GROUND };
+export const BALLOON_HOME = { x: sh(5760) + 800, y: GROUND };
+export const FLY_BOUNDS = { x0: sh(5760) + 220, x1: sh(7200) - 200, y0: 350, y1: GROUND };
 
 const PLATFORMS = [
   ...HURDLES.map((h) => ({ x0: h + 4, x1: h + HURDLE_W - 4, y: GROUND - HURDLE_H })),
@@ -37,8 +41,8 @@ const PLATFORMS = [
 ];
 
 export const SKILL_COUNT = 12;
-export const FLAG = { x: 17040, top: 250 };
-export const CASTLE_X = 17205;
+export const FLAG = { x: sh(17040), top: 250 };
+export const CASTLE_X = sh(17205);
 
 function buildItems() {
   const items = [];
@@ -48,26 +52,29 @@ function buildItems() {
     [640, 700, 760].forEach((dx) => push("coin", x0 + dx, GROUND - 80));
     [1180, 1240, 1300].forEach((dx, k) => push("coin", x0 + dx, GROUND - 250 + (k === 1 ? -30 : 0)));
   });
-  for (let i = 0; i < 5; i++) push("pkg", 4320 + 340 + i * 90, GROUND - 34, 34);
-  for (let i = 0; i < 5; i++) push("chq", 7200 + 360 + i * 170, 450, 34);
-  [8370, 8440, 8510].forEach((x) => push("coin", x, ROOF.y - 80));
-  for (let i = 0; i < 8; i++) push("star", 5760 + 250 + i * 130, 360 + (i % 3) * 110, 30);
+  for (let i = 0; i < 5; i++) push("pkg", sh(4320) + 340 + i * 90, GROUND - 34, 34);
+  for (let i = 0; i < 5; i++) push("chq", sh(7200) + 360 + i * 170, 450, 34);
+  [8370, 8440, 8510].map(sh).forEach((x) => push("coin", x, ROOF.y - 80));
+  for (let i = 0; i < 8; i++) push("star", sh(5760) + 250 + i * 130, 360 + (i % 3) * 110, 30);
   for (let i = 0; i < SKILL_COUNT; i++) {
     const col = i % 4, row = Math.floor(i / 4);
-    push("skill", 10420 + col * 620 + (row % 2) * 160, 790 + row * 240, 48, { index: i });
+    push("skill", sh(10420) + col * 620 + (row % 2) * 160, 790 + row * 240, 48, { index: i });
   }
-  for (let i = 0; i < 5; i++) push("chest", 13160 + i * 250, GROUND - 36, 52, { index: i });
+  for (let i = 0; i < 5; i++) push("chest", sh(13160) + i * 250, GROUND - 36, 52, { index: i });
   return items;
 }
 export const ITEMS = buildItems();
 
 const SKY = [
-  [0, "#4fc3e8", "#8cd0e8"], [1440, "#ffc98a", "#fff0cf"], [2160, "#8fd0ea", "#eaf6ff"], [2880, "#7fd6c2", "#e9f7c7"], [4320, "#8fd0ea", "#f0f8ff"],
-  [5760, "#a8dca0", "#fff4c7"], [7200, "#9fc2ce", "#cfe8ef"], [8640, "#4fc3e8", "#e9f7c7"], [10080, "#6fcdf0", "#bfeef7"], [12960, "#7fd6c2", "#e9f7c7"],
-  [14400, "#ffb86b", "#ffe6b3"], [15840, "#34296b", "#e8846e"], [17280, "#34296b", "#e8846e"],
+  [0, "#4fc3e8", "#8cd0e8"], [1440, "#ffc98a", "#fff0cf"], [2160, "#8fd0ea", "#eaf6ff"], [2880, "#7fd6c2", "#e9f7c7"],
+  [4320, "#f2a24f", "#ffe3a0"], // desert: hot orange sky
+  [sh(4320), "#8fd0ea", "#f0f8ff"], [sh(5760), "#a8dca0", "#fff4c7"], [sh(7200), "#9fc2ce", "#cfe8ef"], [sh(8640), "#4fc3e8", "#e9f7c7"],
+  [11520, "#6aae98", "#d4ecc9"], // rainforest: humid green sky
+  [sh(10080), "#6fcdf0", "#bfeef7"], [sh(12960), "#7fd6c2", "#e9f7c7"],
+  [sh(14400), "#ffb86b", "#ffe6b3"], [sh(15840), "#34296b", "#e8846e"], [sh(17280), "#34296b", "#e8846e"],
 ];
 // rain only on the India → Canada slide
-const RAIN = [[1440, 2880]];
+const RAIN = [[1440, 2880], [11520, 12960]];
 const rainAt = (x) => {
   let r = 0;
   for (const [a, b] of RAIN) {
@@ -77,8 +84,8 @@ const rainAt = (x) => {
   return r;
 };
 // windstorm and thunderstorm near the end of the adventure
-const WIND = [[13700, 14650]];
-const STORM = [[15050, 15800]];
+const WIND = [[sh(13700), sh(14650)]];
+const STORM = [[sh(15050), sh(15800)]];
 const zoneAt = (Z, x) => {
   let r = 0;
   for (const [a, b] of Z) {
@@ -339,16 +346,16 @@ export class Engine {
   /* ---------- simulation ---------- */
   updateAward(dt) {
     const p = this.p;
-    const AX = 8640 + 900;
+    const AX = sh(8640) + 900;
     if (this.awardT == null && p.x > AX - 560 && p.x < AX + 500 && p.mode === "land") { this.awardT = 0; this.setAward("give"); this.emit("award", "give"); }
     if (this.awardT == null || this.awardT >= 99) return;
-    const near = Math.abs(p.x - 9660) < 800;
+    const near = Math.abs(p.x - sh(9660)) < 800;
     if (!this.awardPin && this.awardT > 0.8 && !near) return; // wait for the ninja to be there before handing over the medal
     this.awardT += dt;
     if (this.awardT > 0.9 && !this.awardPin) {
       this.awardPin = true;
       const el = this.els.root.querySelector(".av-award");
-      if (el) { el.style.setProperty("--dx", `${p.x - 9660}px`); el.style.setProperty("--dy", `${p.y - 125 - 490}px`); }
+      if (el) { el.style.setProperty("--dx", `${p.x - sh(9660)}px`); el.style.setProperty("--dy", `${p.y - 125 - 490}px`); }
       this.setAward("pin");
     }
     if (this.awardT > 1.9 && !this.awardPinned) { this.awardPinned = true; this.els.stage.classList.add("av-hasmedal"); this.emit("award", "pinned"); }

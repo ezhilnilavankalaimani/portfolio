@@ -250,9 +250,9 @@ const JapanPoster = ({ who, nameless, score = 0, coins = 0, skills = 0, achs = 0
 
       {/* right panel with starburst stickers */}
       <rect x='386' y='228' width='178' height='392' fill='#14532d' rx='6' />
-      <polygon points={burstPts(475, 330, 76, 66, 16)} fill='#fff4e3' stroke='#f7b32b' strokeWidth='3' />
+      <polygon points={burstPts(475, 298, 60, 52, 16)} fill='#fff4e3' stroke='#f7b32b' strokeWidth='3' />
       {/* tiger face sticker */}
-      <g transform='translate(475 332)'>
+      <g transform='translate(475 300) scale(.78)'>
         <circle cx='-34' cy='-34' r='15' fill='#f28c28' /><circle cx='-34' cy='-33' r='8' fill='#ffb3b3' /><circle cx='34' cy='-34' r='15' fill='#f28c28' /><circle cx='34' cy='-33' r='8' fill='#ffb3b3' />
         <circle r='46' fill='#f28c28' stroke='#7a3b0c' strokeWidth='3' />
         <path d='M0 -44 V-28 M-16 -42 L-12 -28 M16 -42 L12 -28 M-46 -4 H-34 M46 -4 H34' stroke='#1a1209' strokeWidth='5' strokeLinecap='round' />
@@ -263,9 +263,22 @@ const JapanPoster = ({ who, nameless, score = 0, coins = 0, skills = 0, achs = 0
         <path d='M-10 20 Q-5 27 0 20 Q5 27 10 20' stroke='#1a1209' strokeWidth='2.800' fill='none' strokeLinecap='round' />
         <ellipse cx='-30' cy='12' rx='7' ry='4.500' fill='#ff8fa3' opacity='.6' /><ellipse cx='30' cy='12' rx='7' ry='4.500' fill='#ff8fa3' opacity='.6' />
       </g>
-      <polygon points={burstPts(475, 512, 76, 66, 16)} fill='#fff4e3' stroke='#f7b32b' strokeWidth='3' />
+      <polygon points={burstPts(475, 426, 60, 52, 16)} fill='#fff4e3' stroke='#f7b32b' strokeWidth='3' />
+      {/* elephant face sticker */}
+      <g transform='translate(475 424) scale(.78)'>
+        <ellipse cx='-50' cy='-2' rx='27' ry='36' fill='#8fa8c4' stroke='#4b6280' strokeWidth='3' /><ellipse cx='-47' cy='0' rx='14' ry='23' fill='#f6b6c6' />
+        <ellipse cx='50' cy='-2' rx='27' ry='36' fill='#8fa8c4' stroke='#4b6280' strokeWidth='3' /><ellipse cx='47' cy='0' rx='14' ry='23' fill='#f6b6c6' />
+        <circle r='44' fill='#a9c1da' stroke='#4b6280' strokeWidth='3' />
+        <path d='M0 8 Q2 40 -4 56 Q-8 66 -18 60' stroke='#4b6280' strokeWidth='28' fill='none' strokeLinecap='round' />
+        <path d='M0 8 Q2 40 -4 56 Q-8 66 -18 60' stroke='#a9c1da' strokeWidth='22' fill='none' strokeLinecap='round' />
+        <path d='M-6 20 Q0 24 6 20 M-5 34 Q0 38 5 34' stroke='#8fa8c4' strokeWidth='2.500' fill='none' strokeLinecap='round' />
+        <circle cx='-18' cy='-10' r='9' fill='#fff' /><circle cx='-16' cy='-9' r='5.500' fill='#1a1209' /><circle cx='-14' cy='-12' r='2.200' fill='#fff' />
+        <circle cx='18' cy='-10' r='9' fill='#fff' /><circle cx='16' cy='-9' r='5.500' fill='#1a1209' /><circle cx='14' cy='-12' r='2.200' fill='#fff' />
+        <ellipse cx='-32' cy='10' rx='7' ry='4.500' fill='#ff8fa3' opacity='.6' /><ellipse cx='32' cy='10' rx='7' ry='4.500' fill='#ff8fa3' opacity='.6' />
+      </g>
+      <polygon points={burstPts(475, 552, 60, 52, 16)} fill='#fff4e3' stroke='#f7b32b' strokeWidth='3' />
       {/* peacock sticker */}
-      <g transform='translate(475 514)'>
+      <g transform='translate(475 554) scale(.78)'>
         {[-72, -48, -24, 0, 24, 48, 72].map((a) => (
           <g key={a} transform={`rotate(${a} 0 26)`}>
             <ellipse cx='0' cy='-14' rx='11' ry='36' fill={a % 48 === 0 ? '#2f8a57' : '#1f9fb0'} stroke='#14532d' strokeWidth='2' />

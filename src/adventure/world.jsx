@@ -6,7 +6,9 @@ import emailjs from "@emailjs/browser";
 import { testimonials } from "../constants";
 import { Deer, Elephant, Hedgehog, Ninja, Parrot, Peacock, Plane, Rabbit, Tiger, Trophy } from "../game/characters";
 import { CERTS, DETAILS, GREETINGS, LINKS, PROJECTS, SKILLS, STAGES } from "../game/data";
-import { CASTLE_X, FLAG, GROUND, HURDLES, HURDLE_W, HURDLE_H, ITEMS, LADDER, LEVELS, POOL, ROOF, WORLD_W } from "./engine";
+import { CASTLE_X, FLAG, GROUND, HURDLES, HURDLE_W, HURDLE_H, ITEMS, LADDER, LEVELS, POOL, ROOF, WORLD_W, ZONES, sh } from "./engine";
+
+const LVX = (id) => LEVELS.find((l) => l.id === id).x;
 
 export const RESUME_URL = "/Ezhil_Nilavan_Kalaimani_Resume.pdf";
 
@@ -123,6 +125,18 @@ const GroundLayer = memo(() => {
   return (
     <svg className='av-ground' width={WORLD_W} height={GROUND + 810} viewBox={`0 0 ${WORLD_W} ${GROUND + 810}`} aria-hidden='true'>
       <defs>
+        <linearGradient id='av-zf' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stopColor='#000' /><stop offset='.12' stopColor='#fff' /><stop offset='.88' stopColor='#fff' /><stop offset='1' stopColor='#000' /></linearGradient>
+        {ZONES.map((z) => <mask key={z.id} id={`av-m-${z.id}`} maskContentUnits='objectBoundingBox'><rect width='1' height='1' fill='url(#av-zf)' /></mask>)}
+        <pattern id='av-desert-dirt' width='120' height='70' patternUnits='userSpaceOnUse'>
+          <rect width='120' height='70' fill='#dcae66' />
+          <path d='M0 18 L30 0 L60 18 L90 0 L120 18 V38 L90 20 L60 38 L30 20 L0 38Z' fill='#c99847' />
+          <path d='M0 53 L30 35 L60 53 L90 35 L120 53 V73 L90 55 L60 73 L30 55 L0 73Z' fill='#c99847' />
+        </pattern>
+        <pattern id='av-rain-dirt' width='120' height='70' patternUnits='userSpaceOnUse'>
+          <rect width='120' height='70' fill='#5e4026' />
+          <path d='M0 18 L30 0 L60 18 L90 0 L120 18 V38 L90 20 L60 38 L30 20 L0 38Z' fill='#4b3220' />
+          <path d='M0 53 L30 35 L60 53 L90 35 L120 53 V73 L90 55 L60 73 L30 55 L0 73Z' fill='#4b3220' />
+        </pattern>
         <pattern id='av-dirt' width='120' height='70' patternUnits='userSpaceOnUse'>
           <rect width='120' height='70' fill='#9e7b54' />
           <path d='M0 18 L30 0 L60 18 L90 0 L120 18 V38 L90 20 L60 38 L30 20 L0 38Z' fill='#86633f' />
@@ -131,6 +145,13 @@ const GroundLayer = memo(() => {
       </defs>
       {strip(0, POOL.x0)}
       {strip(POOL.x1, WORLD_W)}
+      {ZONES.map((z) => (
+        <g key={z.id} mask={`url(#av-m-${z.id})`}>
+          <rect x={z.x} y={GROUND} width={z.w} height={810} fill={`url(#av-${z.id}-dirt)`} />
+          <rect x={z.x} y={GROUND} width={z.w} height={46} fill={z.id === "desert" ? "#f1cf8c" : "#3f9a4f"} />
+          <path d={`M${z.x} ${GROUND + 46} ${Array.from({ length: Math.ceil(z.w / 18) }, () => "l9 7 l9 -7").join(" ")}`} fill='none' stroke={z.id === "desert" ? "#c99847" : "#2b7a3d"} strokeWidth='3' opacity='.55' />
+        </g>
+      ))}
       <rect x={POOL.x0 - 14} y={GROUND} width={14} height={810} fill='#6b4a2b' />
       <rect x={POOL.x1} y={GROUND} width={14} height={810} fill='#6b4a2b' />
     </svg>
@@ -334,7 +355,7 @@ const Gate = ({ n, name }) => (
 );
 
 const Big = ({ children, left, top, color = "#f7b32b", shade = "#d97a1f", size = 96, depth = 22 }) => (
-  <div className='gm-block ab' style={{ left, top, fontSize: size, color, textShadow: ex(shade, depth), zIndex: 6, whiteSpace: "nowrap" }}>{children}</div>
+  <div className='gm-block ab' style={{ left, top, fontSize: size, color, textShadow: ex(shade, depth), zIndex: 6, whiteSpace: "pre", lineHeight: 1.05 }}>{children}</div>
 );
 
 const DetailModal = ({ d, onClose }) => {
@@ -414,7 +435,7 @@ const Ground = ({ id, n }) => {
   return (
     <>
       <Gate n={lv.n} name={lv.name} />
-      <Big left={420} top={150} size={92}>{lv.big}</Big>
+      <Big left={420} top={lv.bigTop || 150} size={lv.bigSize || 92}>{lv.big}</Big>
       <Sign sign={s.sign} left={430} />
       {id === "work" && <div className='av-tip' style={{ left: 760, top: 560 }}>Stand by the balloon and press <kbd>E</kbd> to fly ☁</div>}
       <StageCard s={s} did={id} n={lv.n} style={{ left: 930, top: 180, width: 430 }} />
@@ -486,12 +507,12 @@ const TD = () => {
         <div className='av-chqc' style={{ fontSize: 13, fontWeight: 700, marginTop: 8, color: "#14532d" }}>Jump to grab the ✔ cheques</div>
       </div>
       <StageCard s={s} did='td' n={5} style={{ left: 360, top: 250, width: 400, zIndex: 21 }} />
-      <div className='av-roofbld' style={{ left: ROOF.x0 - 7200, top: ROOF.y, width: ROOF.x1 - ROOF.x0 - 50, height: GROUND - ROOF.y }}>
+      <div className='av-roofbld' style={{ left: ROOF.x0 - LVX("td"), top: ROOF.y, width: ROOF.x1 - ROOF.x0 - 50, height: GROUND - ROOF.y }}>
         <div className='slab' style={{ width: ROOF.x1 - ROOF.x0 + 10 }} />
         <span>CONTROL ROOM</span>
         {Array.from({ length: 6 }, (_, i) => <i key={i} className='av-blink' style={{ left: 28 + (i % 3) * 78, top: 50 + Math.floor(i / 3) * 70, animationDelay: `${-i * 0.6}s` }} />)}
       </div>
-      <div className='av-ladder' style={{ left: LADDER.x - 7200 - 20, top: LADDER.top, height: LADDER.bottom - LADDER.top }} />
+      <div className='av-ladder' style={{ left: LADDER.x - LVX("td") - 20, top: LADDER.top, height: LADDER.bottom - LADDER.top }} />
     </>
   );
 };
@@ -560,10 +581,10 @@ const AwardScene = () => (
 
 const Today = () => (
   <>
-    <Gate n={6} name='Today' />
-    <Big left={420} top={140} size={92} color='#f27d8c' shade='#8e1b3a'>TODAY</Big>
+    <Gate n={6} name='Black Belt' />
+    <Big left={420} top={150} size={80} color='#f27d8c' shade='#8e1b3a'>BLACK BELT</Big>
     <DetailCard d={DETAILS.today} style={{ left: 70, top: 300, width: 400 }}>
-      <div className='gm-tag'>LEVEL 5 · TODAY</div>
+      <div className='gm-tag'>LEVEL 6 · BLACK BELT</div>
       <h2>Q2 2026 Star Award</h2>
       <div className='gm-sub'>Wealth Operations Officer III · TD, Toronto</div>
       <ul>
@@ -586,6 +607,7 @@ const Skills = ({ skillCount }) => (
       {skillCount >= SKILLS.length ? "🏆 ALL SKILLS UNLOCKED!" : `Dive in and swim into the skills · ${skillCount} / ${SKILLS.length}`}
     </div>
     <Gate n={7} name='Skills · Underwater' />
+    <GullFlock />
     <div className='av-tip' style={{ left: 120, top: 520 }}>Jump into the water ➜ <kbd>←↑↓→</kbd> swim · <kbd>Shift</kbd> faster</div>
   </>
 );
@@ -673,67 +695,103 @@ const Move = () => (
         <path d='M1140 70 L1185 92 L1155 112 L1185 132 L1140 150Z' fill='#a9231b' />
         <text x='720' y='126' textAnchor='middle' fontFamily='Georgia, serif' fontStyle='italic' fontWeight='700' fontSize='44' fill='#fff'>Previously in India · Now in Canada</text>
       </g>
-      {/* India: Taj Mahal */}
+      {/* India: Chennai Central (red Gothic-revival station: clock tower, white trim, arched wings, corner turrets) */}
       <g transform='translate(430 0)'>
-        <rect x='0' y='606' width='380' height='34' rx='4' fill='#efe7d2' stroke='#9c8f72' strokeWidth='3' />
-        {[28, 352].map((x) => (
-          <g key={x}>
-            <rect x={x - 12} y='400' width='24' height='206' fill='#faf6ea' stroke='#9c8f72' strokeWidth='3' />
-            <rect x={x - 16} y='430' width='32' height='9' fill='#e4dcc4' stroke='#9c8f72' strokeWidth='2' /><rect x={x - 16} y='500' width='32' height='9' fill='#e4dcc4' stroke='#9c8f72' strokeWidth='2' />
-            <ellipse cx={x} cy='394' rx='18' ry='13' fill='#fffdf5' stroke='#9c8f72' strokeWidth='3' /><path d={`M${x} 381 V362`} stroke='#9c8f72' strokeWidth='3' />
+        {/* palms */}
+        {[[-26, 1], [404, -1]].map(([x, f]) => (
+          <g key={'pm' + x}>
+            <path d={`M${x} 640 Q${x + 10 * f} 580 ${x + 4 * f} 520`} stroke='#8a5a2b' strokeWidth='7' fill='none' strokeLinecap='round' />
+            {[[-46, -8], [-30, -26], [0, -32], [30, -26], [46, -8]].map(([dx, dy], k) => (
+              <path key={k} d={`M${x + 4 * f} 520 Q${x + 4 * f + dx * 0.6} ${520 + dy - 12} ${x + 4 * f + dx} ${520 + dy + 16}`} stroke='#2f9e4f' strokeWidth='7' fill='none' strokeLinecap='round' />
+            ))}
           </g>
         ))}
-        <rect x='86' y='470' width='208' height='136' fill='#fbf7ec' stroke='#9c8f72' strokeWidth='3' />
-        <path d='M164 606 V524 Q190 484 216 524 V606Z' fill='#d6cdb4' stroke='#9c8f72' strokeWidth='3' />
-        {[104, 262].map((x) => <path key={x} d={`M${x} 606 V540 Q${x + 12} 520 ${x + 24} 540 V606Z`} fill='#d6cdb4' stroke='#9c8f72' strokeWidth='2.5' />)}
-        {[108, 262].map((x) => <g key={x}><ellipse cx={x + 8} cy='470' rx='20' ry='23' fill='#fffdf5' stroke='#9c8f72' strokeWidth='3' /><path d={`M${x + 8} 447 V432`} stroke='#9c8f72' strokeWidth='3' /></g>)}
-        <rect x='160' y='424' width='60' height='48' fill='#fbf7ec' stroke='#9c8f72' strokeWidth='3' />
-        <path d='M120 430 Q190 330 260 430Z' fill='#fffdf5' stroke='#9c8f72' strokeWidth='3' transform='translate(0 20)' />
-        <ellipse cx='190' cy='418' rx='66' ry='72' fill='#fffdf5' stroke='#9c8f72' strokeWidth='3.5' />
-        <path d='M190 346 V316' stroke='#d9a62b' strokeWidth='4' strokeLinecap='round' /><circle cx='190' cy='312' r='6' fill='#f7b32b' stroke='#b9791a' strokeWidth='2' />
-        <path d='M150 380 Q190 350 230 380' stroke='#e9e1c8' strokeWidth='3' fill='none' />
+        {/* long red wings */}
+        <rect x='-10' y='520' width='400' height='100' fill='#c8372d' stroke='#7a1f19' strokeWidth='3' />
+        <rect x='-10' y='516' width='400' height='8' fill='#f6f1e8' stroke='#7a1f19' strokeWidth='2' />
+        <rect x='-10' y='600' width='400' height='8' fill='#f6f1e8' stroke='#7a1f19' strokeWidth='2' />
+        {[50, 74, 98, 122, 236, 260, 284, 308].map((x) => (
+          <g key={'w' + x}>
+            <path d={`M${x} 592 V562 Q${x + 8} 546 ${x + 16} 562 V592Z`} fill='#5c1d19' stroke='#f6f1e8' strokeWidth='3' />
+            <path d={`M${x + 8} 548 V592`} stroke='#f6f1e8' strokeWidth='2' />
+          </g>
+        ))}
+        {/* corner turrets with white pyramid roofs */}
+        {[-10, 340].map((x) => (
+          <g key={'tu' + x}>
+            <rect x={x} y='456' width='50' height='164' fill='#c8372d' stroke='#7a1f19' strokeWidth='3' />
+            <rect x={x - 3} y='452' width='56' height='8' fill='#f6f1e8' stroke='#7a1f19' strokeWidth='2' />
+            <rect x={x - 3} y='516' width='56' height='8' fill='#f6f1e8' stroke='#7a1f19' strokeWidth='2' />
+            <path d={`M${x - 4} 452 L${x + 25} 404 L${x + 54} 452Z`} fill='#e3ebf3' stroke='#7a1f19' strokeWidth='3' strokeLinejoin='round' />
+            <path d={`M${x + 25} 404 V392`} stroke='#7a1f19' strokeWidth='3' strokeLinecap='round' />
+            <path d={`M${x + 8} 500 V474 Q${x + 25} 458 ${x + 42} 474 V500Z`} fill='#5c1d19' stroke='#f6f1e8' strokeWidth='3' />
+            <path d={`M${x + 8} 592 V548 Q${x + 25} 532 ${x + 42} 548 V592Z`} fill='#5c1d19' stroke='#f6f1e8' strokeWidth='3' />
+          </g>
+        ))}
+        {/* central clock tower */}
+        <rect x='154' y='300' width='72' height='320' fill='#c8372d' stroke='#7a1f19' strokeWidth='3' />
+        {[556, 486, 402, 312].map((y) => <rect key={y} x='150' y={y} width='80' height='8' fill='#f6f1e8' stroke='#7a1f19' strokeWidth='2' />)}
+        <path d='M148 312 L190 232 L232 312Z' fill='#e3ebf3' stroke='#7a1f19' strokeWidth='3.500' strokeLinejoin='round' />
+        <path d='M190 232 V210' stroke='#7a1f19' strokeWidth='3.500' strokeLinecap='round' /><circle cx='190' cy='208' r='4' fill='#c8372d' stroke='#7a1f19' strokeWidth='2' />
+        {[173, 207].map((x) => (
+          <g key={'ck' + x}>
+            <circle cx={x} cy='356' r='14' fill='#fff' stroke='#7a1f19' strokeWidth='3' />
+            <path d={`M${x} 356 V346 M${x} 356 L${x + 7} 360`} stroke='#1a1209' strokeWidth='2.500' strokeLinecap='round' />
+          </g>
+        ))}
+        {[168, 196].map((x) => <path key={'u' + x} d={`M${x} 470 V428 Q${x + 8} 412 ${x + 16} 428 V470Z`} fill='#5c1d19' stroke='#f6f1e8' strokeWidth='3' />)}
+        {[166, 198].map((x) => <path key={'m' + x} d={`M${x} 548 V504 Q${x + 8} 488 ${x + 16} 504 V548Z`} fill='#5c1d19' stroke='#f6f1e8' strokeWidth='3' />)}
+        <path d='M168 618 V582 Q190 556 212 582 V618Z' fill='#5c1d19' stroke='#f6f1e8' strokeWidth='3.500' />
+        {/* platform canopy */}
+        <rect x='-24' y='620' width='428' height='10' rx='2' fill='#7d8794' stroke='#4b5563' strokeWidth='2.500' />
+        {[10, 110, 270, 370].map((x) => <rect key={'ps' + x} x={x} y='630' width='5' height='10' fill='#4b5563' />)}
       </g>
-      {/* Toronto: CN Tower (big, bold, easy to recognise) */}
+      {/* Toronto: CN Tower (tripod base, long concrete shaft, banded main pod, upper mast + antenna) */}
       <g transform='translate(902 0)'>
-        <ellipse cx='123' cy='640' rx='70' ry='10' fill='#2f3b48' opacity='.25' />
-        {/* three-legged base */}
-        <path d='M96 640 L108 560 L138 560 L150 640Z' fill='#8795a5' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
-        {/* concrete shaft */}
-        <path d='M110 560 L116 400 L130 400 L136 560Z' fill='#b9c4cf' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
-        <path d='M118 560 L122 400' stroke='#fff' strokeWidth='3' opacity='.8' />
-        {/* main pod */}
-        <path d='M64 392 Q123 372 182 392 L172 410 Q123 424 74 410Z' fill='#7d8b9a' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
-        <path d='M70 380 Q123 358 176 380 L182 392 Q123 372 64 392Z' fill='#dfe6ee' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
-        <path d='M86 394 H160' stroke='#f7d36a' strokeWidth='4' strokeLinecap='round' strokeDasharray='2 7' />
-        {/* upper shaft + sky pod */}
-        <path d='M118 372 L120 262 L126 262 L128 372Z' fill='#b9c4cf' stroke='#2f3b48' strokeWidth='3' />
-        <ellipse cx='123' cy='256' rx='15' ry='7' fill='#dfe6ee' stroke='#2f3b48' strokeWidth='3' />
-        {/* antenna */}
-        <path d='M123 249 L123 168' stroke='#2f3b48' strokeWidth='6' strokeLinecap='round' />
-        <path d='M123 249 L123 168' stroke='#fff' strokeWidth='2' strokeLinecap='round' />
-        <circle cx='123' cy='164' r='11' fill='#e8453c' opacity='.35' />
-        <circle cx='123' cy='164' r='5' fill='#e8453c' stroke='#fff' strokeWidth='2' />
+        <ellipse cx='123' cy='641' rx='52' ry='7' fill='#2f3b48' opacity='.22' />
+        {/* shaft: lit face + shaded face */}
+        <path d='M94 640 L114 430 L119 330 L123 330 L123 640Z' fill='#efe7da' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M123 640 L123 330 L127 330 L132 430 L152 640Z' fill='#34496a' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
+        {/* tripod arch gap at the base */}
+        <path d='M112 640 Q123 592 134 640Z' fill='#2f3b48' />
+        {/* neck under pod */}
+        <path d='M116 346 L119 330 L127 330 L130 346Z' fill='#2f3b48' />
+        {/* main pod: lilac top deck, banded navy drum, underside */}
+        <ellipse cx='123' cy='344' rx='24' ry='6' fill='#a9b0c8' stroke='#2f3b48' strokeWidth='2.500' />
+        <path d='M94 322 Q123 312 152 322 L148 342 Q123 350 98 342Z' fill='#34496a' stroke='#2f3b48' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M96 328 Q123 320 150 328 M97 334 Q123 326 149 334' stroke='#fff' strokeWidth='2' fill='none' opacity='.85' />
+        <ellipse cx='123' cy='320' rx='30' ry='8' fill='#e6e9f2' stroke='#2f3b48' strokeWidth='3' />
+        <ellipse cx='123' cy='318' rx='17' ry='4' fill='#c9cfe0' />
+        {/* upper mast, sky pod collar and antenna */}
+        <rect x='119.500' y='296' width='7' height='22' fill='#aab2c4' stroke='#2f3b48' strokeWidth='2.500' />
+        <ellipse cx='123' cy='298' rx='8' ry='3.500' fill='#e6e9f2' stroke='#2f3b48' strokeWidth='2.500' />
+        <path d='M121.500 296 L123 166 L124.500 296Z' fill='#cfd4de' stroke='#2f3b48' strokeWidth='2.500' strokeLinejoin='round' />
+        <circle cx='123' cy='164' r='9' fill='#e8453c' opacity='.3' /><circle cx='123' cy='164' r='4' fill='#e8453c' stroke='#fff' strokeWidth='1.500' />
       </g>
       {/* Toronto: Rogers Centre dome + skyline */}
       <g transform='translate(1080 0)'>
-        <path d='M10 640 V560 Q130 440 250 560 V640Z' fill='#cfd6de' stroke='#6c7886' strokeWidth='3' />
-        <path d='M60 600 Q130 520 200 600' stroke='#6c7886' strokeWidth='3' fill='none' />
-        <rect x='258' y='470' width='70' height='170' fill='#9aa7b4' stroke='#6c7886' strokeWidth='3' />
-        <rect x='330' y='520' width='50' height='120' fill='#b4bfca' stroke='#6c7886' strokeWidth='3' />
-        {Array.from({ length: 6 }, (_, r) => Array.from({ length: 2 }, (_, c) => <rect key={r + '-' + c} x={270 + c * 28} y={486 + r * 24} width='16' height='12' fill='#f7d36a' opacity='.8' />))}
+        <path d='M0 640 V612 Q18 522 130 490 Q242 522 260 612 V640Z' fill='#f4f6fb' stroke='#8a94ad' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M18 640 V614 Q36 542 130 514 Q224 542 242 614 V640Z' fill='#1d2a44' />
+        <path d='M62 604 Q130 548 198 604' stroke='#6c7a99' strokeWidth='3' fill='none' />
+        <rect x='48' y='598' width='164' height='42' rx='8' fill='#d9d9d3' stroke='#8a94ad' strokeWidth='3' />
+        {[64, 100, 136, 172].map((x) => <rect key={x} x={x} y='612' width='24' height='14' fill='#34496a' />)}
+        <rect x='272' y='468' width='62' height='172' fill='#5b7aa8' stroke='#34496a' strokeWidth='3' />
+        <rect x='340' y='540' width='52' height='100' fill='#d9c7a7' stroke='#8a7a5a' strokeWidth='3' />
+        {Array.from({ length: 6 }, (_, r) => Array.from({ length: 2 }, (_, c) => <rect key={r + '-' + c} x={282 + c * 26} y={486 + r * 24} width='14' height='12' fill='#cfe3ff' opacity='.8' />))}
+        {Array.from({ length: 4 }, (_, r) => Array.from({ length: 2 }, (_, c) => <rect key={'b' + r + '-' + c} x={350 + c * 22} y={556 + r * 22} width='11' height='11' fill='#8a7a5a' opacity='.55' />))}
       </g>
       {/* flight path */}
       <path d='M470 230 Q720 20 970 200' stroke='#fff' strokeWidth='4' strokeDasharray='4 12' strokeLinecap='round' fill='none' opacity='.9' />
     </svg>
     <div className='av-moveplane'>✈</div>
-    <div className='av-movetag' style={{ left: 560, top: 654 }}>TAJ MAHAL · INDIA</div>
-    <div className='av-movetag now' style={{ left: 1030, top: 654 }}>CN TOWER · CANADA</div>
+    <div className='av-movetag' style={{ left: 520, top: 654 }}>CHENNAI CENTRAL · INDIA</div>
+    <div className='av-movetag now' style={{ left: 1005, top: 654 }}>CN TOWER · CANADA</div>
   </>
 );
 
 const FlagCastle = () => {
-  const fx = FLAG.x - 15840;
-  const cx = CASTLE_X - 15840;
+  const fx = FLAG.x - LVX("contact");
+  const cx = CASTLE_X - LVX("contact");
   return (
     <>
       <div className='av-flagpole' style={{ left: fx - 4, top: FLAG.top, height: GROUND - FLAG.top }}>
@@ -818,7 +876,7 @@ const Falling = memo(() => (
 /* ---------------------------------------------------------------- */
 
 const ELEPHANTS = [
-  { x: 4050, w: 190, d: 18 }, { x: 8920, w: 180, d: 16 }, { x: 13820, w: 190, d: 20 },
+  { x: 4050, w: 190, d: 18 }, { x: sh(8920), w: 180, d: 16 }, { x: sh(13820), w: 190, d: 20 },
 ];
 const Elephants = memo(() => (
   <>
@@ -831,9 +889,9 @@ const Elephants = memo(() => (
 ));
 
 const CRITTERS = [
-  ["rabbit", 1900, 78, 6], ["rabbit", 6550, 86, 5], ["rabbit", 9150, 80, 6], ["rabbit", 14750, 82, 6],
-  ["deer", 330, 170, 22], ["deer", 7620, 165, 22], ["deer", 13900, 168, 23],
-  ["hog", 3650, 90, 17], ["hog", 14150, 96, 18],
+  ["rabbit", 1900, 78, 6], ["rabbit", sh(6550), 86, 5], ["rabbit", sh(9150), 80, 6], ["rabbit", sh(14750), 82, 6],
+  ["deer", 330, 170, 22], ["deer", sh(7620), 165, 22], ["deer", sh(13900), 168, 23],
+  ["hog", 3650, 90, 17], ["hog", sh(14150), 96, 18],
 ];
 const Critters = memo(() => (
   <>
@@ -847,6 +905,206 @@ const Critters = memo(() => (
     })}
   </>
 ));
+
+
+/* ---------------------------------------------------------------- */
+/* scenery zones: desert + rainforest                                */
+/* ---------------------------------------------------------------- */
+
+const Cactus = ({ x, h, w = 34, flower = true }) => (
+  <g transform={`translate(${x} 640)`}>
+    <path d={`M${-w * 0.5} ${-h * 0.4} H${-w * 1.35} V${-h * 0.7}`} stroke='#1f5e33' strokeWidth={w * 0.82} fill='none' strokeLinecap='round' strokeLinejoin='round' />
+    <path d={`M${w * 0.5} ${-h * 0.55} H${w * 1.35} V${-h * 0.84}`} stroke='#1f5e33' strokeWidth={w * 0.82} fill='none' strokeLinecap='round' strokeLinejoin='round' />
+    <path d={`M${-w * 0.5} ${-h * 0.4} H${-w * 1.35} V${-h * 0.7}`} stroke='#3f9a4f' strokeWidth={w * 0.6} fill='none' strokeLinecap='round' strokeLinejoin='round' />
+    <path d={`M${w * 0.5} ${-h * 0.55} H${w * 1.35} V${-h * 0.84}`} stroke='#3f9a4f' strokeWidth={w * 0.6} fill='none' strokeLinecap='round' strokeLinejoin='round' />
+    <rect x={-w / 2} y={-h} width={w} height={h} rx={w / 2} fill='#3f9a4f' stroke='#1f5e33' strokeWidth='3' />
+    <path d={`M${-w * 0.14} ${-h + 14} V-8 M${w * 0.16} ${-h + 14} V-8`} stroke='#2c7a3c' strokeWidth='3' strokeLinecap='round' />
+    {flower && <g><circle cx='0' cy={-h - 4} r='9' fill='#f27d8c' stroke='#8e1b3a' strokeWidth='2' /><circle cx='0' cy={-h - 4} r='3.500' fill='#ffd166' /></g>}
+  </g>
+);
+
+const Camel = ({ x, s = 1 }) => (
+  <g transform={`translate(${x} 640) scale(${s})`}>
+    <g fill='#c98d45' stroke='#7a4e20' strokeWidth='3' strokeLinejoin='round'>
+      <rect x='-56' y='-66' width='15' height='66' rx='7' /><rect x='-32' y='-66' width='15' height='66' rx='7' />
+      <rect x='28' y='-66' width='15' height='66' rx='7' /><rect x='52' y='-66' width='15' height='66' rx='7' />
+    </g>
+    <g fill='#5c3a17'><rect x='-56' y='-8' width='15' height='8' rx='3' /><rect x='-32' y='-8' width='15' height='8' rx='3' /><rect x='28' y='-8' width='15' height='8' rx='3' /><rect x='52' y='-8' width='15' height='8' rx='3' /></g>
+    <path d='M-72 -92 Q-92 -80 -88 -52' stroke='#7a4e20' strokeWidth='6' fill='none' strokeLinecap='round' />
+    <path d='M54 -98 Q82 -124 90 -170' stroke='#7a4e20' strokeWidth='30' fill='none' strokeLinecap='round' />
+    <path d='M54 -98 Q82 -124 90 -170' stroke='#e0aa5e' strokeWidth='24' fill='none' strokeLinecap='round' />
+    <ellipse cx='-4' cy='-92' rx='74' ry='36' fill='#e0aa5e' stroke='#7a4e20' strokeWidth='3' />
+    <path d='M-34 -118 Q-8 -176 26 -118Z' fill='#e0aa5e' stroke='#7a4e20' strokeWidth='3' strokeLinejoin='round' />
+    <path d='M-52 -100 Q-4 -76 44 -100' stroke='#c98d45' strokeWidth='4' fill='none' opacity='.6' />
+    <ellipse cx='104' cy='-176' rx='25' ry='15' transform='rotate(-8 104 -176)' fill='#e0aa5e' stroke='#7a4e20' strokeWidth='3' />
+    <circle cx='98' cy='-182' r='4.500' fill='#fff' /><circle cx='99' cy='-182' r='2.400' fill='#1a1209' />
+    <ellipse cx='122' cy='-172' rx='3' ry='2' fill='#7a4e20' /><path d='M108 -168 q8 5 16 0' stroke='#7a4e20' strokeWidth='2.500' fill='none' strokeLinecap='round' />
+    <path d='M86 -190 l-4 -16 l12 10Z' fill='#c98d45' stroke='#7a4e20' strokeWidth='2' />
+  </g>
+);
+
+const DesertPalm = ({ x, h = 150 }) => (
+  <g transform={`translate(${x} 640)`}>
+    <path d={`M0 0 Q14 ${-h * 0.5} 6 ${-h}`} stroke='#7a4a2b' strokeWidth='11' fill='none' strokeLinecap='round' />
+    {[[-58, -4], [-40, -34], [-8, -46], [30, -36], [54, -6], [44, 22]].map(([dx, dy], k) => (
+      <path key={k} d={`M6 ${-h} Q${6 + dx * 0.55} ${-h + dy - 22} ${6 + dx} ${-h + dy + 20}`} stroke='#2f9e4f' strokeWidth='10' fill='none' strokeLinecap='round' />
+    ))}
+    <circle cx='6' cy={-h + 4} r='7' fill='#7a4a2b' />
+  </g>
+);
+
+
+const Fact = ({ left, top, w = 240, ico, head, children, z = 13 }) => (
+  <div className='av-fact' style={{ left, top, width: w, zIndex: z }}>
+    <div className='av-fact-h'><span>{ico}</span>{head}</div>
+    <div className='av-fact-b'>{children}</div>
+  </div>
+);
+
+const Monkey = () => (
+  <svg viewBox='0 0 120 120' width='100%' height='100%' aria-hidden='true'>
+    <path d='M30 88 Q-6 84 6 54 Q12 40 24 48' stroke='#6b4423' strokeWidth='9' fill='none' strokeLinecap='round' />
+    <ellipse cx='58' cy='84' rx='26' ry='24' fill='#8a5a30' stroke='#4a2f16' strokeWidth='3' />
+    <ellipse cx='60' cy='90' rx='15' ry='15' fill='#e9c89a' />
+    <path d='M42 70 Q26 46 34 28' stroke='#8a5a30' strokeWidth='11' fill='none' strokeLinecap='round' />
+    <path d='M76 70 Q96 46 88 26' stroke='#8a5a30' strokeWidth='11' fill='none' strokeLinecap='round' />
+    <circle cx='34' cy='26' r='7' fill='#e9c89a' stroke='#4a2f16' strokeWidth='2' /><circle cx='88' cy='24' r='7' fill='#e9c89a' stroke='#4a2f16' strokeWidth='2' />
+    <rect x='42' y='100' width='12' height='16' rx='6' fill='#8a5a30' stroke='#4a2f16' strokeWidth='2.500' /><rect x='64' y='100' width='12' height='16' rx='6' fill='#8a5a30' stroke='#4a2f16' strokeWidth='2.500' />
+    <circle cx='60' cy='46' r='25' fill='#8a5a30' stroke='#4a2f16' strokeWidth='3' />
+    <circle cx='36' cy='46' r='9' fill='#e9c89a' stroke='#4a2f16' strokeWidth='2.500' /><circle cx='84' cy='46' r='9' fill='#e9c89a' stroke='#4a2f16' strokeWidth='2.500' />
+    <ellipse cx='60' cy='50' rx='19' ry='16' fill='#e9c89a' />
+    <circle cx='52' cy='45' r='5' fill='#fff' /><circle cx='68' cy='45' r='5' fill='#fff' /><circle cx='53' cy='46' r='2.800' fill='#1a1209' /><circle cx='69' cy='46' r='2.800' fill='#1a1209' />
+    <ellipse cx='60' cy='55' rx='5' ry='3' fill='#6b4423' /><path d='M50 60 Q60 68 70 60' stroke='#6b4423' strokeWidth='3' fill='none' strokeLinecap='round' />
+  </svg>
+);
+
+const Gull = () => (
+  <svg viewBox='0 0 60 30' width='100%' height='100%' aria-hidden='true'>
+    <g className='av-wing'><path d='M30 16 Q16 -2 0 8 Q16 6 30 18Z' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' strokeLinejoin='round' /><path d='M30 16 Q44 -2 60 8 Q44 6 30 18Z' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' strokeLinejoin='round' /></g>
+    <ellipse cx='30' cy='19' rx='9' ry='5' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' />
+    <circle cx='38' cy='17' r='3.500' fill='#fff' stroke='#9aa7b2' strokeWidth='1.500' /><path d='M41 17 l5 1.500 l-5 1.500Z' fill='#f7b32b' /><circle cx='39' cy='16' r='.9' fill='#222' />
+  </svg>
+);
+
+const GULLS = [[0, 0, 96, 0], [150, 50, 78, 1.2], [310, -20, 88, 2.1], [470, 60, 70, 3], [610, 6, 84, 0.6], [760, 44, 74, 1.7]];
+const GullFlock = () => (
+  <div className='av-flock'>
+    {GULLS.map(([x, y, w, d], i) => <div key={i} className='av-gull' style={{ left: x, top: y, width: w, height: w / 2, animationDelay: `${-d}s` }}><Gull /></div>)}
+  </div>
+);
+
+const Desert = () => (
+  <>
+    <Big left={430} top={92} size={104} color='#f2c14e' shade='#b9561a' depth={24}>DESERT</Big>
+    <svg className='ab' style={{ left: 0, top: 0, zIndex: 2, pointerEvents: "none" }} width='1440' height='810' viewBox='0 0 1440 810' aria-hidden='true'>
+      <defs><radialGradient id='dz-sun' cx='.5' cy='.5' r='.5'><stop offset='0' stopColor='#fff6c8' stopOpacity='1' /><stop offset='.55' stopColor='#ffd166' stopOpacity='.55' /><stop offset='1' stopColor='#ffb347' stopOpacity='0' /></radialGradient></defs>
+      <circle cx='1080' cy='190' r='190' fill='url(#dz-sun)' />
+      <circle cx='1080' cy='190' r='66' fill='#fff1b0' stroke='#ffd166' strokeWidth='6' />
+      {/* far dunes + pyramids */}
+      <path d='M0 640 V540 Q180 450 360 520 Q560 590 760 500 Q980 420 1180 520 Q1320 572 1440 500 V640Z' fill='#f0c27a' />
+      <g transform='translate(960 0)'>
+        <path d='M0 548 L100 428 L200 548Z' fill='#e2b673' stroke='#b98a43' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M100 428 L200 548 L132 548Z' fill='#c99b57' />
+        <path d='M170 552 L236 474 L302 552Z' fill='#e8bf80' stroke='#b98a43' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M236 474 L302 552 L262 552Z' fill='#c99b57' />
+      </g>
+      <path d='M0 640 V596 Q240 530 480 596 Q760 650 1000 586 Q1240 530 1440 596 V640Z' fill='#e8b266' />
+      <path d='M0 640 V620 Q300 590 620 622 Q900 640 1160 612 Q1330 596 1440 616 V640Z' fill='#dca454' />
+      {/* rocks */}
+      <g fill='#b98a5a' stroke='#7a5a34' strokeWidth='3'><path d='M700 640 Q708 612 734 610 Q760 608 770 640Z' /><path d='M742 640 Q752 622 772 622 Q788 624 794 640Z' /></g>
+      {/* cacti */}
+      <Cactus x={250} h={170} /><Cactus x={600} h={110} w={28} /><Cactus x={1250} h={150} w={32} flower={false} /><Cactus x={1390} h={96} w={26} />
+      {/* oasis with palms */}
+      <ellipse cx='1130' cy='636' rx='96' ry='10' fill='#4fc3e8' stroke='#2b8cc0' strokeWidth='3' />
+      <path d='M1080 634 q14 -6 28 0 M1140 638 q14 -6 28 0' stroke='#fff' strokeOpacity='.7' strokeWidth='2.500' fill='none' strokeLinecap='round' />
+      <DesertPalm x={1060} h={170} /><DesertPalm x={1210} h={140} />
+      {/* camel */}
+      <Camel x={780} s={1.05} />
+      {/* skull + bones */}
+      <g transform='translate(430 622)'><ellipse cx='0' cy='0' rx='15' ry='12' fill='#f6efe0' stroke='#9c8f72' strokeWidth='2.500' /><circle cx='-5' cy='-1' r='3.200' fill='#3a2a1a' /><circle cx='5' cy='-1' r='3.200' fill='#3a2a1a' /><rect x='-6' y='8' width='12' height='7' rx='2' fill='#f6efe0' stroke='#9c8f72' strokeWidth='2' /></g>
+    </svg>
+    <div className='av-tumble' />
+    <Fact left={400} top={236} ico='💧' head='Smart Irrigation'>ArcGIS + SWAT dynamic-programming model for precision crop irrigation. Presented at MIT and other top institutions.</Fact>
+    <Fact left={690} top={236} ico='🥈' head='2nd of 25 teams'>Android app workshop at IIT Bombay. Also General Secretary, CSI Student Chapter.</Fact>
+    <Sign sign={["DESERT CROSSING", "Hot sand ahead"]} left={300} />
+  </>
+);
+
+const BigLeaf = ({ x, s = 1, c = '#2f9e4f', stem = 120 }) => (
+  <g transform={`translate(${x} 640) scale(${s})`}>
+    <path d={`M0 0 Q-8 ${-stem * 0.5} 0 ${-stem}`} stroke='#1f6b3a' strokeWidth='8' fill='none' strokeLinecap='round' />
+    {[-62, 0, 58].map((rot, i) => (
+      <g key={i} transform={`translate(0 ${-stem}) rotate(${rot})`}>
+        <path d='M0 0 C-54 -22 -64 -96 0 -150 C64 -96 54 -22 0 0Z' fill={i === 1 ? c : '#3cae5c'} stroke='#1a5a30' strokeWidth='3' strokeLinejoin='round' />
+        <path d='M0 -4 V-142 M0 -40 L-24 -70 M0 -40 L24 -70 M0 -80 L-22 -108 M0 -80 L22 -108' stroke='#1a5a30' strokeWidth='2.500' fill='none' opacity='.6' strokeLinecap='round' />
+      </g>
+    ))}
+  </g>
+);
+
+const Hibiscus = ({ x, y }) => (
+  <g transform={`translate(${x} ${y})`}>
+    <path d='M0 20 V50' stroke='#1f6b3a' strokeWidth='5' />
+    {[0, 72, 144, 216, 288].map((a) => <ellipse key={a} cx='0' cy='-11' rx='9' ry='13' transform={`rotate(${a})`} fill='#ef476f' stroke='#9c1d3b' strokeWidth='2' />)}
+    <circle r='5' fill='#ffd166' />
+  </g>
+);
+
+const Mushroom = ({ x }) => (
+  <g transform={`translate(${x} 640)`}>
+    <rect x='-5' y='-22' width='10' height='22' rx='4' fill='#f6efe0' stroke='#9c8f72' strokeWidth='2' />
+    <path d='M-20 -20 Q0 -50 20 -20Z' fill='#e8453c' stroke='#8f1d17' strokeWidth='2.500' />
+    <circle cx='-6' cy='-30' r='3' fill='#fff' /><circle cx='7' cy='-26' r='2.500' fill='#fff' />
+  </g>
+);
+
+const Rainforest = () => (
+  <>
+    <Big left={330} top={110} size={84} color='#8bd450' shade='#1f6b3a' depth={22}>RAINFOREST</Big>
+    <svg className='ab' style={{ left: 0, top: 0, zIndex: 2, pointerEvents: "none" }} width='1440' height='810' viewBox='0 0 1440 810' aria-hidden='true'>
+      {/* distant jungle and tall trunks */}
+      <path d='M0 640 V470 Q90 410 180 470 Q280 380 380 460 Q500 390 620 470 Q740 400 860 470 Q980 380 1100 460 Q1220 400 1330 470 Q1400 430 1440 470 V640Z' fill='#2f7d5a' opacity='.55' />
+      {[120, 470, 1010, 1330].map((x, i) => (
+        <g key={x}>
+          <path d={`M${x - 30} 640 Q${x - 22} 340 ${x - 26} 90 H${x + 26} Q${x + 22} 340 ${x + 30} 640Z`} fill='#6b4a2b' stroke='#3d2a17' strokeWidth='3' />
+          <path d={`M${x - 8} 640 Q${x - 4} 380 ${x - 8} 110 M${x + 12} 600 Q${x + 8} 380 ${x + 12} 140`} stroke='#3d2a17' strokeWidth='3' fill='none' opacity='.55' />
+          <path d={`M${x - 28} ${230 + i * 40} q28 12 56 -4 M${x - 28} ${330 + i * 30} q28 12 56 -4 M${x - 28} ${430 + i * 20} q28 12 56 -4`} stroke='#2f9e4f' strokeWidth='7' fill='none' strokeLinecap='round' />
+        </g>
+      ))}
+      {/* canopy */}
+      <path d='M0 0 H1440 V150 Q1360 230 1270 160 Q1180 250 1070 170 Q960 250 850 170 Q740 250 630 170 Q520 250 410 170 Q300 250 190 170 Q90 230 0 160Z' fill='#1f6b3a' />
+      <path d='M0 0 H1440 V100 Q1330 170 1230 110 Q1120 180 1010 110 Q900 180 790 110 Q680 180 570 110 Q460 180 350 110 Q240 170 130 110 Q60 150 0 110Z' fill='#2f9e4f' />
+      {/* hanging vines */}
+      {[210, 380, 560, 880, 1160, 1380].map((x, i) => (
+        <g key={x}>
+          <path d={`M${x} 120 q${i % 2 ? 16 : -16} 60 0 110 q${i % 2 ? -14 : 14} 50 0 ${90 + (i % 3) * 30}`} stroke='#1f8a46' strokeWidth='6' fill='none' strokeLinecap='round' />
+          <ellipse cx={x} cy={330 + (i % 3) * 30} rx='9' ry='14' fill='#3cae5c' stroke='#1a5a30' strokeWidth='2' />
+        </g>
+      ))}
+      {/* waterfall */}
+      <g>
+        <path d='M640 640 V250 Q650 214 700 210 H800 Q850 214 860 250 V640Z' fill='#8a97a0' stroke='#4b5563' strokeWidth='4' strokeLinejoin='round' />
+        <path d='M660 640 V270 M840 640 V270' stroke='#6c7886' strokeWidth='3' opacity='.5' />
+        <rect x='722' y='214' width='56' height='426' fill='#8fd8f5' opacity='.95' />
+        <g className='av-wfall' stroke='#fff' strokeWidth='5' strokeLinecap='round' fill='none' strokeDasharray='26 30' opacity='.85'><path d='M734 214 V640' /><path d='M750 214 V640' /><path d='M766 214 V640' /></g>
+        <ellipse cx='750' cy='636' rx='100' ry='13' fill='#4fc3e8' stroke='#2b8cc0' strokeWidth='3' />
+        <g fill='#fff' opacity='.55'><circle cx='716' cy='620' r='22' /><circle cx='752' cy='610' r='28' /><circle cx='788' cy='622' r='20' /></g>
+      </g>
+      {/* plants and flowers */}
+      <BigLeaf x={300} s={1.05} /><BigLeaf x={575} s={0.85} c='#2a8a4a' stem={90} /><BigLeaf x={1150} s={1.1} /><BigLeaf x={1390} s={0.9} c='#2a8a4a' stem={100} />
+      <Hibiscus x={240} y={590} /><Hibiscus x={1000} y={596} /><Hibiscus x={1260} y={594} />
+      <Mushroom x={430} /><Mushroom x={920} /><Mushroom x={1090} />
+    </svg>
+    <Parrot className='ab' style={{ left: 520, top: 360, width: 66, zIndex: 14 }} />
+    <Parrot className='ab' style={{ left: 1190, top: 400, width: 58, zIndex: 14 }} />
+    <div className='av-mist' />
+    <Fact left={90} top={258} w={230} ico='🏅' head='Certified ScrumMaster'>Scrum Alliance · May 2025. Led projects through every SDLC phase.</Fact>
+    <Fact left={900} top={258} w={230} ico='⚽' head='Football Analytics'>Python certification, Mad About Sports. Plus SQL (UC Davis) and Excel 2019 (Pearson).</Fact>
+    <Fact left={1160} top={258} w={230} ico='📊' head='Power BI + Tableau'>Dashboards for senior leadership. Lean, UAT and automation at Amazon: +35% accuracy.</Fact>
+    <div className='av-monkey'><Monkey /></div>
+    <Sign sign={["RAINFOREST", "Humid and wild"]} left={300} />
+  </>
+);
 
 export const WorldContent = memo(({ skillCount, opened, finished }) => (
   <>
@@ -871,6 +1129,7 @@ export const WorldContent = memo(({ skillCount, opened, finished }) => (
       else body = <Contact finished={finished} />;
       return <div key={l.id} className={`av-lv av-lv-${l.id}`} style={{ left: l.x }}>{body}</div>;
     })}
+    {ZONES.map((z) => <div key={z.id} className={`av-lv av-lv-${z.id}`} style={{ left: z.x }}>{z.id === "desert" ? <Desert /> : <Rainforest />}</div>)}
     <Items />
   </>
 ));

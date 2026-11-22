@@ -443,3 +443,31 @@ kbd { background: #fff; color: #14532d; border-radius: 6px; padding: 1px 7px; ma
 @keyframes av-bolt { 0%, 86%, 100% { opacity: 0; } 88% { opacity: calc(var(--storm, 0) * .55); } 90% { opacity: 0; } 92% { opacity: calc(var(--storm, 0) * .4); } 95% { opacity: 0; } }
 .av-wxbadge { position: absolute; left: 30px; top: 100px; z-index: 61; background: #0c3b24dd; color: #fff; font-weight: 800; font-size: 14px; padding: 6px 12px; border-radius: 12px; }
 @media (prefers-reduced-motion: reduce) { .av-wind::before, .av-wind i, .av-flash { animation: none; } }
+
+/* scenery zones: desert + rainforest */
+.av-tumble { position: absolute; left: 0; top: 596px; width: 44px; height: 44px; border-radius: 50%; border: 3px dashed #8a5a24; background: radial-gradient(circle, #c99847 0 30%, transparent 32%); z-index: 4; animation: av-tumble 16s linear infinite; }
+@keyframes av-tumble { 0% { transform: translateX(-80px) rotate(0) } 25% { transform: translate(300px, -16px) rotate(380deg) } 50% { transform: translate(700px, 0) rotate(760deg) } 75% { transform: translate(1050px, -14px) rotate(1140deg) } 100% { transform: translateX(1520px) rotate(1520deg) } }
+.av-wfall path { animation: av-wf .9s linear infinite; }
+@keyframes av-wf { to { stroke-dashoffset: -56 } }
+.av-mist { position: absolute; left: 0; top: 330px; width: 1440px; height: 340px; z-index: 12; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(236,248,240,.38) 55%, rgba(255,255,255,.18) 100%); animation: av-mistdrift 9s ease-in-out infinite alternate; }
+@keyframes av-mistdrift { from { opacity: .55; transform: translateX(-24px) } to { opacity: 1; transform: translateX(24px) } }
+
+.av-fact { position: absolute; background: rgba(255,251,234,.96); border: 3px solid #f7b32b; border-radius: 16px; padding: 10px 14px 12px; color: #14532d; box-shadow: 0 6px 16px rgba(0,0,0,.22); text-align: left; }
+.av-fact-h { font-weight: 800; font-size: 17px; display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+.av-fact-b { font-size: 13.5px; line-height: 1.35; color: #3a4a3f; }
+.av-monkey { position: absolute; left: 0; top: 0; width: 84px; height: 84px; z-index: 11; pointer-events: none; animation: av-monkey 9s ease-in-out infinite; }
+@keyframes av-monkey {
+  0% { transform: translate(470px, 300px) rotate(-10deg) scaleX(1) }
+  22% { transform: translate(640px, 140px) rotate(20deg) scaleX(1) }
+  44% { transform: translate(980px, 290px) rotate(-8deg) scaleX(1) }
+  50% { transform: translate(990px, 300px) rotate(0) scaleX(-1) }
+  72% { transform: translate(760px, 150px) rotate(-20deg) scaleX(-1) }
+  94% { transform: translate(480px, 300px) rotate(8deg) scaleX(-1) }
+  100% { transform: translate(470px, 300px) rotate(-10deg) scaleX(1) }
+}
+.av-flock { position: absolute; left: 0; top: 70px; width: 900px; height: 150px; z-index: 5; pointer-events: none; animation: av-flock 34s linear infinite; }
+.av-gull { position: absolute; animation: av-bob 1.8s ease-in-out infinite; }
+.av-wing { transform-origin: 30px 17px; animation: av-flap .55s ease-in-out infinite alternate; }
+@keyframes av-flock { from { transform: translateX(-300px) } to { transform: translateX(2500px) } }
+@keyframes av-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-14px) } }
+@keyframes av-flap { from { transform: scaleY(1) } to { transform: scaleY(.35) } }

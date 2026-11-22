@@ -163,6 +163,19 @@ const MapOverlay = ({ onClose, onGo, onRecruiter, onRestart, visited, level }) =
               <path d='M0 -34L12 -8H-12Z' fill={i % 3 ? "#38985a" : "#46b36a"} stroke='#1f5e33' strokeWidth='2' />
             </g>
           ))}
+          {/* scenery zones: desert + rainforest */}
+          <g>
+            <path d='M150 205 Q170 130 250 135 Q300 150 275 200 Q250 250 190 255 Q140 255 150 205Z' fill='#f2cf8a' stroke='#c99847' strokeWidth='4' strokeDasharray='8 6' />
+            {[[185, 235], [255, 160]].map(([x, y], i) => <path key={i} d={`M${x} ${y} q8 -10 16 0 q8 10 16 0`} stroke='#d9a95c' strokeWidth='3' fill='none' strokeLinecap='round' />)}
+            <text x='212' y='198' textAnchor='middle' fontSize='26'>🏜️</text>
+            <text x='222' y='222' textAnchor='middle' fontSize='20'>🌵</text>
+            <g transform='translate(262 268)'><rect x='-36' y='-12' width='72' height='20' rx='10' fill='#8a5a24' opacity='.92' /><text y='3' textAnchor='middle' fontSize='11' fontWeight='800' fill='#fff'>DESERT</text></g>
+            <path d='M525 360 Q540 305 610 310 Q665 325 640 385 Q610 420 560 415 Q515 405 525 360Z' fill='#1f7a45' stroke='#14532d' strokeWidth='4' strokeDasharray='8 6' opacity='.96' />
+            <path d='M575 400 q-6 -40 6 -72' stroke='#8fd8f5' strokeWidth='7' fill='none' strokeLinecap='round' />
+            <text x='560' y='372' textAnchor='middle' fontSize='24'>🌴</text>
+            <text x='612' y='362' textAnchor='middle' fontSize='20'>🦜</text>
+            <g transform='translate(585 432)'><rect x='-48' y='-12' width='96' height='20' rx='10' fill='#14532d' opacity='.92' /><text y='3' textAnchor='middle' fontSize='11' fontWeight='800' fill='#fff'>RAINFOREST</text></g>
+          </g>
           {/* trail */}
           <path d={smooth} fill='none' stroke='#fff3c4' strokeWidth='12' strokeLinecap='round' strokeLinejoin='round' opacity='.95' />
           <path d={smooth} fill='none' stroke='#c58a3c' strokeWidth='4' strokeDasharray='2 12' strokeLinecap='round' />

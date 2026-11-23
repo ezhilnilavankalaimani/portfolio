@@ -49,7 +49,7 @@ const CHIPS = ['Experience', 'Studies', 'Skills', 'Projects', 'Accolades', 'Bany
 
 const ApBuddy = ({ onGame }) => {
   const [open, setOpen] = useState(false);
-  const [msgs, setMsgs] = useState([{ b: 1, t: "Hi, I'm EZ. I make life easier. Tell me where to go, like 'take me to projects', or ask me the top score in the game." }]);
+  const [msgs, setMsgs] = useState([{ b: 1, t: "Hi, I'm EZ. I make life EaZier. Tell me where to go, like 'take me to projects', or ask me the top score in the game." }]);
   const [val, setVal] = useState('');
   const log = useRef(null);
   useEffect(() => { if (log.current) log.current.scrollTop = log.current.scrollHeight; }, [msgs, open]);
@@ -65,11 +65,15 @@ const ApBuddy = ({ onGame }) => {
     if (/(how (do|can|to|did).*(earn|get|collect|unlock|win|score|reach|beat|finish|clear)|earn|cheat|tip|trick|secret|where (are|is).*(coin|star|skill|cheque|badge)|walkthrough|guide to)/.test(s) && /(game|point|score|coin|star|skill|achievement|badge|level|play)/.test(s)) return "That part is for you to discover. All I can say is the top score is 3,210 points. Say 'take me to the game' to try for it.";
     if (/(point|score|max|highest|best|top)/.test(s) && /(game|point|score|play|max)/.test(s) && !/(take me|go to|show me)/.test(s)) return 'The top score in the game version is 3,210 points. Say "take me to the game" and see how close you get.';
     if (/(help|menu|what can you|options|where)/.test(s) && !/(work|stud)/.test(s)) return 'I can take you to: Experience, Studies, Skills, Projects, Accolades, My banyan, Popcorn Corner, Contact, or the Game.';
+    if (/\b(time|clock|hour)\b/.test(s) && /(chennai|india|mumbai|delhi|tamil|toronto|canada|ontario)/.test(s)) {
+      const f = (tz) => new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true, weekday: 'short' }).format(new Date());
+      return `Right now it is ${f('Asia/Kolkata')} in Chennai (India) and ${f('America/Toronto')} in Toronto.`;
+    }
     if (/(game|play|adventure|interactive)/.test(s)) { setTimeout(() => onGame && onGame(), 700); return 'Loading the game version. Easy!'; }
     for (const [, re, id, label] of TARGETS) {
       if (re.test(s)) { go(id); return `Rolling to ${label}.`; }
     }
-    return "I give directions around this page, and the game's top score, that's how I make life easier. Try 'take me to projects'.";
+    return "I give directions around this page, and the game's top score, that's how I make life EaZier. Try 'take me to projects'.";
   };
   const send = (text) => {
     const t = (text || '').trim();
@@ -89,7 +93,7 @@ const ApBuddy = ({ onGame }) => {
       <span className='apx-tip'>Need help? Click me</span>
       {open && (
         <div className='apx-chat' role='dialog' aria-label='EZ'>
-          <header><span>EZ <small style={{ fontWeight: 400, opacity: .7, marginLeft: 6 }}>I make life easier</small></span><button type='button' aria-label='Close' onClick={() => setOpen(false)}>&times;</button></header>
+          <header><span>EZ <small style={{ fontWeight: 400, opacity: .7, marginLeft: 6 }}>I make life EaZier</small></span><button type='button' aria-label='Close' onClick={() => setOpen(false)}>&times;</button></header>
           <div className='apx-log' ref={log}>{msgs.map((m, i) => <div key={i} className={`apx-m ${m.u ? 'u' : 'b'}`}>{m.t}</div>)}</div>
           <div className='apx-chips'>{CHIPS.map((c) => <button key={c} type='button' onClick={() => send(`take me to ${c}`)}>{c}</button>)}</div>
           <form onSubmit={(e) => { e.preventDefault(); send(val); }}>

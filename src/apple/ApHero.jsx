@@ -56,6 +56,7 @@ const ApHero = ({ onGame }) => {
   useRing(ring);
   return (
     <section className='sec hero' id='overview'>
+      <h2 className='hname'>Ezhil Nilavan Kalaimani</h2>
       <div className='eyebrow'>Finance · Data analysis · Automation</div>
       <h1 className='reveal'>Making work <span className='grad'>run itself.</span></h1>
       <p className='sub reveal'>A rare mix of finance knowledge and analyst skills. I understand how money and client work actually move, and I use data to make that work faster, clearer and more accurate. From automation to wealth services, I like fixing the process behind the result.</p>

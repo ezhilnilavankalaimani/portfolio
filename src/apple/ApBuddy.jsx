@@ -49,7 +49,7 @@ const CHIPS = ['Experience', 'Studies', 'Skills', 'Projects', 'Accolades', 'Bany
 
 const ApBuddy = ({ onGame }) => {
   const [open, setOpen] = useState(false);
-  const [msgs, setMsgs] = useState([{ b: 1, t: "Hi, I'm EZ. I make life EaZier. Tell me where to go, like 'take me to projects', or ask me the top score in the game." }]);
+  const [msgs, setMsgs] = useState([{ b: 1, t: "Hi, I'm EZ, your personal assistant and advisor. Tell me where to go, like 'take me to projects', or ask me the top score in the game." }]);
   const [val, setVal] = useState('');
   const log = useRef(null);
   useEffect(() => { if (log.current) log.current.scrollTop = log.current.scrollHeight; }, [msgs, open]);
@@ -73,7 +73,7 @@ const ApBuddy = ({ onGame }) => {
     for (const [, re, id, label] of TARGETS) {
       if (re.test(s)) { go(id); return `Rolling to ${label}.`; }
     }
-    return "I give directions around this page, and the game's top score, that's how I make life EaZier. Try 'take me to projects'.";
+    return "I'm your personal assistant and advisor here: I give directions around this page and share the game's top score. Try 'take me to projects'.";
   };
   const send = (text) => {
     const t = (text || '').trim();
@@ -93,7 +93,7 @@ const ApBuddy = ({ onGame }) => {
       <span className='apx-tip'>Need help? Click me</span>
       {open && (
         <div className='apx-chat' role='dialog' aria-label='EZ'>
-          <header><span>EZ <small style={{ fontWeight: 400, opacity: .7, marginLeft: 6 }}>I make life EaZier</small></span><button type='button' aria-label='Close' onClick={() => setOpen(false)}>&times;</button></header>
+          <header><span>EZ <small style={{ fontWeight: 400, opacity: .7, marginLeft: 6 }}>your personal assistant and advisor</small></span><button type='button' aria-label='Close' onClick={() => setOpen(false)}>&times;</button></header>
           <div className='apx-log' ref={log}>{msgs.map((m, i) => <div key={i} className={`apx-m ${m.u ? 'u' : 'b'}`}>{m.t}</div>)}</div>
           <div className='apx-chips'>{CHIPS.map((c) => <button key={c} type='button' onClick={() => send(`take me to ${c}`)}>{c}</button>)}</div>
           <form onSubmit={(e) => { e.preventDefault(); send(val); }}>

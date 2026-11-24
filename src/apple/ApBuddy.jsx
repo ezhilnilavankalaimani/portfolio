@@ -49,7 +49,7 @@ const CHIPS = ['Experience', 'Studies', 'Skills', 'Projects', 'Accolades', 'Bany
 
 const ApBuddy = ({ onGame }) => {
   const [open, setOpen] = useState(false);
-  const [msgs, setMsgs] = useState([{ b: 1, t: "Hi, I'm EZ, your wingman. Tell me where to go, like 'take me to projects', or ask me the top score in the game." }]);
+  const [msgs, setMsgs] = useState([{ b: 1, t: "Hi, I'm EZ, I make life EaZier. Tell me where to go, like 'take me to projects', or ask me the top score in the game." }]);
   const [val, setVal] = useState('');
   const log = useRef(null);
   useEffect(() => { if (log.current) log.current.scrollTop = log.current.scrollHeight; }, [msgs, open]);

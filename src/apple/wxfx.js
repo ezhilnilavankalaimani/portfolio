@@ -74,12 +74,16 @@ export function createWx(canvas, cfg) {
     drops = []; flakes = []; clouds = []; splashes = []; beads = []; stars = []; fogs = [];
     const area = W * H;
     if (kind === 'rain' || kind === 'drizzle' || kind === 'storm') {
-      const n = Math.round((area / 650) * inten * (kind === 'drizzle' ? 0.7 : 1));
+      const dz = kind === 'drizzle';
+      const n = Math.max(6, Math.round((area / 650) * Math.pow(inten, 1.7) * (dz ? 2 : 1)));
+      const hv = inten > 1 ? 1.25 : 1;
       for (let i = 0; i < n; i++) {
         const z = Math.random();
-        drops.push({ x: rnd(-W * 0.2, W * 1.1), y: rnd(-H, H), z, len: 9 + z * 34, v: 520 + z * 980, w: 0.5 + z * 1.15, a: 0.28 + z * 0.5 });
+        drops.push(dz
+          ? { x: rnd(-W * 0.2, W * 1.1), y: rnd(-H, H), z, len: 5 + z * 11, v: 300 + z * 360, w: 0.4 + z * 0.55, a: 0.18 + z * 0.3 }
+          : { x: rnd(-W * 0.2, W * 1.1), y: rnd(-H, H), z, len: (9 + z * 34) * hv, v: (520 + z * 980) * hv, w: 0.5 + z * 1.15, a: 0.28 + z * 0.5 });
       }
-      const nb = kind === 'drizzle' ? 6 : 11;
+      const nb = Math.max(2, Math.round((kind === 'drizzle' ? 5 : 11) * inten));
       for (let i = 0; i < nb; i++) beads.push({ x: rnd(8, W - 8), y: rnd(8, H * 0.8), r: rnd(1.4, 4.2), vy: 0, wait: rnd(1, 9), trail: [] });
     }
     if (kind === 'snow') {

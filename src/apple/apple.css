@@ -1276,3 +1276,8 @@
 .ap .aw.wm .pn{margin:6px auto 20px}
 .ap .aw.wm .pn .pin{box-shadow:0 0 0 6px #0071ce,0 0 0 8px #ffd966,0 12px 22px #0b2a5a55,inset 0 0 0 2px #ffffff55}
 .ap .coc .t{text-shadow:none}
+/* chevron instead of plus on cards */
+.ap .plus{font-size:30px;line-height:1;display:flex;align-items:center;justify-content:center;padding-bottom:4px;padding-left:2px;transition:transform .3s,background .3s}
+.ap .popc:hover .plus{transform:translateX(4px)}
+.ap .pt3:not(.pc) .pl3{display:flex;align-items:center;justify-content:center;line-height:1;padding-bottom:3px;padding-left:2px}
+.ap .pt3:not(.pc):hover .pl3{transform:translateX(4px)}

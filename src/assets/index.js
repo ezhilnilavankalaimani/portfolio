@@ -1,4 +1,4 @@
-import logo from "./logo.jpg";
+import logo from "./logo.png";
 import backend from "./backend.png";
 import database from "./database.png";
 import mobile from "./mobile.png";

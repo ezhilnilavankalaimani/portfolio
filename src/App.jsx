@@ -60,6 +60,7 @@ const CH_CSS = `
 .ch-h { font-size: 27px; font-weight: 700; letter-spacing: -.5px; margin: 8px 0; }
 .ch-p { font-size: 16px; line-height: 1.45; margin: 0 0 22px; }
 .ch-go { font-size: 17px; font-weight: 500; }
+@media (max-width: 760px) { .ch-card { padding: 18px 22px; border-radius: 24px; } .ch-h { font-size: 22px; margin: 4px 0; } .ch-p { font-size: 14px; margin: 0 0 8px; } .ch-go { font-size: 15px; } .ch-tag { font-size: 12px; } .ch-ninja { width: 56px; left: 34px; top: -62px; } .ch-me { width: 72px; right: 30px; top: -62px; } }
 @media (prefers-reduced-motion: reduce) { .ch-ninja, .ch-me, .ch-wv, .ch-ninja svg > path { animation: none; } .ch-ninja { transform: translateY(40px); } .ch-me { transform: translateY(8px); } }
 `;
 
@@ -76,13 +77,13 @@ const Chooser = ({ onPick }) => {
   useEffect(() => { const t = setTimeout(() => setFace((f) => (f === 'surprised' ? 'happy' : f)), 2600); return () => clearTimeout(t); }, []);
   const pickFormal = () => { setFace('sad'); setTimeout(() => onPick('formal'), 650); };
   const phone = typeof window !== 'undefined' && window.innerWidth < 760;
-  const wrap = { position: 'relative', marginTop: phone ? 130 : 116, width: phone ? '100%' : 360, maxWidth: 400 };
+  const wrap = { position: 'relative', marginTop: phone ? 62 : 116, width: phone ? '100%' : 360, maxWidth: 400 };
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '24px 20px', background: '#f5f5f7', color: '#1d1d1f', textAlign: 'center', fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif' }}>
+    <div style={{ position: 'relative', overflow: 'hidden', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: phone ? '8px 20px' : '24px 20px', background: '#f5f5f7', color: '#1d1d1f', textAlign: 'center', fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif' }}>
       <style>{CH_CSS}</style>
       <div style={{ fontSize: 15, color: '#6e6e73', fontWeight: 600 }}>Welcome to the portfolio of</div>
-      <h1 style={{ fontSize: phone ? 38 : 60, fontWeight: 700, letterSpacing: -1.5, margin: '4px 0', lineHeight: 1.05 }}>Ezhil Nilavan Kalaimani</h1>
-      <div style={{ fontSize: phone ? 18 : 21, color: '#6e6e73' }}>How would you like to explore?</div>
+      <h1 style={{ fontSize: phone ? 32 : 60, fontWeight: 700, letterSpacing: -1.2, margin: '2px 0', lineHeight: 1.05 }}>Ezhil Nilavan Kalaimani</h1>
+      <div style={{ fontSize: phone ? 16 : 21, color: '#6e6e73', marginBottom: phone ? 4 : 0 }}>How would you like to explore?</div>
       <div style={{ display: 'flex', gap: phone ? 8 : 28, flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
         <div style={wrap}>
           <div className='ch-ninja'><Ninja face={face} style={{ width: '100%', display: 'block' }} /></div>
@@ -103,7 +104,7 @@ const Chooser = ({ onPick }) => {
           </button>
         </div>
       </div>
-      <div style={{ marginTop: 36, fontSize: 13, color: '#86868b' }}>You can switch any time from the button on the page.</div>
+      <div style={{ marginTop: phone ? 8 : 36, fontSize: 12, color: '#86868b' }}>You can switch any time from the button on the page.</div>
     </div>
   );
 };

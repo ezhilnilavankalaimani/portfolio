@@ -1176,13 +1176,103 @@
 @keyframes wmgl{0%,30%{background-position:0 0,160% 0}70%,100%{background-position:0 0,-60% 0}}
 @keyframes pinflip{from{transform:rotateY(180deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.ap .aw.wm .pn::before,.ap .aw.wm .pn::after,.ap .aw.wm.in .pn .pin{animation:none}}
-
-/* CSM: sun gliding along the badge edge */
-.ap .aw.csm .csun{position:absolute;left:0;top:0;z-index:4;width:64px;height:64px;margin:-32px 0 0 -32px;pointer-events:none;offset-path:circle(46% at 50% 50%);offset-rotate:0deg;animation:csmsun 11s linear 1.4s infinite;opacity:0}
-.ap .aw.csm.csmgo .csun{opacity:1}
-.ap .aw.csm .csun::before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6c8 14%,#ffd45a 30%,#ffa21c55 52%,#ff8a0000 72%);mix-blend-mode:screen;animation:csmsp 2.4s ease-in-out infinite}
-.ap .aw.csm .csun::after{content:"";position:absolute;inset:-14px;border-radius:50%;background:repeating-conic-gradient(from 0deg,#ffe48a00 0 9deg,#ffe48aaa 11deg,#ffe48a00 13deg 30deg);-webkit-mask-image:radial-gradient(circle,#000 0,#000a 30%,#0000 68%);mask-image:radial-gradient(circle,#000 0,#000a 30%,#0000 68%);mix-blend-mode:screen;animation:csmray 9s linear infinite}
-@keyframes csmsun{from{offset-distance:62%}to{offset-distance:162%}}
+/* CSM: one lap of sun around the edge, then it settles into the star */
+.ap .aw.csm .csun{position:absolute;left:50%;top:96%;z-index:4;width:64px;height:64px;margin:-32px 0 0 -32px;pointer-events:none;opacity:0}
+.ap .aw.csm.csmgo .csun{animation:csmlap 6.4s linear 1.3s 1 forwards}
+.ap .aw.csm .csun::before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6c8 14%,#ffd45a 30%,#ffa21c55 52%,#ff8a0000 72%);mix-blend-mode:screen;animation:csmsp 2s ease-in-out infinite}
+.ap .aw.csm .csun::after{content:"";position:absolute;inset:-14px;border-radius:50%;background:repeating-conic-gradient(from 0deg,#ffe48a00 0 9deg,#ffe48aaa 11deg,#ffe48a00 13deg 30deg);-webkit-mask-image:radial-gradient(circle,#000 0,#000a 30%,#0000 68%);mask-image:radial-gradient(circle,#000 0,#000a 30%,#0000 68%);mix-blend-mode:screen;animation:csmray 7s linear infinite}
+.ap .aw.csm .csstar{position:absolute;left:50%;top:83%;z-index:4;width:30px;height:30px;margin:-15px 0 0 -15px;pointer-events:none;opacity:0}
+.ap .aw.csm .csstar::before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fffbe0 0,#ffe27a 28%,#ffb21f55 55%,#ff9a0000 74%);mix-blend-mode:screen}
+.ap .aw.csm .csstar::after{content:"";position:absolute;inset:3px;background:#fff;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);filter:drop-shadow(0 0 6px #ffd45a)}
+.ap .aw.csm.csmgo .csstar{animation:csmburst 1s cubic-bezier(.2,1.3,.4,1) 6.9s forwards,csmbreathe 3.2s ease-in-out 7.9s infinite}
+@keyframes csmlap{0.00%{left:50.00%;top:96.00%;opacity:0;transform:scale(.4)}1.67%{left:44.00%;top:95.61%}3.33%{left:38.09%;top:94.43%;opacity:1;transform:scale(1)}5.00%{left:32.40%;top:92.50%}6.67%{left:27.00%;top:89.84%}8.33%{left:22.00%;top:86.49%}10.00%{left:17.47%;top:82.53%}11.67%{left:13.51%;top:78.00%}13.33%{left:10.16%;top:73.00%}15.00%{left:7.50%;top:67.60%}16.67%{left:5.57%;top:61.91%}18.33%{left:4.39%;top:56.00%}20.00%{left:4.00%;top:50.00%}21.67%{left:4.39%;top:44.00%}23.33%{left:5.57%;top:38.09%}25.00%{left:7.50%;top:32.40%}26.67%{left:10.16%;top:27.00%}28.33%{left:13.51%;top:22.00%}30.00%{left:17.47%;top:17.47%}31.67%{left:22.00%;top:13.51%}33.33%{left:27.00%;top:10.16%}35.00%{left:32.40%;top:7.50%}36.67%{left:38.09%;top:5.57%}38.33%{left:44.00%;top:4.39%}40.00%{left:50.00%;top:4.00%}41.67%{left:56.00%;top:4.39%}43.33%{left:61.91%;top:5.57%}45.00%{left:67.60%;top:7.50%}46.67%{left:73.00%;top:10.16%}48.33%{left:78.00%;top:13.51%}50.00%{left:82.53%;top:17.47%}51.67%{left:86.49%;top:22.00%}53.33%{left:89.84%;top:27.00%}55.00%{left:92.50%;top:32.40%}56.67%{left:94.43%;top:38.09%}58.33%{left:95.61%;top:44.00%}60.00%{left:96.00%;top:50.00%}61.67%{left:95.61%;top:56.00%}63.33%{left:94.43%;top:61.91%}65.00%{left:92.50%;top:67.60%}66.67%{left:89.84%;top:73.00%}68.33%{left:86.49%;top:78.00%}70.00%{left:82.53%;top:82.53%}71.67%{left:78.00%;top:86.49%}73.33%{left:73.00%;top:89.84%}75.00%{left:67.60%;top:92.50%}76.67%{left:61.91%;top:94.43%}78.33%{left:56.00%;top:95.61%}80.00%{left:50.00%;top:96.00%}90%{left:50%;top:83%;opacity:1;transform:scale(.9)}100%{left:50%;top:83%;opacity:0;transform:scale(.3)}}
+@keyframes csmburst{0%{opacity:0;transform:scale(.2) rotate(-40deg)}60%{opacity:1;transform:scale(1.9) rotate(10deg)}100%{opacity:.95;transform:scale(1) rotate(0)}}
+@keyframes csmbreathe{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
 @keyframes csmsp{0%,100%{transform:scale(.85);opacity:.85}50%{transform:scale(1.15);opacity:1}}
 @keyframes csmray{to{transform:rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){.ap .aw.csm .csun,.ap .aw.csm .csun::before,.ap .aw.csm .csun::after{animation:none}.ap .aw.csm .csun{offset-distance:88%}}
+@media(prefers-reduced-motion:reduce){.ap .aw.csm.csmgo .csun{animation:none;opacity:0}.ap .aw.csm.csmgo .csstar{animation:none;opacity:.9}.ap .aw.csm .csun::before,.ap .aw.csm .csun::after{animation:none}}
+
+/* Studies: hover - card lifts, slides toward the timeline, gradient rail fills, dot pulses */
+.ap .tli{transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s,background .45s;overflow:hidden}
+.ap .tli::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(#0071e3,#7a5cff,#ff5ca8);transform:scaleY(0);transform-origin:top;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.ap .tli:hover{transform:translateX(10px) scale(1.012);box-shadow:0 22px 54px #0071e326,0 2px 0 #fff inset;background:linear-gradient(120deg,#fff 55%,#eef5ff)}
+.ap .tli:hover::after{transform:scaleY(1)}
+.ap .tli:hover:before{animation:tlpulse 1.2s ease-out infinite;background:linear-gradient(135deg,#0071e3,#7a5cff)}
+.ap .tli:hover .yr{letter-spacing:2.4px}
+.ap .tli .yr{transition:letter-spacing .4s}
+.ap .tli:hover h3{background:linear-gradient(90deg,#1d1d1f,#0071e3);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes tlpulse{0%{box-shadow:0 0 0 0 #0071e388}100%{box-shadow:0 0 0 16px #0071e300}}
+@media(hover:none){.ap .tli:hover{transform:none}}
+/* Studies: hover accent follows each institution's logo colour */
+.ap .tl>.tli:nth-child(1){--tc:#1f2f9e;--tc2:#4a63e6}
+.ap .tl>.tli:nth-child(2){--tc:#8a1c1c;--tc2:#c04a3a}
+.ap .tl>.tli:nth-child(3){--tc:#a8864a;--tc2:#d9bd7e}
+.ap .tl>.tli:nth-child(4){--tc:#0071e3;--tc2:#34c7b8}
+.ap .tli::after{background:linear-gradient(var(--tc,#0071e3),var(--tc2,#7a5cff))}
+.ap .tli:hover{box-shadow:0 22px 54px color-mix(in srgb,var(--tc,#0071e3) 22%,transparent),0 2px 0 #fff inset;background:linear-gradient(120deg,#fff 55%,color-mix(in srgb,var(--tc,#0071e3) 8%,#fff))}
+.ap .tli:hover:before{background:var(--tc,#0071e3);animation:tlpulse2 1.2s ease-out infinite}
+.ap .tli:hover .yr{color:var(--tc,#0071e3)}
+.ap .tli:hover h3{background:linear-gradient(90deg,#1d1d1f,var(--tc,#0071e3));-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes tlpulse2{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--tc,#0071e3) 50%,transparent)}100%{box-shadow:0 0 0 16px transparent}}
+/* Education award cards: white at rest, colour only on hover */
+.ap .aw[class*=k-]{background:#fff;border-color:#e8e8ed;box-shadow:0 4px 18px #0000000d;transition:background .45s,border-color .45s,box-shadow .45s,transform .45s cubic-bezier(.2,.8,.2,1)}
+.ap .aw[class*=k-]:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--kb) 80%,#fff),color-mix(in srgb,var(--kb) 35%,#fff));border-color:var(--kb);box-shadow:0 16px 40px color-mix(in srgb,var(--kb) 70%,transparent);transform:translateY(-4px)}
+/* Gaming and Reddit cards in Popcorn Corner */
+.ap .gmz{max-width:1240px;margin:84px auto 0;text-align:left}
+.ap .gmz>h3{font-size:30px;letter-spacing:-.02em;margin:0 0 22px;text-align:center}
+.ap .gcs{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:22px}
+.ap .gc{display:flex;flex-direction:column;background:#f5f5f7;border-radius:26px;overflow:hidden;color:inherit;text-decoration:none;transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s}
+.ap .gc:hover{transform:translateY(-6px);box-shadow:0 24px 54px #0002}
+.ap .gci{position:relative;height:300px;overflow:hidden;background:#111}
+.ap .gci img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:opacity .6s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.ap .gc:hover .gci img{transform:scale(1.04)}
+.ap .gci img.b{opacity:0}.ap .gc.xc1:hover .gci img.b{opacity:1}.ap .gc.xc1:hover .gci img.a{opacity:0}
+.ap .gct{padding:20px 24px 24px}
+.ap .gct i{font-style:normal;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.ap .gc.xc1 .gct i{color:#3d9a1f}.ap .gc.xc2 .gct i{color:#0070d1}.ap .gc.xc3 .gct i{color:#ff4500}
+.ap .gct h3{margin:6px 0 6px;font-size:23px}
+.ap .gct p{margin:0;color:var(--mute);font-size:15px;line-height:1.45}
+.ap .gcta{display:inline-block;margin-top:12px;font-size:15px;font-weight:600;color:var(--blue)}
+@media(max-width:900px){.ap .gcs{grid-template-columns:1fr;max-width:520px;margin:0 auto}.ap .gci{height:260px}}
+/* Clash of Clans card: village screenshot on the right, profile on hover */
+.ap .coc::before,.ap .coc::after{content:"";position:absolute;top:0;right:0;bottom:0;width:62%;background-size:cover;background-position:center;transition:opacity .7s,transform 1.2s cubic-bezier(.2,.8,.2,1);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 55%);mask-image:linear-gradient(90deg,transparent 0,#000 55%)}
+.ap .coc::before{background-image:var(--cb);opacity:.9}
+.ap .coc::after{background-image:var(--cp);opacity:0}
+.ap .coc:hover::before{opacity:0;transform:scale(1.04)}.ap .coc:hover::after{opacity:.95;transform:scale(1.04)}
+.ap .coc .cr{position:relative;z-index:2}
+.ap .coc .cr>svg{display:none}
+.ap .coc .t{text-shadow:0 2px 14px #000}
+@media(max-width:860px){.ap .coc::before,.ap .coc::after{width:100%;-webkit-mask-image:linear-gradient(180deg,transparent 20%,#000 90%);mask-image:linear-gradient(180deg,transparent 20%,#000 90%);opacity:.5}.ap .coc:hover::before{opacity:0}.ap .coc:hover::after{opacity:.6}}
+.ap .gcs{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.ap .gcs{grid-template-columns:1fr}}
+.ap img.bico{width:42px;height:30px;object-fit:contain;display:block}
+/* Clash card: text stats only, no screenshots */
+.ap .coc::before,.ap .coc::after{content:none!important;display:none}
+.ap .coc .cstats{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0}
+.ap .coc .cstats span{display:flex;flex-direction:column;gap:2px;background:#1c1c1e;border:1px solid #2c2c30;border-radius:16px;padding:10px 16px;font-size:12px;color:#a1a1a6;letter-spacing:.02em}
+.ap .coc .cstats b{font-size:20px;color:#fff;letter-spacing:-.01em}
+.ap .coc .cr>svg{display:block}
+.ap .socials{grid-template-columns:repeat(4,1fr);max-width:860px}
+@media(max-width:640px){.ap .socials{grid-template-columns:repeat(2,1fr)}}
+.ap .coc .cstats .ct{background:none;border:0;padding:10px 4px 10px 0;align-self:center;font-size:13px;font-weight:600;color:#ffb340;letter-spacing:.06em;text-transform:uppercase}
+/* Naive Drafts: clapperboard that claps */
+.ap .blog svg.clap{width:230px;height:218px;fill:none;stroke:none;overflow:visible;filter:drop-shadow(0 18px 22px #a15c0033)}
+.ap .blog .clap .carm{transform-origin:20px 60px;transform-box:view-box;animation:clapAnim 4.2s cubic-bezier(.5,0,.2,1) infinite}
+.ap .blog:hover .clap .carm{animation-duration:1.6s}
+@keyframes clapAnim{0%,55%{transform:rotate(-22deg)}62%{transform:rotate(0)}68%{transform:rotate(-6deg)}74%,100%{transform:rotate(-22deg)}}
+@media(max-width:860px){.ap .blog svg.clap{width:170px;height:162px;align-self:center}}
+/* Contact: full email on one line */
+.ap .socials{max-width:980px}
+.ap .so[href^="mailto:"] span{white-space:nowrap;overflow-wrap:normal;font-size:12.5px;letter-spacing:-.01em}
+@media(max-width:640px){.ap .so[href^="mailto:"] span{font-size:min(11px,2.9vw)}}
+/* Walmart: gold seal frame, smaller pin */
+.ap .aw.wm .pn{width:124px;height:124px;margin:22px auto 26px}
+.ap .aw.wm .pn .pin{width:124px;height:124px;box-shadow:0 0 0 6px #0071ce,0 0 0 8px #ffd966,inset 0 0 0 2px #ffffff55}
+.ap .aw.wm .pn::before{inset:-22px;border-radius:0;animation:none;clip-path:polygon(100.00% 50.00%,95.11% 55.94%,98.30% 62.94%,92.04% 67.41%,93.30% 75.00%,86.10% 77.70%,85.36% 85.36%,77.70% 86.10%,75.00% 93.30%,67.41% 92.04%,62.94% 98.30%,55.94% 95.11%,50.00% 100.00%,44.06% 95.11%,37.06% 98.30%,32.59% 92.04%,25.00% 93.30%,22.30% 86.10%,14.64% 85.36%,13.90% 77.70%,6.70% 75.00%,7.96% 67.41%,1.70% 62.94%,4.89% 55.94%,0.00% 50.00%,4.89% 44.06%,1.70% 37.06%,7.96% 32.59%,6.70% 25.00%,13.90% 22.30%,14.64% 14.64%,22.30% 13.90%,25.00% 6.70%,32.59% 7.96%,37.06% 1.70%,44.06% 4.89%,50.00% 0.00%,55.94% 4.89%,62.94% 1.70%,67.41% 7.96%,75.00% 6.70%,77.70% 13.90%,85.36% 14.64%,86.10% 22.30%,93.30% 25.00%,92.04% 32.59%,98.30% 37.06%,95.11% 44.06%);background:linear-gradient(145deg,#ffe27a,#ffc220 45%,#e0a000);box-shadow:none;filter:drop-shadow(0 10px 12px #0b2a5a55)}
+.ap .aw.wm .pn::after{inset:0}
+@media(max-width:640px){.ap .aw.wm .pn{margin:20px auto 22px}}
+/* Walmart: no yellow seal behind the pin */
+.ap .aw.wm .pn::before{display:none}
+.ap .aw.wm .pn{margin:6px auto 20px}
+.ap .aw.wm .pn .pin{box-shadow:0 0 0 6px #0071ce,0 0 0 8px #ffd966,0 12px 22px #0b2a5a55,inset 0 0 0 2px #ffffff55}
+.ap .coc .t{text-shadow:none}

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createWx } from './wxfx';
 
 // India on the left, USA on the right, like they sit on the world map, with the time in each right now.
 const CSS = `
@@ -33,15 +34,7 @@ const CSS = `
 .wc .wc-big.night .wc-lab,.wc .wc-big.night .wc-sub,.wc .wc-big.night .wc-wx{color:#b8c3e6}
 .wc .wc-big.night .wc-tm{color:#fff}
 .wc .wc-wx{font-size:12px;color:#6e6e73;display:flex;align-items:center;gap:6px;min-height:16px}
-.wc .wc-fx{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.85}
-.wc .wc-fx.rain{background-image:repeating-linear-gradient(105deg,transparent 0 15px,rgba(70,110,170,.38) 15px 16px);background-size:44px 44px;animation:wc-rain .55s linear infinite}
-.wc .night .wc-fx.rain{background-image:repeating-linear-gradient(105deg,transparent 0 15px,rgba(160,190,255,.35) 15px 16px)}
-.wc .wc-fx.snow{background-image:radial-gradient(circle,#fff 1.6px,transparent 2.4px),radial-gradient(circle,#fff 1.2px,transparent 2px);background-size:56px 56px,86px 86px;background-position:0 0,20px 30px;animation:wc-snow 6s linear infinite;opacity:.55}
-.wc .wc-fx.cloud{background:radial-gradient(60px 26px at 20% 22%,rgba(255,255,255,.75),transparent 70%),radial-gradient(80px 30px at 78% 16%,rgba(255,255,255,.6),transparent 70%);animation:wc-drift 14s ease-in-out infinite alternate}
-.wc .night .wc-fx.cloud{background:radial-gradient(60px 26px at 20% 22%,rgba(255,255,255,.12),transparent 70%),radial-gradient(80px 30px at 78% 16%,rgba(255,255,255,.1),transparent 70%)}
-.wc .wc-fx.sun{background:radial-gradient(70px 70px at 88% 12%,rgba(255,200,60,.55),transparent 70%)}
-.wc .wc-fx.moon{background:radial-gradient(40px 40px at 88% 14%,rgba(255,255,255,.55),transparent 70%),radial-gradient(circle,#fff 1px,transparent 1.6px);background-size:auto,64px 64px;opacity:.7}
-.wc .wc-fx.fog{background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0) 60%)}
+.wc .wc-fx{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;border-radius:inherit}
 @keyframes wc-rain{to{background-position:-14px 44px}}
 @keyframes wc-snow{to{background-position:14px 56px,34px 116px}}
 @keyframes wc-drift{to{transform:translateX(14px)}}
@@ -57,48 +50,107 @@ const offsetMin = (tz, now) => {
   const p = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour12: false, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }).formatToParts(now).reduce((o, x) => { o[x.type] = x.value; return o; }, {});
   return (Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute, p.second) - now.getTime()) / 60000;
 };
-const WX = (c) => (c === 0 ? 'clear' : c <= 3 ? 'cloud' : c === 45 || c === 48 ? 'fog' : (c >= 51 && c <= 67) || (c >= 80 && c <= 82) ? 'rain' : (c >= 71 && c <= 77) || c === 85 || c === 86 ? 'snow' : c >= 95 ? 'rain' : 'cloud');
-const WLABEL = { clear: 'Clear', cloud: 'Cloudy', fog: 'Foggy', rain: 'Rain', snow: 'Snow' };
+// Open-Meteo weather codes -> a scene kind, an intensity and a plain-English label.
+const WX = (c) => {
+  if (c === 0) return { k: 'clear', i: 0, label: 'Clear' };
+  if (c === 1) return { k: 'clear', i: 0, label: 'Mostly clear' };
+  if (c === 2) return { k: 'partly', i: 0, label: 'Partly cloudy' };
+  if (c === 3) return { k: 'cloud', i: 0, label: 'Overcast' };
+  if (c === 45 || c === 48) return { k: 'fog', i: 0.8, label: 'Foggy' };
+  if (c === 51) return { k: 'drizzle', i: 0.4, label: 'Light drizzle' };
+  if (c === 53) return { k: 'drizzle', i: 0.6, label: 'Drizzle' };
+  if (c === 55 || c === 56 || c === 57) return { k: 'drizzle', i: 0.85, label: 'Heavy drizzle' };
+  if (c === 61 || c === 80) return { k: 'rain', i: 0.5, label: 'Light rain' };
+  if (c === 63 || c === 81 || c === 66) return { k: 'rain', i: 0.85, label: 'Rain' };
+  if (c === 65 || c === 82 || c === 67) return { k: 'rain', i: 1.25, label: 'Heavy rain' };
+  if (c === 71 || c === 77 || c === 85) return { k: 'snow', i: 0.55, label: 'Light snow' };
+  if (c === 73) return { k: 'snow', i: 0.9, label: 'Snow' };
+  if (c === 75 || c === 86) return { k: 'snow', i: 1.3, label: 'Heavy snow' };
+  if (c >= 95) return { k: 'storm', i: 1.2, label: 'Thunderstorm' };
+  return { k: 'cloud', i: 0, label: 'Cloudy' };
+};
+const EMOJI = { clear: null, partly: '⛅', cloud: '☁️', fog: '🌫️', drizzle: '🌦️', rain: '🌧️', storm: '⛈️', snow: '🌨️' };
+const DEMO = (() => {
+  try { const q = new URLSearchParams(window.location.search).get('wx'); return q ? q.split(',') : null; } catch (e) { return null; }
+})();
+const DEMO_MAP = { clear: 0, partly: 2, cloud: 3, fog: 45, drizzle: 53, rain: 63, heavyrain: 65, storm: 95, snow: 73 };
 const phase = (h) => (h >= 5 && h < 8 ? 'dawn' : h >= 8 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'dusk' : 'night');
 const GRAD = {
   dawn: ['#ffe2cf', '#fff6ea'], day: ['#dcefff', '#f7fbff'], dusk: ['#ffd7c0', '#ffeff6'], night: ['#0f1b3d', '#27386b'],
 };
-const bgFor = (ph, wx) => {
+const bgFor = (ph, k) => {
   let [a, b] = GRAD[ph];
-  if (ph !== 'night' && (wx === 'rain' || wx === 'cloud' || wx === 'fog')) { a = '#d5dee9'; b = '#eef2f7'; }
-  if (ph !== 'night' && wx === 'snow') { a = '#e3edf8'; b = '#f8fbff'; }
-  if (ph === 'night' && wx === 'rain') { a = '#141b2e'; b = '#27324f'; }
-  if (ph === 'night' && wx === 'snow') { a = '#1b2742'; b = '#38507f'; }
+  if (ph !== 'night') {
+    if (k === 'partly') { a = '#cfe5fb'; b = '#f2f8ff'; }
+    if (k === 'cloud' || k === 'fog' || k === 'drizzle') { a = '#cdd6e2'; b = '#e9eef4'; }
+    if (k === 'rain') { a = '#b9c4d3'; b = '#dde4ec'; }
+    if (k === 'storm') { a = '#8f9bb0'; b = '#c1c9d6'; }
+    if (k === 'snow') { a = '#dde8f5'; b = '#f6faff'; }
+  } else {
+    if (k === 'cloud' || k === 'fog' || k === 'drizzle' || k === 'partly') { a = '#1a2440'; b = '#2e3b62'; }
+    if (k === 'rain') { a = '#121a2c'; b = '#243049'; }
+    if (k === 'storm') { a = '#0b101d'; b = '#1e283f'; }
+    if (k === 'snow') { a = '#1b2742'; b = '#38507f'; }
+  }
   return `linear-gradient(160deg, ${a}c9, ${b}99)`;
 };
-const fxFor = (ph, wx) => (wx === 'rain' ? 'rain' : wx === 'snow' ? 'snow' : wx === 'cloud' ? 'cloud' : wx === 'fog' ? 'fog' : ph === 'night' ? 'moon' : 'sun');
-const useWeather = (lat, lon) => {
+const useWeather = (lat, lon, slot) => {
   const [w, setW] = useState(null);
   useEffect(() => {
     let dead = false;
+    if (DEMO && DEMO[slot]) {
+      const code = DEMO_MAP[DEMO[slot]] ?? 0;
+      setW({ ...WX(code), t: 12, wind: DEMO[slot] === 'storm' ? 30 : 12 });
+      return undefined;
+    }
     const go = () => {
       if (typeof fetch === 'undefined') return;
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`)
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m`)
         .then((r) => r.json())
-        .then((j) => { if (!dead && j && j.current) setW({ wx: WX(j.current.weather_code), t: Math.round(j.current.temperature_2m) }); })
+        .then((j) => { if (!dead && j && j.current) setW({ ...WX(j.current.weather_code), t: Math.round(j.current.temperature_2m), wind: j.current.wind_speed_10m || 0 }); })
         .catch(() => {});
     };
     go();
     const id = setInterval(go, 15 * 60 * 1000);
     return () => { dead = true; clearInterval(id); };
-  }, [lat, lon]);
+  }, [lat, lon, slot]);
   return w;
 };
+// Draws the live weather behind a card.
+const Sky = ({ kind, i, night, wind, phase: ph }) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const cv = ref.current;
+    if (!cv) return undefined;
+    const fx = createWx(cv, { kind, i, night, wind, phase: ph });
+    fx.start();
+    let io = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? fx.resume() : fx.stop())));
+      io.observe(cv);
+    }
+    const onVis = () => (document.hidden ? fx.stop() : fx.resume());
+    document.addEventListener('visibilitychange', onVis);
+    let t = 0;
+    const onResize = () => { clearTimeout(t); t = setTimeout(() => fx.resize(), 150); };
+    window.addEventListener('resize', onResize);
+    return () => { fx.stop(); if (io) io.disconnect(); document.removeEventListener('visibilitychange', onVis); window.removeEventListener('resize', onResize); clearTimeout(t); };
+  }, [kind, i, night, wind, ph]);
+  return <canvas ref={ref} className='wc-fx' aria-hidden='true' />;
+};
 const Box = ({ lab, tz, city, now, w, role, roleCls, extra }) => {
-  const ph = phase(hr(tz, now));
-  const wx = w ? w.wx : 'clear';
+  const h = hr(tz, now);
+  const ph = phase(h);
+  const k = w ? w.k : 'clear';
+  const night = ph === 'night';
+  const emoji = (w && EMOJI[k]) || icon(h);
   return (
-    <div className={`wc-big${ph === 'night' ? ' night' : ''}`} style={{ '--bg': bgFor(ph, wx) }}>
-      <i className={`wc-fx ${fxFor(ph, wx)}`} />
+    <div className={`wc-big${night ? ' night' : ''}`} style={{ '--bg': bgFor(ph, k) }}>
+      <Sky kind={k} i={w ? w.i : 0} night={night} wind={w ? w.wind : 0} phase={ph} />
       <span className='wc-lab'>{lab}</span>
       <span className='wc-tm'>{fmt(tz, now)}</span>
-      <span className='wc-sub'><span>{icon(hr(tz, now))}</span> {city} · {day(tz, now)}</span>
-      <span className='wc-wx'>{w ? `${WLABEL[w.wx]} · ${w.t}°C` : '\u00a0'}</span>
+      <span className='wc-sub'><span>{emoji}</span> {city} · {day(tz, now)}</span>
+      <span className='wc-wx'>{w ? `${w.label} · ${w.t}°C` : '\u00a0'}</span>
       <span className={`wc-role ${roleCls}`}>{role}</span>
       {extra}
     </div>
@@ -109,8 +161,8 @@ const icon = (h) => (h >= 6 && h < 18 ? '☀️' : '🌙');
 const ApWorldClock = () => {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
-  const wi = useWeather(13.08, 80.27);
-  const wc = useWeather(43.65, -79.38);
+  const wi = useWeather(13.08, 80.27, 0);
+  const wc = useWeather(43.65, -79.38, 1);
   const IN = 'Asia/Kolkata';
   const CA = 'America/Toronto';
   const d = offsetMin(IN, now) - offsetMin(CA, now);
